@@ -1,4 +1,4 @@
-# C++ Project
+# Stupid Bird
 
 ## Day1 Set up environment
 
@@ -16,3 +16,4 @@
 2. Polling 
 3. Basic framework of project
 4. project demo
+
