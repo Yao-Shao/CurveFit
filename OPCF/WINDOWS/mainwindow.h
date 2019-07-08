@@ -8,7 +8,7 @@
 #include <QSpinBox>
 #include <QCloseEvent>
 #include "ui_mainwindow.h"
-#include "base.h"
+#include "../COMMON/base.h"
 #include "drawgraph.h"
 
 #define LENGTH 1080
