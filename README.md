@@ -1,4 +1,4 @@
-# C++ Project
+# Stupid Bird
 
 ## Day1 Set up environment
 
