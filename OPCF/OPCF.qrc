@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/OPCF">
+        <file>img/running.png</file>
+        <file>img/logo.png</file>
+    </qresource>
+</RCC>
