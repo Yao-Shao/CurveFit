@@ -1,12 +1,13 @@
-////////////////////////////////////////////////////////////////////////////////
+﻿////////////////////////////////////////////////////////////////////////////////
 #pragma once
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <memory>
-#include "any.h"
+#include <any>
 #include <vector>
 #include <map>
 #include <stack>
+#include <array>
 
 //types
 typedef unsigned char     uchar;
@@ -27,7 +28,7 @@ class ICommandBase
 {
 public:
 	//virtual void SetParameter(const std::shared_ptr<ICommandParameter>& param) = 0;
-    virtual void SetParameter(const _new_any_space_::any& param) = 0;
+	virtual void SetParameter(const std::any& param) = 0;
 	virtual void Exec() = 0;
 /*
 virtual std::shared_ptr<ICommandBase> get_Undo() = 0;
@@ -61,12 +62,16 @@ public:
 	{
 		m_array.push_back(p);
 	}
-/*
 	void RemoveNotification(const std::shared_ptr<T>& p) throw()
 	{
-		...
+		auto iter(m_array.begin());
+		for( ; iter != m_array.end(); ++ iter ) {
+			if( (*iter).get() == p.get() ) {
+				m_array.erase(iter);
+				return ;
+			}
+		}
 	}
-*/
 
 protected:
 	std::vector<std::shared_ptr<T>> m_array;
@@ -94,6 +99,10 @@ public:
 	{
 		AddNotification(p);
 	}
+	void RemovePropertyNotification(const std::shared_ptr<IPropertyNotification>& p) throw()
+	{
+		RemoveNotification(p);
+	}
 	void Fire_OnPropertyChanged(const std::string& str)
 	{
 		auto iter(m_array.begin());
@@ -110,6 +119,10 @@ public:
 	{
 		AddNotification(p);
 	}
+	void RemoveCommandNotification(const std::shared_ptr<ICommandNotification>& p) throw()
+	{
+		RemoveNotification(p);
+	}
 	void Fire_OnCommandComplete(const std::string& str, bool bOK)
 	{
 		auto iter(m_array.begin());
@@ -124,23 +137,31 @@ public:
 class IStateBase
 {
 public:
-    virtual int Process(unsigned int uEvent, _new_any_space_::any& param) = 0;
+	virtual int Process(unsigned int uEvent, const std::any& param) = 0;
 };
 
 class StateManager
 {
 public:
-/*
-viud Add(int iState, const std::shared_ptr<IStateBase>& spState)
-{
-...
-}
-void Process(unsigned int uEvent, ANY::any& param)
-{
-...
-}
-...
-*/
+	void Add(int iState, const std::shared_ptr<IStateBase>& spState)
+	{
+		m_map.insert(std::pair<int, std::shared_ptr<IStateBase>>(iState, spState));
+	}
+	void SetStartState(int iStartState) throw()
+	{
+		m_iCurrentState = iStartState;
+	}
+	void Process(unsigned int uEvent, const std::any& param)
+	{
+		auto iter(m_map.find(m_iCurrentState));
+		if( iter != m_map.end() )
+			m_iCurrentState = iter->second->Process(uEvent, param);
+	}
+	int GetCurrentState() const throw()
+	{
+		return m_iCurrentState;
+	}
+
 private:
 	int m_iCurrentState;
 	std::map<int, std::shared_ptr<IStateBase>> m_map;
