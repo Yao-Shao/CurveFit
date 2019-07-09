@@ -29,6 +29,7 @@ private:
 	void add_Ln(bool pos, double num, double com,bool com_pos);
 public:
     Function()throw(){}
+	void set_type(Type t) { type = t; }
 	Function& operator=(const std::string& s);//you just need to give the function string
 	Function& operator=(std::string&& s);
 	double get_y(const double& x);
