@@ -13,14 +13,15 @@ void ViewModel::SetModel(const std::shared_ptr<Model>& model)
 
 std::shared_ptr<Function> ViewModel::getFunction()
 {
-	return std::shared_ptr<Function>();
+	return m_model->getFunction();
 }
 
 std::shared_ptr<ICommandBase> ViewModel::getQueryCommand()
 {
-	return std::shared_ptr<ICommandBase>();
+	return std::static_pointer_cast<ICommandBase>(m_cmdQuery);
 }
 
-void ViewModel::Execc_QueryCommand(Param p)
+void ViewModel::Execc_QueryCommand(Param_opcf p)
 {
+	m_model->opcf_createFunction(p);
 }

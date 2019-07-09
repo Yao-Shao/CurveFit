@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include <QToolButton>
+#include <QTableWidget>
 #include <QLabel>
 #include <QComboBox>
 #include <QSpinBox>
@@ -11,7 +12,7 @@
 #include "ui_mainwindow.h"
 #include "../COMMON/base.h"
 #include "drawgraph.h"
-#include "../common/etlbase.h"
+#include "../COMMON/etlbase.h"
 
 #define LENGTH 1080
 #define WIDTH 720
@@ -24,6 +25,7 @@ class MainWindow : public QMainWindow
 
 public:
 	MainWindow(QWidget* parent = 0);
+	void set_ptrCommand(std::shared_ptr<ICommandBase> ptrCommand);
 	~MainWindow();
 	void createToolBar();
 	void createMenu();
@@ -74,6 +76,8 @@ private:
 
 	void getPoints();
 	
+	/*½Ó¿Ú*/
+	std::shared_ptr<ICommandBase> _ptrCommand;
 };
 
 #endif // MAINWINDOW_H

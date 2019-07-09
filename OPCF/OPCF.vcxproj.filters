@@ -47,8 +47,6 @@
     <ClCompile Include="VIEWMODEL\viewmodel.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VIEWMODEL\viewmodel.cpp">
-      <Filter>Header Files</Filter>
     <ClCompile Include="MODEL\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -71,6 +69,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="VIEWMODEL\commad\QueryCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="APP\app.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="APP\command\opcf_command.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="COMMON\param.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -110,6 +117,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="COMMON\param.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="APP\app.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="APP\command\opcf_command.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,7 +2,6 @@
 
 
 #include "../../COMMON/etlbase.h"
-#include "../viewmodel.h"
 #include "../COMMON/base.h"
 #include "../COMMON/param.h"
 class ViewModel;
@@ -17,6 +16,6 @@ public:
 private:
 	ViewModel* ptr_viewmodel;
 
-	Param m_param;
+	Param_opcf m_param;
 };
 

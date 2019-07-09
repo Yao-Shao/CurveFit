@@ -1,7 +1,6 @@
 #pragma once
 
 #include "../../COMMON/etlbase.h"
-#include "../viewmodel.h"
 
 class  ViewModel;
 
