@@ -5,7 +5,6 @@ Model::Model()
 {
 
 	sp_Function = std::make_shared<Function>();
-
 }
 
 std::shared_ptr<Function> Model::getFunction()
@@ -69,6 +68,6 @@ void Model::opcf_createFunction(Param p)
 	else {
 
 	}
-	//告知其它模块，model里面的Function已经改变
+	//鍛婄煡鍏跺畠妯″潡锛宮odel閲岄潰鐨凢unction宸茬粡鏀瑰彉
 	Fire_OnPropertyChanged("Fuction");
 }
