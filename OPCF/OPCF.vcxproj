@@ -125,6 +125,7 @@
     <ClCompile Include="VIEWMODEL\viewmodel.cpp" />
     <ClCompile Include="WINDOWS\DrawGraph.cpp" />
     <ClCompile Include="WINDOWS\mainwindow.cpp" />
+    <ClCompile Include="WINDOWS\sinks\runSink.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="mainwindow.ui" />
@@ -146,6 +147,7 @@
     <ClInclude Include="VIEWMODEL\sinks\ViewModelSink.h" />
     <ClInclude Include="VIEWMODEL\viewmodel.h" />
     <ClInclude Include="WINDOWS\DrawGraph.h" />
+    <ClInclude Include="WINDOWS\sinks\runSink.h" />
     <QtMoc Include="WINDOWS\mainwindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

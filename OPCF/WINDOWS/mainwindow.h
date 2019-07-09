@@ -13,6 +13,7 @@
 #include "../COMMON/base.h"
 #include "drawgraph.h"
 #include "../COMMON/etlbase.h"
+#include "../COMMON/param.h"
 
 #define LENGTH 1080
 #define WIDTH 720
@@ -30,6 +31,9 @@ public:
 	void createToolBar();
 	void createMenu();
 	void createTable();
+	void createFuncText();
+	void update();
+	void set_function(std::shared_ptr<Function> spFunction);
 
 protected:
 	void closeEvent(QCloseEvent*);
@@ -63,21 +67,26 @@ private:
 	QToolButton* colorBtn;
 	QToolButton* clearBtn;
 
+
+
+	QLabel* funcBox;
 	QTableWidget* table;
 	Type fitType;
- 
-	std::shared_ptr<Type> type;
+	QString funcText;
+	Param_opcf m_param;
+
+	std::shared_ptr<Function> spFunction;
 	std::shared_ptr<QPixmap> pix;
 	std::shared_ptr<Points> pointsData;
 
 	/* file */
 	QString openFileAddr;
 	QString saveFileAddr;
-
-	void getPoints();
 	
 	/*½Ó¿Ú*/
 	std::shared_ptr<ICommandBase> _ptrCommand;
+
+	void getPoints();
 };
 
 #endif // MAINWINDOW_H

@@ -15,6 +15,9 @@ void app_opcf::run()
 
 	//½«modelÓëviewmodel°ó¶¨¡£
 	viewmodel->SetModel(model);
+	//_mainwindow.SetViewModel(viewmodel);
+
+	_mainwindow.set_function(viewmodel->getFunction());
 
 	sp_opcf_command = std::make_shared<opcf_command>(this);
 

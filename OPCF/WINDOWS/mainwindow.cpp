@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QAbstractButton>
 #include <QPushButton>
+#include <qdebug.h>
 #include "mainwindow.h"
 
 
@@ -24,6 +25,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	createMenu();
 	createToolBar();
 	createTable();
+	createFuncText();
 }
 
 void MainWindow::set_ptrCommand(std::shared_ptr<ICommandBase> ptrCommand)
@@ -197,8 +199,12 @@ void MainWindow::createTable()
 	table->setItem(0, 0, item0);
 	table->setItem(0, 1, item1
 	*/
+}
 
-
+void MainWindow::createFuncText()
+{
+	funcBox = new QLabel();
+	funcBox->setGeometry(500, 100, 500, 100);
 }
 
 void MainWindow::showType()
@@ -234,6 +240,90 @@ void MainWindow::getPoints()
 	}
 }
 
+void MainWindow::set_function(std::shared_ptr<Function> spFunction)
+{
+	this->spFunction = spFunction;
+}
+
+void MainWindow::update()
+{
+//	qDebug << "update" << endl;
+ 	funcBox->setText(QString::fromStdString(spFunction->get_function()));
+	funcBox->show();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 /*
 void MainWindow::setActionStatus()
@@ -252,13 +342,25 @@ void MainWindow::setActionStatus()
 */
 
 
+
+
+
+
+
+
+
+
 void MainWindow::drawLineActionTrigger()
 {
 }
 
 void MainWindow::runActionTrigger()
 {
-
+	getPoints();
+	m_param.set_type(fitType);
+	m_param.set_point(*pointsData);
+	_ptrCommand->SetParameter(m_param);
+	_ptrCommand->Exec();
 }
 
 void MainWindow::drawEclipseActionTrigger()

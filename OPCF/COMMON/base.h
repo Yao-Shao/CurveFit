@@ -34,6 +34,7 @@ public:
 	Function& operator=(std::string&& s);
 	double get_y(const double& x);
 	double get_dy(const double& x);
+	std::string get_function() const;
 };
 class Point
 {
