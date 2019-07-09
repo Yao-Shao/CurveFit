@@ -8,12 +8,14 @@
 #include <QMessageBox>
 #include <QAbstractButton>
 #include <QPushButton>
-#include <qdebug.h>
+#include <QtDebug>
 #include "mainwindow.h"
+#include "../VIEWMODEL/viewmodel.h"
 
 
 MainWindow::MainWindow(QWidget* parent) :
-	QMainWindow(parent)
+	QMainWindow(parent),
+	m_sink(std::make_shared<runSink>(this))
 {
 	QWidget* centralWidget = new QWidget;
 	setCentralWidget(centralWidget);
@@ -88,10 +90,10 @@ void MainWindow::createToolBar()
 	QToolBar* toolBar = addToolBar("Tool");             /*add tool bar object*/
 
 	/* Runing */
-	QAction* runAction = new QAction("Run", toolBar);
+	QToolButton* runAction = new QToolButton();
 	runAction->setIcon(QIcon(":/OPCF/img/running.png"));
 	runAction->setToolTip(tr("Draw fitted curve"));
-	toolBar->addAction(runAction);
+	toolBar->addWidget(runAction);
 	connect(runAction, SIGNAL(clicked()), this, SLOT(runActionTrigger()));
 
 	/*
@@ -137,7 +139,7 @@ void MainWindow::createToolBar()
 	styleComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
 	styleComboBox->addItem(tr("Free"), static_cast<int>(NORMAL_FUNCTION));
 
-	connect(styleComboBox, SIGNAL(activated(int)), this, SLOT(setType()));
+	connect(styleComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
 	toolBar->addWidget(styleLabel);
 	toolBar->addWidget(styleComboBox);
 	
@@ -235,7 +237,7 @@ void MainWindow::getPoints()
 			continue;
 		}
 		else {
-			(*pointsData).push_back(Point((item1->text()).toDouble(), (item2->text().toDouble())));
+			pointsData.push_back(Point((item1->text()).toDouble(), (item2->text().toDouble())));
 		}
 	}
 }
@@ -247,14 +249,28 @@ void MainWindow::set_function(std::shared_ptr<Function> spFunction)
 
 void MainWindow::update()
 {
-//	qDebug << "update" << endl;
+	qDebug() << "update" << endl;
  	funcBox->setText(QString::fromStdString(spFunction->get_function()));
 	funcBox->show();
 }
 
+void MainWindow::runActionTrigger()
+{
+	qDebug() << "run" << endl;
+	getPoints();
+	qDebug() << "getPoints" << endl;
+	m_param.set_type(fitType);
+	m_param.set_point(pointsData);
+	_ptrCommand->SetParameter(m_param);
+	_ptrCommand->Exec();
+	qDebug() << "pass para" << endl;
+}
 
-
-
+void MainWindow::SetViewModel(const std::shared_ptr<ViewModel>& viewmodel)
+{
+	m_viewmodel = viewmodel;
+	m_viewmodel->AddPropertyNotification(std::static_pointer_cast<IPropertyNotification>(m_sink));
+}
 
 
 
@@ -354,14 +370,7 @@ void MainWindow::drawLineActionTrigger()
 {
 }
 
-void MainWindow::runActionTrigger()
-{
-	getPoints();
-	m_param.set_type(fitType);
-	m_param.set_point(*pointsData);
-	_ptrCommand->SetParameter(m_param);
-	_ptrCommand->Exec();
-}
+
 
 void MainWindow::drawEclipseActionTrigger()
 {

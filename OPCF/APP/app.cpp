@@ -15,7 +15,7 @@ void app_opcf::run()
 
 	//½«modelÓëviewmodel°ó¶¨¡£
 	viewmodel->SetModel(model);
-	//_mainwindow.SetViewModel(viewmodel);
+	_mainwindow.SetViewModel(viewmodel);
 
 	_mainwindow.set_function(viewmodel->getFunction());
 
