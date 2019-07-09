@@ -6,8 +6,6 @@
 #include<strstream>
 #define Infinity 100000000
 #define BLOCK_SIZE 400
-
-
 enum Type {
 	LINEAR_FUNCTION,
 	QUADRATIC_FUNCTION,
@@ -15,8 +13,6 @@ enum Type {
 	LN_FUNCTION,
 	NORMAL_FUNCTION
 };
-
-
 class Function
 {
  private:
@@ -28,9 +24,9 @@ class Function
 	};
 private:
 	bool convert();
-	void add_power(int pos, int num, int power);
-	void add_Exp(int pos, int num, int com);
-	void add_Ln(int pos, int num, int com);
+	void add_power(bool pos, double num, int power);
+	void add_Exp(bool pos, double num, double com,bool com_pos);
+	void add_Ln(bool pos, double num, double com,bool com_pos);
 public:
     Function()throw(){}
 	Function& operator=(const std::string& s);//you just need to give the function string
@@ -46,7 +42,7 @@ private:
 public:
 	Point(double xx = 0.0, double yy = 0.0) throw(): x(xx), y(yy){}
 	Point(const Point& p): x(p.x),y(p.y){}
-	Point(Point&& p);
+	Point(Point&& p) noexcept;
 	bool operator!=(Point& p);
 	Point& operator=(const Point& p);
 	Point& operator=(Point&& p);
@@ -56,10 +52,7 @@ public:
 	double& gety() throw();
 	void reset(const double& xx, const double& yy) { x = xx; y = yy; }
 };
-
 typedef std::vector<Point> Points;
-
-
 //异常类， 可以用 throw XXXException("XXX error!")调用
 class ValueException : public std::exception {
 public:
