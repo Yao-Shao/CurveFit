@@ -15,6 +15,11 @@ Function& Function::operator=(std::string&& s)
 	convert();
 	return *this;
 }
+
+void Function::set_function(std::string& func)
+{
+	function = func;
+}
 bool Function::convert()
 {
 	int i = 0;

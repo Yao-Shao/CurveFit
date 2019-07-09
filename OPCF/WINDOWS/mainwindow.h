@@ -9,6 +9,7 @@
 #include <QSpinBox>
 #include <QCloseEvent>
 #include <QPixMap>
+#include <QLineEdit>
 #include "ui_mainwindow.h"
 #include "../COMMON/base.h"
 #include "drawgraph.h"
@@ -72,7 +73,7 @@ private:
 
 
 
-	QLabel* funcBox;
+	QLineEdit* funcBox;
 	QTableWidget* table;
 	Type fitType;
 	Param_opcf m_param;

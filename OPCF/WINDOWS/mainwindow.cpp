@@ -15,7 +15,8 @@
 
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent),
-	m_sink(std::make_shared<runSink>(this))
+	m_sink(std::make_shared<runSink>(this)),
+	fitType(LINEAR_FUNCTION)
 {
 	QWidget* centralWidget = new QWidget;
 	setCentralWidget(centralWidget);
@@ -205,7 +206,7 @@ void MainWindow::createTable()
 
 void MainWindow::createFuncText()
 {
-	funcBox = new QLabel();
+	funcBox = new QLineEdit();
 	funcBox->setGeometry(500, 100, 500, 100);
 }
 
@@ -249,8 +250,9 @@ void MainWindow::set_function(std::shared_ptr<Function> spFunction)
 
 void MainWindow::update()
 {
-	qDebug() << "update" << endl;
- 	funcBox->setText(QString::fromStdString(spFunction->get_function()));
+	qDebug() << "update" << QString::fromStdString(spFunction->get_function()) << endl;
+	
+ 	funcBox->setText("y = " + QString::fromStdString(spFunction->get_function()));
 	funcBox->show();
 }
 

@@ -1,5 +1,5 @@
 #include "Model.h"
-
+#define precision 1e-13
 
 Model::Model()
 {
@@ -9,7 +9,12 @@ Model::Model()
 
 std::shared_ptr<Function> Model::getFunction()
 {
-	return std::shared_ptr<Function>();
+	return sp_Function;
+}
+
+void Model::set_function(std::shared_ptr<Function> func)
+{
+	sp_Function = func;
 }
 
 void Model::opcf_createFunction(Param_opcf p)
@@ -24,12 +29,12 @@ void Model::opcf_createFunction(Param_opcf p)
 		int n;
 		std::string func;
 		ave_x = ave_y = sum_xy = sum_qx = 0.0;
-		n = (sp_points).size();
+		n = sp_points.size();
 		for (int i = 0; i < n; i++) {
-			ave_x += (sp_points)[i].getx();
-			ave_y += (sp_points)[i].gety();
-			sum_xy += (sp_points)[i].getx() * (sp_points)[i].gety();
-			sum_qx += (sp_points)[i].getx() * (sp_points)[i].getx();
+			ave_x += sp_points[i].getx();
+			ave_y += sp_points[i].gety();
+			sum_xy += sp_points[i].getx() * sp_points[i].gety();
+			sum_qx += sp_points[i].getx() * sp_points[i].getx();
 		}
 		ave_x /= n;
 		ave_y /= n;
@@ -51,12 +56,60 @@ void Model::opcf_createFunction(Param_opcf p)
 			func += '\0';
 		}
 		else if (a == 0) func += '\0';
-		(*sp_Function) = func;
+		sp_Function->set_function(func);
 	}
 	else if (t == QUADRATIC_FUNCTION) {
-
+		int n = sp_points.size();
+		double a,b,c,m1,m2,m3,z1,z2,z3;
+		double sumx = 0, sumx2 = 0, sumx3 = 0, sumx4 = 0, sumy = 0, sumxy = 0, sumx2y = 0;
+		a = b = c = 0;
+		for (int i = 0; i < n; i++) {
+			sumx += sp_points[i].getx();
+			sumx2 += sp_points[i].getx() * sp_points[i].getx();
+			sumx3 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
+			sumx4 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
+			sumy += sp_points[i].gety();
+			sumxy += sp_points[i].getx() * sp_points[i].gety();
+			sumx2y += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].gety();
+		}
+		do { 
+			m1 = a;a = (sumx2y - sumx3 * b - sumx2 * c) / sumx4; z1 = (a - m1) * (a - m1);
+			m2 = b; b = (sumxy - sumx * c - sumx3 * a) / sumx2; z2 = (b - m2) * (b - m2);
+			m3 = c; c = (sumy - sumx2 * a - sumx * b) / n; z3 = (c - m3) * (c - m3); 
+		} while ((z1 > precision) || (z2 > precision) || (z3 > precision));
+		std::string func;
+		if (a != 0) {
+			func += std::to_string(a);
+			func += "x^2";
+		}
+		if (b != 0) {
+			if (b < 0) {
+				func += std::to_string(b);
+				func += 'x';
+			}
+			else {
+				func += '+';
+				func += std::to_string(b);
+				func += 'x';
+			}
+		}
+		if (c != 0) {
+			if (c < 0)func += std::to_string(c);
+			else {
+				func += '+';
+				func += std::to_string(c);
+			}
+		}
+		func += '\0';
+		sp_Function->set_function(func);
 	}
 	else if (t == EXPONENTIAL_FUNCTION) {
+		int n = sp_points.size();
+		double a, b, Inb;
+		double sumx = 0, sumy = 0, sumIny = 0, sumx2 = 0, sumxIny = 0;
+		for (int i = 0; i < n; i++) {
+			//sumx +=
+		}
 
 	}
 	else if (t == LN_FUNCTION) {
@@ -69,5 +122,5 @@ void Model::opcf_createFunction(Param_opcf p)
 
 	}
 	//告知其它模块，model里面的Function已经改变
-	Fire_OnPropertyChanged("Fuction");
+	Fire_OnPropertyChanged("Function");
 }
