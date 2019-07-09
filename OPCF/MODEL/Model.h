@@ -11,7 +11,7 @@ public:
 	Model();
 	~Model() {}
 	std::shared_ptr<Function> getFunction();
-	void opcf_createFunction(Param p);
+	void opcf_createFunction(Param_opcf p);
 
 private:
 	std::shared_ptr<Function> sp_Function;

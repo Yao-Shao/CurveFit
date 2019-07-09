@@ -14,7 +14,7 @@ public:
 	void SetModel(const std::shared_ptr<Model>& model);
 	std::shared_ptr<Function> getFunction();
 	std::shared_ptr<ICommandBase> getQueryCommand();
-	void Execc_QueryCommand(Param p);
+	void Execc_QueryCommand(Param_opcf p);
 
 private:
 	std::shared_ptr<Model> m_model;

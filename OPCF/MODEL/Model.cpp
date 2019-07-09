@@ -12,7 +12,7 @@ std::shared_ptr<Function> Model::getFunction()
 	return std::shared_ptr<Function>();
 }
 
-void Model::opcf_createFunction(Param p)
+void Model::opcf_createFunction(Param_opcf p)
 {
 	Type t = p.get_type();
 	Points sp_points = p.get_points();

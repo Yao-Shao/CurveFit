@@ -30,6 +30,11 @@ MainWindow::MainWindow(QWidget* parent) :
 	createTable();
 }
 
+void MainWindow::set_ptrCommand(std::shared_ptr<ICommandBase> ptrCommand)
+{
+	_ptrCommand = ptrCommand;
+}
+
 MainWindow::~MainWindow()
 {
 	//delete ui;
