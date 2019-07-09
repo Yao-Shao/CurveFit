@@ -10,12 +10,10 @@ public:
 	Model();
 	~Model() {}
 	std::shared_ptr<Function> getFunction();
+	void opcf_createFunction(Type t);
 
 private:
-	Points p_sets;
-	std::shared_ptr<Function> sp_Fuction;
+	std::shared_ptr<Points> sp_points;
+	std::shared_ptr<Function> sp_Function;
 };
 
-class model
-{
-};
