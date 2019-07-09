@@ -7,6 +7,7 @@
 #include <QComboBox>
 #include <QSpinBox>
 #include <QCloseEvent>
+#include <QPixMap>
 #include "ui_mainwindow.h"
 #include "../COMMON/base.h"
 #include "drawgraph.h"
@@ -58,8 +59,12 @@ private:
 	QSpinBox* widthSpinBox;
 	QToolButton* colorBtn;
 	QToolButton* clearBtn;
-	int type;
-	DrawGraph  *drawGraph;
+
+	std::shared_ptr<command>
+	std::shared_ptr<Type> type;
+	std::shared_ptr<QPixmap> pix;
+	std::shared_ptr<Points> pointsData;
+	std::shared_ptr<
 
 	/* file */
 	QString openFileAddr;

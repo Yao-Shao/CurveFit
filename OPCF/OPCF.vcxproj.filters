@@ -30,20 +30,20 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="APP\main.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="MODEL\Model.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
-    <ClCompile Include="VIEWMODEL\viewmodel.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="WINDOWS\DrawGraph.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="WINDOWS\mainwindow.cpp">
-      <Filter>Header Files</Filter>
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="APP\main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MODEL\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VIEWMODEL\viewmodel.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

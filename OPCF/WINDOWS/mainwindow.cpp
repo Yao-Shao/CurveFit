@@ -13,10 +13,7 @@
 
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent)
-//	ui(new Ui::MainWindow)
 {
-
-
 	QWidget* centralWidget = new QWidget;
 	setCentralWidget(centralWidget);
 	setMinimumSize(LENGTH, WIDTH);
