@@ -116,6 +116,8 @@
   <ItemGroup>
     <ClCompile Include="APP\main.cpp" />
     <ClCompile Include="MODEL\Model.cpp" />
+    <ClCompile Include="VIEWMODEL\commad\QueryCommand.cpp" />
+    <ClCompile Include="VIEWMODEL\sinks\ViewModelSink.cpp" />
     <ClCompile Include="VIEWMODEL\viewmodel.cpp" />
     <ClCompile Include="WINDOWS\DrawGraph.cpp" />
     <ClCompile Include="WINDOWS\mainwindow.cpp" />
@@ -132,7 +134,10 @@
   <ItemGroup>
     <ClInclude Include="COMMON\base.h" />
     <ClInclude Include="COMMON\etlbase.h" />
+    <ClInclude Include="COMMON\param.h" />
     <ClInclude Include="MODEL\Model.h" />
+    <ClInclude Include="VIEWMODEL\commad\QueryCommand.h" />
+    <ClInclude Include="VIEWMODEL\sinks\ViewModelSink.h" />
     <ClInclude Include="VIEWMODEL\viewmodel.h" />
     <ClInclude Include="WINDOWS\DrawGraph.h" />
     <QtMoc Include="WINDOWS\mainwindow.h" />

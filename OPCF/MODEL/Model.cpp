@@ -4,6 +4,7 @@
 Model::Model()
 {
 	sp_Fuction = std::make_shared<Function>();
+	sp_points = std::make_shared<Points>();
 }
 
 std::shared_ptr<Function> Model::getFunction()

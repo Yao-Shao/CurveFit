@@ -33,9 +33,6 @@
     <ClCompile Include="APP\main.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
-    <ClCompile Include="MODEL\Model.cpp">
-      <Filter>Header Files</Filter>
-    </ClCompile>
     <ClCompile Include="VIEWMODEL\viewmodel.cpp">
       <Filter>Header Files</Filter>
     </ClCompile>
@@ -44,6 +41,15 @@
     </ClCompile>
     <ClCompile Include="WINDOWS\mainwindow.cpp">
       <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MODEL\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VIEWMODEL\sinks\ViewModelSink.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VIEWMODEL\commad\QueryCommand.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,6 +79,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WINDOWS\DrawGraph.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VIEWMODEL\sinks\ViewModelSink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VIEWMODEL\commad\QueryCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="COMMON\param.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
