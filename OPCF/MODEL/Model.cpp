@@ -21,6 +21,7 @@ void Model::opcf_createFunction(Param_opcf p)
 {
 	Type t = p.get_type();
 	Points sp_points = p.get_points();
+	sp_Function = std::make_shared<Function>();
 	(*sp_Function).set_type(t);
 	if (t == LINEAR_FUNCTION)
 	{
@@ -109,7 +110,6 @@ void Model::opcf_createFunction(Param_opcf p)
 		double sumx = 0, sumy = 0, sumIny = 0, sumx2 = 0, sumxIny = 0;
 		for (int i = 0; i < n; i++) {
 			//sumx +=
-		}
 
 	}
 	else if (t == LN_FUNCTION) {
