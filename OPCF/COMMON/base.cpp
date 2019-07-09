@@ -101,15 +101,19 @@ bool Function::convert()
 		i++;
 	}
 	if (If_Ex == 1) {
-		type = EXPONENTIAL_FUNCTION;
+		//type = EXPONENTIAL_FUNCTION;
 		add_Exp(pos, num, com, com_pos);
 	}
 	else if (If_Ln == 1) {
-		type = LN_FUNCTION;
+		//type = LN_FUNCTION;
 		add_Ln(pos, num, com, com_pos);
 	}
 	else {
-		type = NORMAL_FUNCTION;
+		//type = NORMAL_FUNCTION;
+		if (init) {
+			for (int j = 0; j < 4; j++)power_function[j] = 0;
+			init = false;
+		}
 		if (power == 0) {
 			if (If_point == true) {
 				for (int j = 0; j < place; j++)num /= 10.0;

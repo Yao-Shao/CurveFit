@@ -115,6 +115,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="APP\main.cpp" />
+    <ClCompile Include="COMMON\base.cpp" />
     <ClCompile Include="MODEL\Model.cpp" />
     <ClCompile Include="VIEWMODEL\viewmodel.cpp" />
     <ClCompile Include="WINDOWS\DrawGraph.cpp" />
