@@ -14,6 +14,6 @@ public:
 
 private:
 	std::shared_ptr<Points> sp_points;
-	std::shared_ptr<Function> sp_Fuction;
+	std::shared_ptr<Function> sp_Function;
 };
 
