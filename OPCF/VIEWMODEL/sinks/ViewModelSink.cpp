@@ -1,4 +1,3 @@
-#include "ViewModelSink.h"
 #include "../viewmodel.h"
 
 ViewModelSink::ViewModelSink(ViewModel* p) throw():ptr_viewmodel(p)

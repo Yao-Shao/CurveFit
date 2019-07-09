@@ -8,15 +8,13 @@
 #include <QMessageBox>
 #include <QAbstractButton>
 #include <QPushButton>
+#include <qdebug.h>
 #include "mainwindow.h"
 
 
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent)
-//	ui(new Ui::MainWindow)
 {
-
-
 	QWidget* centralWidget = new QWidget;
 	setCentralWidget(centralWidget);
 	setMinimumSize(LENGTH, WIDTH);
@@ -24,10 +22,10 @@ MainWindow::MainWindow(QWidget* parent) :
 	setWindowTitle("OPCF");
 	setWindowIcon(QIcon(":/OPCF/img/logo.png"));
 
-	drawGraph = new DrawGraph;
 	createMenu();
 	createToolBar();
 	createTable();
+	createFuncText();
 }
 
 void MainWindow::set_ptrCommand(std::shared_ptr<ICommandBase> ptrCommand)
@@ -172,7 +170,7 @@ void MainWindow::createToolBar()
 
 void MainWindow::createTable()
 {
-	QTableWidget *table = new QTableWidget(ROW, COLUMN, this);
+	table = new QTableWidget(ROW, COLUMN, this);
 	//set position
 	table->setGeometry(10, 100, 400, 600);
 
@@ -201,13 +199,17 @@ void MainWindow::createTable()
 	table->setItem(0, 0, item0);
 	table->setItem(0, 1, item1
 	*/
+}
 
-
+void MainWindow::createFuncText()
+{
+	funcBox = new QLabel();
+	funcBox->setGeometry(500, 100, 500, 100);
 }
 
 void MainWindow::showType()
 {
-	drawGraph->setType(styleComboBox->itemData(styleComboBox->currentIndex(), Qt::UserRole).toInt());
+	fitType = static_cast<Type>(styleComboBox->itemData(styleComboBox->currentIndex(), Qt::UserRole).toInt());
 }
 
 void MainWindow::showColor()
@@ -222,13 +224,143 @@ void MainWindow::showColor()
 	}
 }
 
+
+void MainWindow::getPoints()
+{
+	for (int i = 0; i < ROW; i++)
+	{
+		QTableWidgetItem* item1 = table->item(i, 0);
+		QTableWidgetItem* item2 = table->item(i, 1); 
+		if (item1 == NULL || item2 == NULL) {
+			continue;
+		}
+		else {
+			(*pointsData).push_back(Point((item1->text()).toDouble(), (item2->text().toDouble())));
+		}
+	}
+}
+
+void MainWindow::set_function(std::shared_ptr<Function> spFunction)
+{
+	this->spFunction = spFunction;
+}
+
+void MainWindow::update()
+{
+//	qDebug << "update" << endl;
+ 	funcBox->setText(QString::fromStdString(spFunction->get_function()));
+	funcBox->show();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+void MainWindow::setActionStatus()
+{
+	if(drawWidget->getUndoSize() > 0){
+		undoAct->setEnabled(true);
+	}else{
+		undoAct->setEnabled(false);
+	}
+	if(drawWidget->getRedoSize() > 0){
+		redoAct->setEnabled(true);
+	}else{
+		redoAct->setEnabled(false);
+	}
+}
+*/
+
+
+
+
+
+
+
+
+
+
 void MainWindow::drawLineActionTrigger()
 {
 }
 
 void MainWindow::runActionTrigger()
 {
-
+	getPoints();
+	m_param.set_type(fitType);
+	m_param.set_point(*pointsData);
+	_ptrCommand->SetParameter(m_param);
+	_ptrCommand->Exec();
 }
 
 void MainWindow::drawEclipseActionTrigger()
@@ -281,7 +413,7 @@ bool MainWindow::saveGraph()
 	return true;
 }
 
-void MainWindow::closeEvent(QCloseEvent * e)
+void MainWindow::closeEvent(QCloseEvent* e)
 {
 	bool status = true;
 	if (status == false)
@@ -314,21 +446,4 @@ void MainWindow::redoTrigger()
 {
 
 }
-
-
-/*
-void MainWindow::setActionStatus()
-{
-	if(drawWidget->getUndoSize() > 0){
-		undoAct->setEnabled(true);
-	}else{
-		undoAct->setEnabled(false);
-	}
-	if(drawWidget->getRedoSize() > 0){
-		redoAct->setEnabled(true);
-	}else{
-		redoAct->setEnabled(false);
-	}
-}
-*/
 

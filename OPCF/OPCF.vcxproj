@@ -126,6 +126,7 @@
     <ClCompile Include="VIEWMODEL\viewmodel.cpp" />
     <ClCompile Include="WINDOWS\DrawGraph.cpp" />
     <ClCompile Include="WINDOWS\mainwindow.cpp" />
+    <ClCompile Include="WINDOWS\sinks\runSink.cpp" />
   </ItemGroup>
   <ItemGroup>
     <QtUic Include="mainwindow.ui" />
@@ -147,6 +148,7 @@
     <ClInclude Include="VIEWMODEL\sinks\ViewModelSink.h" />
     <ClInclude Include="VIEWMODEL\viewmodel.h" />
     <ClInclude Include="WINDOWS\DrawGraph.h" />
+    <ClInclude Include="WINDOWS\sinks\runSink.h" />
     <QtMoc Include="WINDOWS\mainwindow.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
@@ -157,7 +159,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_x64="Qt_mvsv" MocOptions="" />
+      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_x64="5.13" MocOptions="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

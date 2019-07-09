@@ -167,6 +167,11 @@ double Function::get_dy(const double& x)
 		return power_function[1] + 2 * power_function[2] * x + 3 * power_function[3] * x * x;
 	}
 }
+
+std::string Function::get_function() const
+{
+	return function;
+}
 Point::Point(Point&& p) noexcept
 {
 	x = static_cast<double&&>(p.x);
