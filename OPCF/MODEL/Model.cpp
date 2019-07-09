@@ -5,7 +5,6 @@ Model::Model()
 {
 
 	sp_Function = std::make_shared<Function>();
-	sp_points= std::make_shared<Points>();
 
 }
 
@@ -14,8 +13,10 @@ std::shared_ptr<Function> Model::getFunction()
 	return std::shared_ptr<Function>();
 }
 
-void Model::opcf_createFunction(Type t)
+void Model::opcf_createFunction(Param p)
 {
+	Type t = p.get_type();
+	Points sp_points = p.get_points();
 	(*sp_Function).set_type(t);
 	if (t == LINEAR_FUNCTION)
 	{
@@ -24,12 +25,12 @@ void Model::opcf_createFunction(Type t)
 		int n;
 		std::string func;
 		ave_x = ave_y = sum_xy = sum_qx = 0.0;
-		n = (*sp_points).size();
+		n = (sp_points).size();
 		for (int i = 0; i < n; i++) {
-			ave_x += (*sp_points)[i].getx();
-			ave_y += (*sp_points)[i].gety();
-			sum_xy += (*sp_points)[i].getx() * (*sp_points)[i].gety();
-			sum_qx += (*sp_points)[i].getx() * (*sp_points)[i].getx();
+			ave_x += (sp_points)[i].getx();
+			ave_y += (sp_points)[i].gety();
+			sum_xy += (sp_points)[i].getx() * (sp_points)[i].gety();
+			sum_qx += (sp_points)[i].getx() * (sp_points)[i].getx();
 		}
 		ave_x /= n;
 		ave_y /= n;
