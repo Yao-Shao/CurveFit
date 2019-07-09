@@ -21,7 +21,6 @@ MainWindow::MainWindow(QWidget* parent) :
 	setWindowTitle("OPCF");
 	setWindowIcon(QIcon(":/OPCF/img/logo.png"));
 
-	drawGraph = new DrawGraph;
 	createMenu();
 	createToolBar();
 	createTable();
@@ -164,7 +163,7 @@ void MainWindow::createToolBar()
 
 void MainWindow::createTable()
 {
-	QTableWidget *table = new QTableWidget(ROW, COLUMN, this);
+	table = new QTableWidget(ROW, COLUMN, this);
 	//set position
 	table->setGeometry(10, 100, 400, 600);
 
@@ -199,7 +198,7 @@ void MainWindow::createTable()
 
 void MainWindow::showType()
 {
-	drawGraph->setType(styleComboBox->itemData(styleComboBox->currentIndex(), Qt::UserRole).toInt());
+	fitType = static_cast<Type>(styleComboBox->itemData(styleComboBox->currentIndex(), Qt::UserRole).toInt());
 }
 
 void MainWindow::showColor()
@@ -213,6 +212,40 @@ void MainWindow::showColor()
 		colorBtn->setIcon(QIcon(p));
 	}
 }
+
+
+void MainWindow::getPoints()
+{
+	for (int i = 0; i < ROW; i++)
+	{
+		QTableWidgetItem* item1 = table->item(i, 0);
+		QTableWidgetItem* item2 = table->item(i, 1); 
+		if (item1 == NULL || item2 == NULL) {
+			continue;
+		}
+		else {
+			(*pointsData).push_back(Point((item1->text()).toDouble(), (item2->text().toDouble())));
+		}
+	}
+}
+
+
+/*
+void MainWindow::setActionStatus()
+{
+	if(drawWidget->getUndoSize() > 0){
+		undoAct->setEnabled(true);
+	}else{
+		undoAct->setEnabled(false);
+	}
+	if(drawWidget->getRedoSize() > 0){
+		redoAct->setEnabled(true);
+	}else{
+		redoAct->setEnabled(false);
+	}
+}
+*/
+
 
 void MainWindow::drawLineActionTrigger()
 {
@@ -273,7 +306,7 @@ bool MainWindow::saveGraph()
 	return true;
 }
 
-void MainWindow::closeEvent(QCloseEvent * e)
+void MainWindow::closeEvent(QCloseEvent* e)
 {
 	bool status = true;
 	if (status == false)
@@ -306,21 +339,4 @@ void MainWindow::redoTrigger()
 {
 
 }
-
-
-/*
-void MainWindow::setActionStatus()
-{
-	if(drawWidget->getUndoSize() > 0){
-		undoAct->setEnabled(true);
-	}else{
-		undoAct->setEnabled(false);
-	}
-	if(drawWidget->getRedoSize() > 0){
-		redoAct->setEnabled(true);
-	}else{
-		redoAct->setEnabled(false);
-	}
-}
-*/
 

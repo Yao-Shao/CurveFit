@@ -11,10 +11,11 @@
 #include "ui_mainwindow.h"
 #include "../COMMON/base.h"
 #include "drawgraph.h"
+#include "../common/etlbase.h"
 
 #define LENGTH 1080
 #define WIDTH 720
-#define ROW 20
+#define ROW 50
 #define COLUMN 2
 
 class MainWindow : public QMainWindow
@@ -60,15 +61,18 @@ private:
 	QToolButton* colorBtn;
 	QToolButton* clearBtn;
 
-	std::shared_ptr<command>
+	QTableWidget* table;
+	Type fitType;
+ 
 	std::shared_ptr<Type> type;
 	std::shared_ptr<QPixmap> pix;
 	std::shared_ptr<Points> pointsData;
-	std::shared_ptr<
 
 	/* file */
 	QString openFileAddr;
 	QString saveFileAddr;
+
+	void getPoints();
 	
 };
 
