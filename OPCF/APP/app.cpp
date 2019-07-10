@@ -1,5 +1,6 @@
 #include "app.h"
 #include <QtDebug>
+
 app_opcf::app_opcf()
 {
 }
@@ -10,25 +11,29 @@ app_opcf::~app_opcf()
 
 void app_opcf::run()
 {
-	model = std::make_shared<Model>();
-	viewmodel = std::make_shared<ViewModel>();
-	sp_function = std::make_shared<Function>();
+
 #ifndef NDEBUG
 	qDebug() << "In app_opcf.run()\n";
 #endif // !NDEBUG
 
-	//½«modelÓëviewmodel°ó¶¨¡£
+	//objects
+	model = std::make_shared<Model>();
+	viewmodel = std::make_shared<ViewModel>();
+
 	viewmodel->SetModel(model);
-	_mainwindow.SetViewModel(viewmodel);
+	
+	// binding properties
+	_mainwindow.set_function(viewmodel->getFunction());
+	_mainwindow.set_real_points(viewmodel->getRealPoints());
+	_mainwindow.set_range_x(viewmodel->getRangeX());
+	_mainwindow.set_range_y(viewmodel->getRangeY());
+	//command
+	_mainwindow.set_runCommand(viewmodel->get_fitCommand());
 
+	//notifications
+	viewmodel->AddPropertyNotification(_mainwindow.get_updateSink());
+	viewmodel->AddCommandNotification(_mainwindow.get_runSink());
 
-	sp_function = model->getFunction();
-	_mainwindow.set_function(sp_function);
-
-
-	sp_opcf_command = std::make_shared<opcf_command>(this);
-
-	_mainwindow.set_ptrCommand(std::static_pointer_cast<ICommandBase>(this->sp_opcf_command));
 	_mainwindow.show();
 }
 

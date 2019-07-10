@@ -6,16 +6,17 @@
 #include "../COMMON/param.h"
 class ViewModel;
 
-class QueryCommand:public ICommandBase
+class RunFitCommand:public ICommandBase
 {
 public:
-	QueryCommand(ViewModel* p) throw();
+	RunFitCommand(ViewModel* p) throw();
 
 	virtual void SetParameter(const std::any& param);
 	virtual void Exec();
+
+
 private:
 	ViewModel* ptr_viewmodel;
-
 	Param_opcf m_param;
 };
 

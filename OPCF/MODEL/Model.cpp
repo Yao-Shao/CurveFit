@@ -1,16 +1,35 @@
-#include "Model.h"
 #include <QtDebug>
+#include "Model.h"
 #define precision 1e-13
+#define STARTLNFUNCT 1e-4
 
 Model::Model()
 {
-
 	sp_Function = std::make_shared<Function>();
+	samplePoints = std::make_shared<Points>();
+	real_xy_points = std::make_shared<Points>();
+	map_to_img_xy = std::make_shared<Points>();
+	range_x = std::make_shared<Point>();
+	range_y = std::make_shared<Point>();
 }
-
 std::shared_ptr<Function> Model::getFunction()
 {
 	return sp_Function;
+}
+
+std::shared_ptr<Points> Model::getRealPoints()
+{
+	return real_xy_points;
+}
+
+std::shared_ptr<Point> Model::getRangeX()
+{
+	return range_x;
+}
+
+std::shared_ptr<Point> Model::getRangeY()
+{
+	return range_y;
 }
 
 bool Model::opcf_fit(Param_opcf& p)
@@ -18,12 +37,27 @@ bool Model::opcf_fit(Param_opcf& p)
 	Type t = p.get_type();
 	Points sp_points = p.get_points();
 	(*sp_Function).set_type(t);
+
+
+	/*send sample points to model*/
+	samplePoints->clear();
+	for (auto i = 0; i < sp_points.size(); i++)
+	{
+		Point point = sp_points[i];
+		samplePoints->push_back(point);
+	}
+
+
 #ifndef NDEBUG
 	qDebug() << "Int Create Function\n";
 	qDebug() << "Type: " <<t;
 	qDebug() << "\n point number" << sp_points.size();
 	qDebug() << "\n";
+	qDebug() << "Test if pass to model" << samplePoints->size();
 #endif // !NDEBUG
+
+	/*fuction fit*/
+
 	if (t == LINEAR_FUNCTION)
 	{
 		double ave_x, ave_y, sum_xy, sum_qx;
@@ -160,12 +194,179 @@ bool Model::opcf_fit(Param_opcf& p)
 	else {
 
 	}
+
+	/*get xy*/
+	bool whether_get_real_points;
+	whether_get_real_points = get_realXYPoints(t);
+	range_x->setx((this->get_min_real_x()));
+	range_x->sety((this->get_max_real_x()));
+	range_y->setx((this->get_min_real_y()));
+	range_y->sety((this->get_max_real_y()));
+
+	/*map to x y in img*/
+
+
+
 #ifndef NDEBUG
 	qDebug() << "End of opcf_fit and the function is" << QString::fromStdString((*sp_Function).get_function()) << "\n";
+	qDebug() << "And we have " << real_xy_points->size() << " points to be painted\n";
 	qDebug() <<"Fire_OnPropertyChanged(Function) \n";
 #endif // !NDEBUG
-	//告知其它模块，model里面的Function已经改变
-	//暂时不考虑错误拟合
+
+	//inform other section
+	//
 	Fire_OnPropertyChanged("Function");
 	return true;
+}
+
+bool Model::get_realXYPoints(Type t)
+{
+	double x;
+	double y;
+	double start_x;
+	double end_x;
+	double length;
+	double step;
+	start_x = get_min_sample_x();
+	end_x = get_max_sample_x();
+	length = end_x - start_x;
+#ifndef NDEBUG
+	qDebug() << "In get_realXYPoints(Type):\n" << "X Range of sample Points  " << start_x << "-" << end_x<<"\n";
+	qDebug()<<"Function: "<< QString::fromStdString(sp_Function->get_function());
+#endif // !NDEBUG
+	switch (t)
+	{
+	case LINEAR_FUNCTION: {
+		start_x = start_x - length;
+		end_x = end_x + length;
+		step = (end_x - start_x) / POINTSNUMBER;
+	}
+		break;
+	case QUADRATIC_FUNCTION: {
+		start_x = start_x - length;
+		end_x = end_x + length;
+		step = (end_x - start_x) / POINTSNUMBER;
+	}
+		break;
+	case EXPONENTIAL_FUNCTION: {
+		start_x = start_x - length;
+		end_x = end_x + length;
+		step = (end_x - start_x) / POINTSNUMBER;
+	}
+		break;
+	case LN_FUNCTION: {
+		start_x = start_x - length;
+		end_x = end_x + length;
+		if (start_x <= 0) start_x = STARTLNFUNCT;
+		step = (end_x - start_x) / POINTSNUMBER;
+	}
+		break;
+	case NORMAL_FUNCTION: {
+		step = (end_x - start_x) / POINTSNUMBER;
+	}
+		break;
+	default: {
+		step = (end_x - start_x) / POINTSNUMBER;
+	}
+		break;
+	}
+
+	real_xy_points->clear();
+	x = start_x;
+	y = sp_Function->get_y(x);
+	for (int i = 0; i < POINTSNUMBER; i++) {
+		Point t;
+		t.setx(x);
+		t.sety(y);
+#ifndef NDEBUG
+		qDebug() << "In get_realXYPoints(Type):\n" << "x  " << x << "y " << y << "\n";
+#endif // !NDEBUG
+		real_xy_points->push_back(t);
+		x += step;
+		y = sp_Function->get_y(x);
+	}
+	return true;
+}
+
+bool Model::get_mappedXYPoints()
+{
+	return false;
+}
+
+double Model::get_min_real_x()
+{
+	double min = ((*real_xy_points)[0]).getx();
+	for (auto i = 1; i < real_xy_points->size(); i++) {
+		if (min > ((*real_xy_points)[i]).getx())
+		{
+			min = ((*real_xy_points)[i]).getx();
+		}
+	}
+	return min;
+}
+
+double Model::get_max_real_x()
+{
+	double max = ((*real_xy_points)[0]).getx();
+	for (auto i = 1; i < real_xy_points->size(); i++) {
+		if (max < ((*real_xy_points)[i]).getx())
+		{
+			max = ((*real_xy_points)[i]).getx();
+		}
+	}
+	return max;
+}
+
+double Model::get_min_real_y()
+{
+#ifndef NDEBUG
+	qDebug() << "In get_min_real_y()\n";
+#endif // !NDEBUG
+	double min = ((*real_xy_points)[0]).gety();
+	for (auto i = 1; i < real_xy_points->size(); i++) {
+		if (min > ((*real_xy_points)[i]).gety())
+		{
+			min = ((*real_xy_points)[i]).gety();
+		}
+	}
+#ifndef NDEBUG
+	qDebug() << "min"<<min<<"\n";
+#endif // !NDEBUG
+	return min;
+}
+
+double Model::get_max_real_y()
+{
+	double max = ((*real_xy_points)[0]).gety();
+	for (auto i = 1; i < real_xy_points->size(); i++) {
+		if (max < ((*real_xy_points)[i]).gety())
+		{
+			max = ((*real_xy_points)[i]).gety();
+		}
+	}
+	return max;
+}
+
+double Model::get_min_sample_x()
+{
+	double min = (*samplePoints)[0].getx();
+	for (auto i = 1; i < samplePoints->size(); i++) {
+		if (min > (*samplePoints)[i].getx())
+		{
+			min = (*samplePoints)[i].getx();
+		}
+	}
+	return min;
+}
+
+double Model::get_max_sample_x()
+{
+	double max = (*samplePoints)[0].getx();
+	for (auto i = 1; i < samplePoints->size(); i++) {
+		if (max < (*samplePoints)[i].getx())
+		{
+			max = (*samplePoints)[i].getx();
+		}
+	}
+	return max;
 }

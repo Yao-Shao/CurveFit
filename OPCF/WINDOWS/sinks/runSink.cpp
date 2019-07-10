@@ -1,18 +1,13 @@
 #include "../mainwindow.h"
 #include "runSink.h"
-#include <QtDebug>
 
-runSink::runSink(MainWindow* ptr) {
-	ptr_mainwindow = ptr;
+runSink::runSink(MainWindow* p) throw():ptr_mainwindow(p)
+{
 }
 
-void runSink::OnPropertyChanged(const std::string& str)
+void runSink::OnCommandComplete(const std::string& str, bool bOK)
 {
-#ifndef NDEBUG
-	qDebug() << "In windows sink get change signal snd toupdate\n";
-#endif // !NDEBUG
-	if (str == "Function")
-	{
-		ptr_mainwindow->update();
+	if (str == "RunFitCommand") {
+			ptr_mainwindow->update(bOK);
 	}
 }

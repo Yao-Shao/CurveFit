@@ -1,7 +1,7 @@
 #include "viewmodel.h"
 #include <QtDebug>
 
-ViewModel::ViewModel():m_cmdQuery(std::make_shared<QueryCommand>(this)),
+ViewModel::ViewModel():m_cmdFit(std::make_shared<RunFitCommand>(this)),
 						m_sink(std::make_shared<ViewModelSink>(this))
 {
 }
@@ -20,15 +20,30 @@ std::shared_ptr<Function> ViewModel::getFunction()
 	return m_model->getFunction();
 }
 
-std::shared_ptr<ICommandBase> ViewModel::getQueryCommand()
+std::shared_ptr<Points> ViewModel::getRealPoints()
 {
-	return std::static_pointer_cast<ICommandBase>(m_cmdQuery);
+	return m_model->getRealPoints();
+}
+
+std::shared_ptr<Point> ViewModel::getRangeX()
+{
+	return m_model->getRangeX();
+}
+
+std::shared_ptr<Point> ViewModel::getRangeY()
+{
+	return m_model->getRangeY();
+}
+
+std::shared_ptr<ICommandBase> ViewModel::get_fitCommand()
+{
+	return std::static_pointer_cast<ICommandBase>(m_cmdFit);
 }
 
 bool ViewModel::call_model_fit(Param_opcf& p)
 {
 #ifndef NDEBUG
-	qDebug() << "Int send param to model Execc_QueryCommand:\n";
+	qDebug() << "Int send param to model Execc_RunFitCommand:\n";
 	qDebug() << "Type: " << p.get_type();
 	qDebug() << "\n point number" << p.get_points().size();
 	qDebug() << "\n";
@@ -36,4 +51,5 @@ bool ViewModel::call_model_fit(Param_opcf& p)
 	bool whether_fit;
 	whether_fit = m_model->opcf_fit(p);
 	return whether_fit;
+
 }

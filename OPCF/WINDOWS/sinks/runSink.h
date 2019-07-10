@@ -1,17 +1,19 @@
-#ifndef RUN_SINK_H
-#define RUN_SINK_H
+#ifndef MAINWINDOW_SINK_H
+#define MAINWINDOW_SINK_H
 
 #include "..//COMMON/etlbase.h"
+
 class MainWindow;
-class runSink : public IPropertyNotification
+
+class runSink : public ICommandNotification
 {
 public:
+
 	runSink(MainWindow* ptr);
-	virtual void OnPropertyChanged(const std::string& str);
+	virtual void OnCommandComplete(const std::string& str, bool bOK);
 
 private:
 	MainWindow* ptr_mainwindow;
 };
 
-
-#endif // !RUN_SINK_h
+#endif // !MAINWINDOW_SINK_h
