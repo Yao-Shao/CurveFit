@@ -14,7 +14,6 @@
 #include "drawgraph.h"
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
-#include "../VIEWMODEL/viewmodel.h"
 #include "sinks/updateSink.h"
 #include "sinks/runSink.h"
 
@@ -29,7 +28,6 @@ class MainWindow : public QMainWindow
 
 public:
 	MainWindow(QWidget* parent = 0);
-	void set_ptrCommand(std::shared_ptr<ICommandBase> ptrCommand);
 	~MainWindow();
 	void createToolBar();
 	void createMenu();
@@ -41,11 +39,14 @@ public:
 	void set_runCommand(const std::shared_ptr<ICommandBase>& cmd);
 	std::shared_ptr<runSink> get_runSink();
 
+
+
 protected:
 	void closeEvent(QCloseEvent*);
 
-public slots:
 
+
+public slots:
 	void showType();
 	void showColor();
 	bool saveData();

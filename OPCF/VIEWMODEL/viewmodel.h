@@ -3,7 +3,7 @@
 
 #include "../MODEL/Model.h"
 #include "../common/etlbase.h"
-#include "commad/QueryCommand.h"
+#include "command/QueryCommand.h"
 #include "sinks/ViewModelSink.h"
 
 class ViewModel :public Proxy_PropertyNotification<ViewModel>,
@@ -14,7 +14,7 @@ public:
 	void SetModel(const std::shared_ptr<Model>& model);
 	std::shared_ptr<Function> getFunction();
 	std::shared_ptr<ICommandBase> getQueryCommand();
-	void Execc_QueryCommand(Param_opcf p);
+	bool call_model_fit(Param_opcf& p);
 
 private:
 	std::shared_ptr<Model> m_model;
