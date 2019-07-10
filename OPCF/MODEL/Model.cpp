@@ -1,4 +1,5 @@
 #include "Model.h"
+#include <QtDebug>
 #define precision 1e-13
 
 Model::Model()
@@ -22,6 +23,12 @@ void Model::opcf_createFunction(Param_opcf p)
 	Type t = p.get_type();
 	Points sp_points = p.get_points();
 	(*sp_Function).set_type(t);
+#ifndef NDEBUG
+	qDebug() << "Int Create Function\n";
+	qDebug() << "Type: " <<t;
+	qDebug() << "\n point number" << sp_points.size();
+	qDebug() << "\n";
+#endif // !NDEBUG
 	if (t == LINEAR_FUNCTION)
 	{
 		double ave_x, ave_y, sum_xy, sum_qx;
@@ -106,14 +113,32 @@ void Model::opcf_createFunction(Param_opcf p)
 	else if (t == EXPONENTIAL_FUNCTION) {
 		int n = sp_points.size();
 		double a, b, Inb;
-		double sumx = 0, sumy = 0, sumIny = 0, sumx2 = 0, sumxIny = 0;
+		double sumx = 0, sumIny = 0, sumx2 = 0, sumxIny = 0;
 		for (int i = 0; i < n; i++) {
-			//sumx +=
+			sumx += sp_points[i].getx();
+			sumIny += log(sp_points[i].gety());
+			sumx2 += sp_points[i].getx() * sp_points[i].getx();
+			sumxIny += sp_points[i].getx() * log(sp_points[i].gety());
 		}
-			
-
+		a = (n * sumxIny - sumx * sumIny) / (n * sumx2 - sumx * sumx);
+		Inb = (sumx2 * sumIny - sumxIny * sumx) / (n * sumx2 - sumx * sumx);
+		b = exp(Inb);
+		std::string func;
+		if (b == 0)func += "0\0";
+		else {
+			func += std::to_string(b);
+			func += 'e';
+			if (a == 0)func += '\0';
+			else {
+				func += '^';
+				func += std::to_string(a);
+				func += "x\0";
+			}
+		}
+		sp_Function->set_function(func);
 	}
 	else if (t == LN_FUNCTION) {
+
 
 	}
 	else if (t == NORMAL_FUNCTION) {
@@ -122,6 +147,10 @@ void Model::opcf_createFunction(Param_opcf p)
 	else {
 
 	}
+#ifndef NDEBUG
+	qDebug() << "End of opcf and the function is" << QString::fromStdString((*sp_Function).get_function()) << "\n";
+	qDebug() <<"Fire_OnPropertyChanged(Function) \n";
+#endif // !NDEBUG
 	//告知其它模块，model里面的Function已经改变
 	Fire_OnPropertyChanged("Function");
 }

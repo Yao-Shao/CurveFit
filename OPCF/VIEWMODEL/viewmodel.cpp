@@ -1,4 +1,5 @@
 #include "viewmodel.h"
+#include <QtDebug>
 
 ViewModel::ViewModel():m_cmdQuery(std::make_shared<QueryCommand>(this)),
 						m_sink(std::make_shared<ViewModelSink>(this))
@@ -23,5 +24,12 @@ std::shared_ptr<ICommandBase> ViewModel::getQueryCommand()
 
 void ViewModel::Execc_QueryCommand(Param_opcf p)
 {
+#ifndef NDEBUG
+	qDebug() << "Int send param to model Execc_QueryCommand:\n";
+	qDebug() << "Type: " << p.get_type();
+	qDebug() << "\n point number" << p.get_points().size();
+	qDebug() << "\n";
+#endif // !NDEBUG
+
 	m_model->opcf_createFunction(p);
 }

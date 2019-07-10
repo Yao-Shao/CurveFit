@@ -230,6 +230,11 @@ void MainWindow::showColor()
 
 void MainWindow::getPoints()
 {
+
+#ifndef NDEBUG
+	qDebug() << "In getPoints" << endl;
+	qDebug() << "ROW: " << ROW;
+#endif // !NDEBUG
 	pointsData.clear();
 	for (int i = 0; i < ROW; i++)
 	{
@@ -249,9 +254,12 @@ void MainWindow::getPoints()
 			else {
 				continue;
 			}
-			
 		}
 	}
+#ifndef NDEBUG
+	qDebug() << "Points info " << endl;
+	qDebug() << pointsData.size() << endl;
+#endif // !NDEBUG
 }
 
 void MainWindow::set_function(std::shared_ptr<Function> spFunction)
@@ -261,7 +269,9 @@ void MainWindow::set_function(std::shared_ptr<Function> spFunction)
 
 void MainWindow::update()
 {
+#ifndef NDEBUG
 	qDebug() << "update" << QString::fromStdString(spFunction->get_function()) << endl;
+#endif // !NDEBUG
 	
  	funcBox->setText("y = " + QString::fromStdString(spFunction->get_function()));
 	funcBox->show();
@@ -269,14 +279,22 @@ void MainWindow::update()
 
 void MainWindow::runActionTrigger()
 {
-	qDebug() << "run" << endl;
+#ifndef NDEBUG
+	qDebug() << "In runAction Trigger" << endl;
+#endif // !NDEBUG
 	getPoints();
-	qDebug() << "getPoints" << endl;
+#ifndef NDEBUG
+	qDebug() << "Out of getPoints" << endl;
+	qDebug() << pointsData.size() << endl;
+#endif // !NDEBUG
+
 	m_param.set_type(fitType);
 	m_param.set_point(pointsData);
 	_ptrCommand->SetParameter(m_param);
 	_ptrCommand->Exec();
-	qDebug() << "pass para" << endl;
+#ifndef NDEBUG
+	qDebug() << "End of pass para" << endl;
+#endif // !NDEBUG
 }
 
 void MainWindow::SetViewModel(const std::shared_ptr<ViewModel>& viewmodel)
