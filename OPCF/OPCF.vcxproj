@@ -116,7 +116,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="APP\app.cpp" />
-    <ClCompile Include="APP\command\opcf_command.cpp" />
     <ClCompile Include="APP\main.cpp" />
     <ClCompile Include="COMMON\base.cpp" />
     <ClCompile Include="COMMON\param.cpp" />
@@ -140,7 +139,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="APP\app.h" />
-    <ClInclude Include="APP\command\opcf_command.h" />
     <ClInclude Include="COMMON\base.h" />
     <ClInclude Include="COMMON\etlbase.h" />
     <ClInclude Include="COMMON\param.h" />
@@ -161,7 +159,7 @@
   </ImportGroup>
   <ProjectExtensions>
     <VisualStudio>
-      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_x64="5.13" MocOptions="" />
+      <UserProperties MocDir=".\GeneratedFiles\$(ConfigurationName)" UicDir=".\GeneratedFiles" RccDir=".\GeneratedFiles" lupdateOptions="" lupdateOnBuild="0" lreleaseOptions="" Qt5Version_x0020_x64="Qt5.13.0" MocOptions="" />
     </VisualStudio>
   </ProjectExtensions>
 </Project>

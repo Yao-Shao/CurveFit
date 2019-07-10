@@ -19,9 +19,6 @@
     <ClCompile Include="MODEL\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="APP\command\opcf_command.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="COMMON\param.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -57,9 +54,6 @@
     <ClInclude Include="MODEL\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="APP\command\opcf_command.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="VIEWMODEL\viewmodel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -73,6 +67,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="WINDOWS\sinks\runSink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="VIEWMODEL\command\QueryCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
