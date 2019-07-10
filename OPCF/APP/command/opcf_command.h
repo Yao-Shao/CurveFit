@@ -1,7 +1,7 @@
 #pragma once
 
 #include "..//COMMON/etlbase.h"
-
+#include "..//COMMON/param.h"
 
 class app_opcf;
 
@@ -12,7 +12,7 @@ private:
 public:
 	opcf_command(app_opcf* ptr_app);
 	~opcf_command();
-	virtual void SetParameter(const std::any& param);
-	virtual void Exec();
+	void SetParameter(const std::any& param);
+	void Exec();
 };
 

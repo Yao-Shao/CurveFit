@@ -9,10 +9,14 @@
 #include <QSpinBox>
 #include <QCloseEvent>
 #include <QPixMap>
+#include <QLineEdit>
+#include "ui_mainwindow.h"
 #include "../COMMON/base.h"
 #include "drawgraph.h"
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
+#include "../VIEWMODEL/viewmodel.h"
+#include "sinks/runSink.h"
 
 #define LENGTH 1080
 #define WIDTH 720
@@ -33,6 +37,7 @@ public:
 	void createFuncText();
 	void update();
 	void set_function(std::shared_ptr<Function> spFunction);
+	void SetViewModel(const std::shared_ptr<ViewModel>& viewmodel);
 
 protected:
 	void closeEvent(QCloseEvent*);
@@ -68,15 +73,16 @@ private:
 
 
 
-	QLabel* funcBox;
+	QLineEdit* funcBox;
 	QTableWidget* table;
 	Type fitType;
-	QString funcText;
 	Param_opcf m_param;
 
 	std::shared_ptr<Function> spFunction;
 	std::shared_ptr<QPixmap> pix;
-	std::shared_ptr<Points> pointsData;
+	Points pointsData;
+	std::shared_ptr<ViewModel> m_viewmodel;
+	std::shared_ptr<runSink> m_sink;
 
 	/* file */
 	QString openFileAddr;

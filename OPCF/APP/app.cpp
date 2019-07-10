@@ -12,13 +12,16 @@ void app_opcf::run()
 {
 	model = std::make_shared<Model>();
 	viewmodel = std::make_shared<ViewModel>();
+	sp_function = std::make_shared<Function>();
 
 	//将model与viewmodel绑定。
 	viewmodel->SetModel(model);
-	//_mainwindow.SetViewModel(viewmodel);
+	_mainwindow.SetViewModel(viewmodel);
 
-	_mainwindow.set_function(viewmodel->getFunction());
-	//将mainwindow设置为viewmodel的信息接收者
+
+	model->set_function(sp_function);
+	_mainwindow.set_function(sp_function);
+
 
 	sp_opcf_command = std::make_shared<opcf_command>(this);
 
@@ -29,4 +32,9 @@ void app_opcf::run()
 MainWindow* app_opcf::getmainwindow()
 {
 	return &_mainwindow;
+}
+
+std::shared_ptr<ViewModel> app_opcf::get_viewmodel()
+{
+	return viewmodel;
 }

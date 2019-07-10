@@ -7,7 +7,7 @@ runSink::runSink(MainWindow* ptr) {
 
 void runSink::OnPropertyChanged(const std::string& str)
 {
-	if (str == "function")
+	if (str == "Function")
 	{
 		ptr_mainwindow->update();
 	}
