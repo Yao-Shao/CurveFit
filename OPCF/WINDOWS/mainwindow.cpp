@@ -244,12 +244,16 @@ void MainWindow::getPoints()
 			continue;
 		}
 		else {
-			pointsData.push_back(Point((item1->text()).toDouble(), (item2->text().toDouble())));
-#ifndef NDEBUG
-			qDebug() << (item1->text()) << "   ";
-			qDebug() << item2->text() << endl;
-			qDebug() << (item1->text()) << item2->text() << "\n";
-#endif // !NDEBUG
+			bool valid1 = true, valid2 = true;
+			double data1 = (item1->text()).toDouble(&valid1);
+			double data2 = (item2->text()).toDouble(&valid2);
+			if (valid1 && valid2) {
+				pointsData.push_back(Point(data1, data2));
+				qDebug() << (item1->text()).toDouble() << item2->text().toDouble() << "\n";
+			}
+			else {
+				continue;
+			}
 		}
 	}
 #ifndef NDEBUG
