@@ -230,6 +230,7 @@ void MainWindow::showColor()
 
 void MainWindow::getPoints()
 {
+	pointsData.clear();
 	for (int i = 0; i < ROW; i++)
 	{
 		QTableWidgetItem* item1 = table->item(i, 0);
@@ -239,6 +240,7 @@ void MainWindow::getPoints()
 		}
 		else {
 			pointsData.push_back(Point((item1->text()).toDouble(), (item2->text().toDouble())));
+			qDebug() << (item1->text()) << item2->text() << "\n";
 		}
 	}
 }
