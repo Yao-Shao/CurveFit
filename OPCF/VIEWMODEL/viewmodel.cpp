@@ -1,7 +1,7 @@
 #include "viewmodel.h"
 #include <QtDebug>
 
-ViewModel::ViewModel():m_cmdFit(std::make_shared<QueryCommand>(this)),
+ViewModel::ViewModel():m_cmdFit(std::make_shared<RunFitCommand>(this)),
 						m_sink(std::make_shared<ViewModelSink>(this))
 {
 }
@@ -28,7 +28,7 @@ std::shared_ptr<ICommandBase> ViewModel::get_fitCommand()
 bool ViewModel::call_model_fit(Param_opcf& p)
 {
 #ifndef NDEBUG
-	qDebug() << "Int send param to model Execc_QueryCommand:\n";
+	qDebug() << "Int send param to model Execc_RunFitCommand:\n";
 	qDebug() << "Type: " << p.get_type();
 	qDebug() << "\n point number" << p.get_points().size();
 	qDebug() << "\n";

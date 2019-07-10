@@ -34,7 +34,7 @@
     <ClCompile Include="WINDOWS\sinks\runSink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VIEWMODEL\command\QueryCommand.cpp">
+    <ClCompile Include="VIEWMODEL\command\RunFitCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -69,7 +69,7 @@
     <ClInclude Include="WINDOWS\sinks\runSink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VIEWMODEL\command\QueryCommand.h">
+    <ClInclude Include="VIEWMODEL\command\RunFitCommand.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -80,7 +80,7 @@
     <QtRcc Include="OPCF.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="mainwindow.ui" />
+    <QtUic Include="WINDOWS/mainwindow.ui" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

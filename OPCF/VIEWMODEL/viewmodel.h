@@ -1,7 +1,7 @@
 #pragma once
 #include "../MODEL/Model.h"
 #include "../common/etlbase.h"
-#include "command/QueryCommand.h"
+#include "command/RunFitCommand.h"
 #include "sinks/ViewModelSink.h"
 
 class ViewModel :public Proxy_PropertyNotification<ViewModel>,
@@ -16,6 +16,6 @@ public:
 
 private:
 	std::shared_ptr<Model> m_model;
-	std::shared_ptr<QueryCommand> m_cmdFit;
+	std::shared_ptr<RunFitCommand> m_cmdFit;
 	std::shared_ptr<ViewModelSink> m_sink;
 };
