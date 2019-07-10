@@ -29,15 +29,17 @@ class MainWindow : public QMainWindow
 public:
 	MainWindow(QWidget* parent = 0);
 	~MainWindow();
+
 	void createToolBar();
 	void createMenu();
 	void createTable();
 	void createFuncText();
+
 	void update();
 	void set_function(std::shared_ptr<Function> spFunction);
-	std::shared_ptr<updateSink> get_updateSink();
+	std::shared_ptr<IPropertyNotification> get_updateSink();
 	void set_runCommand(const std::shared_ptr<ICommandBase>& cmd);
-	std::shared_ptr<runSink> get_runSink();
+	std::shared_ptr<ICommandNotification> get_runSink();
 
 
 
@@ -63,7 +65,6 @@ public slots:
 	void undoTrigger();
 	void redoTrigger();
 	
-
 
 private:
 	/* draw */

@@ -4,7 +4,6 @@
 
 Model::Model()
 {
-
 	sp_Function = std::make_shared<Function>();
 }
 
@@ -18,12 +17,14 @@ bool Model::opcf_fit(Param_opcf& p)
 	Type t = p.get_type();
 	Points sp_points = p.get_points();
 	(*sp_Function).set_type(t);
+
 #ifndef NDEBUG
 	qDebug() << "Int Create Function\n";
 	qDebug() << "Type: " <<t;
 	qDebug() << "\n point number" << sp_points.size();
 	qDebug() << "\n";
 #endif // !NDEBUG
+
 	if (t == LINEAR_FUNCTION)
 	{
 		double ave_x, ave_y, sum_xy, sum_qx;
@@ -160,10 +161,12 @@ bool Model::opcf_fit(Param_opcf& p)
 	else {
 
 	}
+
 #ifndef NDEBUG
 	qDebug() << "End of opcf_fit and the function is" << QString::fromStdString((*sp_Function).get_function()) << "\n";
 	qDebug() <<"Fire_OnPropertyChanged(Function) \n";
 #endif // !NDEBUG
+
 	//告知其它模块，model里面的Function已经改变
 	//暂时不考虑错误拟合
 	Fire_OnPropertyChanged("Function");

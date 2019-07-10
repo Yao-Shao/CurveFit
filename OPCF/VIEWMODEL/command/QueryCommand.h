@@ -13,9 +13,10 @@ public:
 
 	virtual void SetParameter(const std::any& param);
 	virtual void Exec();
+
+
 private:
 	ViewModel* ptr_viewmodel;
-
 	Param_opcf m_param;
 };
 

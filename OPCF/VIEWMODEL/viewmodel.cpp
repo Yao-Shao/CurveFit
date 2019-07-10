@@ -1,7 +1,7 @@
 #include "viewmodel.h"
 #include <QtDebug>
 
-ViewModel::ViewModel():m_cmdQuery(std::make_shared<QueryCommand>(this)),
+ViewModel::ViewModel():m_cmdFit(std::make_shared<QueryCommand>(this)),
 						m_sink(std::make_shared<ViewModelSink>(this))
 {
 }
@@ -20,9 +20,9 @@ std::shared_ptr<Function> ViewModel::getFunction()
 	return m_model->getFunction();
 }
 
-std::shared_ptr<ICommandBase> ViewModel::getQueryCommand()
+std::shared_ptr<ICommandBase> ViewModel::get_fitCommand()
 {
-	return std::static_pointer_cast<ICommandBase>(m_cmdQuery);
+	return std::static_pointer_cast<ICommandBase>(m_cmdFit);
 }
 
 bool ViewModel::call_model_fit(Param_opcf& p)
@@ -36,4 +36,5 @@ bool ViewModel::call_model_fit(Param_opcf& p)
 	bool whether_fit;
 	whether_fit = m_model->opcf_fit(p);
 	return whether_fit;
+
 }

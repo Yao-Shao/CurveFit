@@ -231,6 +231,7 @@ void MainWindow::getPoints()
 #endif // !NDEBUG
 
 	pointsData.clear();
+
 	for (int i = 0; i < ROW; i++)
 	{
 		QTableWidgetItem* item1 = table->item(i, 0);
@@ -251,10 +252,12 @@ void MainWindow::getPoints()
 			}
 		}
 	}
+
 #ifndef NDEBUG
 	qDebug() << "Points info " << endl;
 	qDebug() << pointsData.size() << endl;
 #endif // !NDEBUG
+
 }
 
 void MainWindow::set_function(std::shared_ptr<Function> spFunction)
@@ -264,6 +267,7 @@ void MainWindow::set_function(std::shared_ptr<Function> spFunction)
 
 void MainWindow::update()
 {
+
 #ifndef NDEBUG
 	qDebug() << "update" << QString::fromStdString(spFunction->get_function()) << endl;
 #endif // !NDEBUG
@@ -295,14 +299,14 @@ void MainWindow::runActionTrigger()
 #endif // !NDEBUG
 }
 
-std::shared_ptr<updateSink> MainWindow::get_updateSink()
+std::shared_ptr<IPropertyNotification> MainWindow::get_updateSink()
 {
-	return m_updateSink;
+	return std::static_pointer_cast<IPropertyNotification>(m_updateSink);
 }
 
-std::shared_ptr<runSink> MainWindow::get_runSink()
+std::shared_ptr<ICommandNotification> MainWindow::get_runSink()
 {
-	return m_runSink;
+	return std::static_pointer_cast<ICommandNotification>(m_runSink);
 }
 
 void MainWindow::set_runCommand(const std::shared_ptr<ICommandBase>& cmd)
