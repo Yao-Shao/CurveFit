@@ -136,8 +136,6 @@ void Model::opcf_createFunction(Param_opcf p)
 			}
 		}
 		sp_Function->set_function(func);
-
-
 	}
 	else if (t == LN_FUNCTION) {
 		int n = sp_points.size();
