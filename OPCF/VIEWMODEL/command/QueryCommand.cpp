@@ -12,6 +12,6 @@ void QueryCommand::SetParameter(const std::any& param)
 
 void QueryCommand::Exec()
 {
-	ptr_viewmodel->Execc_QueryCommand(m_param);
+	ptr_viewmodel->call_model_fit(m_param);
 	ptr_viewmodel->Fire_OnCommandComplete("QueryCommand", true);
 }

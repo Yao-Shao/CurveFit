@@ -14,7 +14,7 @@
 #include "drawgraph.h"
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
-#include "../VIEWMODEL/viewmodel.h"
+#include "sinks/updateSink.h"
 #include "sinks/runSink.h"
 
 #define LENGTH 1080
@@ -28,7 +28,6 @@ class MainWindow : public QMainWindow
 
 public:
 	MainWindow(QWidget* parent = 0);
-	void set_ptrCommand(std::shared_ptr<ICommandBase> ptrCommand);
 	~MainWindow();
 	void createToolBar();
 	void createMenu();
@@ -36,13 +35,18 @@ public:
 	void createFuncText();
 	void update();
 	void set_function(std::shared_ptr<Function> spFunction);
-	void SetViewModel(const std::shared_ptr<ViewModel>& viewmodel);
+	std::shared_ptr<updateSink> get_updateSink();
+	void set_runCommand(const std::shared_ptr<ICommandBase>& cmd);
+	std::shared_ptr<runSink> get_runSink();
+
+
 
 protected:
 	void closeEvent(QCloseEvent*);
 
-public slots:
 
+
+public slots:
 	void showType();
 	void showColor();
 	bool saveData();
@@ -70,8 +74,6 @@ private:
 	QToolButton* colorBtn;
 	QToolButton* clearBtn;
 
-
-
 	QLineEdit* funcBox;
 	QTableWidget* table;
 	Type fitType;
@@ -80,15 +82,14 @@ private:
 	std::shared_ptr<Function> spFunction;
 	std::shared_ptr<QPixmap> pix;
 	Points pointsData;
-	std::shared_ptr<ViewModel> m_viewmodel;
-	std::shared_ptr<runSink> m_sink;
+
+	std::shared_ptr<updateSink> m_updateSink;
+	std::shared_ptr<ICommandBase> m_cmdRun;
+	std::shared_ptr<runSink> m_runSink;
 
 	/* file */
 	QString openFileAddr;
 	QString saveFileAddr;
-	
-	/*½Ó¿Ú*/
-	std::shared_ptr<ICommandBase> _ptrCommand;
 
 	void getPoints();
 };

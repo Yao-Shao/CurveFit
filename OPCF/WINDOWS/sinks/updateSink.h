@@ -1,13 +1,12 @@
-#ifndef MAINWINDOW_SINK_H
-#define MAINWINDOW_SINK_H
+#ifndef RUN_SINK_H
+#define RUN_SINK_H
 
 #include "..//COMMON/etlbase.h"
-
 class MainWindow;
-class runSink : public IPropertyNotification
+class updateSink : public IPropertyNotification
 {
 public:
-	runSink(MainWindow* ptr);
+	updateSink(MainWindow* ptr);
 	virtual void OnPropertyChanged(const std::string& str);
 
 private:
@@ -15,4 +14,4 @@ private:
 };
 
 
-#endif // !MAINWINDOW_SINK_h
+#endif // !RUN_SINK_h
