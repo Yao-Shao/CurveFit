@@ -23,12 +23,19 @@ void Model::opcf_createFunction(Param_opcf p)
 	Type t = p.get_type();
 	Points sp_points = p.get_points();
 	(*sp_Function).set_type(t);
-#ifndef NDEBUG
-	qDebug() << "Int Create Function\n";
-	qDebug() << "Type: " <<t;
-	qDebug() << "\n point number" << sp_points.size();
-	qDebug() << "\n";
-#endif // !NDEBUG
+	if (sp_points.size() == 0) {
+		std::string func;
+		func += '\0';
+		sp_Function->set_function(func);
+		return;
+	}
+	else if (sp_points.size() == 1) {
+		std::string func;
+		func += std::to_string(sp_points[0].gety());
+		func += '\0';
+		sp_Function->set_function(func);
+		return;
+	}
 	if (t == LINEAR_FUNCTION)
 	{
 		double ave_x, ave_y, sum_xy, sum_qx;
@@ -138,8 +145,24 @@ void Model::opcf_createFunction(Param_opcf p)
 		sp_Function->set_function(func);
 	}
 	else if (t == LN_FUNCTION) {
-
-
+	    int n = sp_points.size();
+		double Ina, a, b;
+		double sumyInx = 0, sumy = 0, sumInx = 0, sumInx2 = 0;
+		std::string func;
+		for (int i = 0; i < n; i++) {
+			sumyInx += sp_points[i].gety() * log(sp_points[i].getx());
+			sumy += sp_points[i].gety();
+			sumInx += log(sp_points[i].getx());
+			sumInx2 += log(sp_points[i].getx()) * log(sp_points[i].getx());
+		}
+		b = (n * sumyInx - sumy * sumInx) / (n * sumInx2 - sumInx * sumInx);
+		Ina = (sumy * sumInx - b * sumInx * sumInx) / (n * b * sumInx);
+		a = exp(Ina);
+		func += std::to_string(b);
+		func += "Ln";
+		func += std::to_string(a);
+		func += "x\0";
+		(*sp_Function) = func;
 	}
 	else if (t == NORMAL_FUNCTION) {
 
