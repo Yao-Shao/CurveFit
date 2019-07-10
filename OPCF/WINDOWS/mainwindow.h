@@ -9,7 +9,6 @@
 #include <QSpinBox>
 #include <QCloseEvent>
 #include <QPixMap>
-#include "ui_mainwindow.h"
 #include "../COMMON/base.h"
 #include "drawgraph.h"
 #include "../COMMON/etlbase.h"

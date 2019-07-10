@@ -18,6 +18,7 @@ void app_opcf::run()
 	//_mainwindow.SetViewModel(viewmodel);
 
 	_mainwindow.set_function(viewmodel->getFunction());
+	//将mainwindow设置为viewmodel的信息接收者
 
 	sp_opcf_command = std::make_shared<opcf_command>(this);
 
