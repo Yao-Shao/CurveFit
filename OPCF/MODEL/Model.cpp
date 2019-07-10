@@ -117,7 +117,10 @@ void Model::opcf_createFunction(Param_opcf p)
 		for (int i = 0; i < n; i++) {
 			//sumx +=
 		}
-	}else if (t == LN_FUNCTION) {
+
+	}
+	else if (t == LN_FUNCTION) {
+
 
 	}
 	else if (t == NORMAL_FUNCTION) {

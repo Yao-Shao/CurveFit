@@ -230,10 +230,12 @@ void MainWindow::showColor()
 
 void MainWindow::getPoints()
 {
+
 #ifndef NDEBUG
 	qDebug() << "In getPoints" << endl;
 	qDebug() << "ROW: " << ROW;
 #endif // !NDEBUG
+	pointsData.clear();
 	for (int i = 0; i < ROW; i++)
 	{
 		QTableWidgetItem* item1 = table->item(i, 0);
@@ -246,6 +248,7 @@ void MainWindow::getPoints()
 #ifndef NDEBUG
 			qDebug() << (item1->text()) << "   ";
 			qDebug() << item2->text() << endl;
+			qDebug() << (item1->text()) << item2->text() << "\n";
 #endif // !NDEBUG
 		}
 	}
