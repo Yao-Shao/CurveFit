@@ -10,12 +10,12 @@
 #include <QPushButton>
 #include <QtDebug>
 #include "mainwindow.h"
-#include "../VIEWMODEL/viewmodel.h"
 
 
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent),
-	m_sink(std::make_shared<runSink>(this)),
+	m_updateSink(std::make_shared<updateSink>(this)),
+	m_runSink(std::make_shared<runSink>(this)),
 	fitType(LINEAR_FUNCTION)
 {
 	QWidget* centralWidget = new QWidget;
@@ -29,11 +29,6 @@ MainWindow::MainWindow(QWidget* parent) :
 	createToolBar();
 	createTable();
 	createFuncText();
-}
-
-void MainWindow::set_ptrCommand(std::shared_ptr<ICommandBase> ptrCommand)
-{
-	_ptrCommand = ptrCommand;
 }
 
 MainWindow::~MainWindow()
@@ -230,11 +225,11 @@ void MainWindow::showColor()
 
 void MainWindow::getPoints()
 {
-
 #ifndef NDEBUG
 	qDebug() << "In getPoints" << endl;
 	qDebug() << "ROW: " << ROW;
 #endif // !NDEBUG
+
 	pointsData.clear();
 	for (int i = 0; i < ROW; i++)
 	{
@@ -282,7 +277,9 @@ void MainWindow::runActionTrigger()
 #ifndef NDEBUG
 	qDebug() << "In runAction Trigger" << endl;
 #endif // !NDEBUG
+
 	getPoints();
+
 #ifndef NDEBUG
 	qDebug() << "Out of getPoints" << endl;
 	qDebug() << pointsData.size() << endl;
@@ -290,21 +287,28 @@ void MainWindow::runActionTrigger()
 
 	m_param.set_type(fitType);
 	m_param.set_point(pointsData);
-	_ptrCommand->SetParameter(m_param);
-	_ptrCommand->Exec();
+	m_cmdRun->SetParameter(m_param);
+	m_cmdRun->Exec();
+
 #ifndef NDEBUG
 	qDebug() << "End of pass para" << endl;
 #endif // !NDEBUG
 }
 
-void MainWindow::SetViewModel(const std::shared_ptr<ViewModel>& viewmodel)
+std::shared_ptr<updateSink> MainWindow::get_updateSink()
 {
-	m_viewmodel = viewmodel;
-	m_viewmodel->AddPropertyNotification(std::static_pointer_cast<IPropertyNotification>(m_sink));
+	return m_updateSink;
 }
 
+std::shared_ptr<runSink> MainWindow::get_runSink()
+{
+	return m_runSink;
+}
 
-
+void MainWindow::set_runCommand(const std::shared_ptr<ICommandBase>& cmd)
+{
+	m_cmdRun = cmd;
+}
 
 
 

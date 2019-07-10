@@ -10,25 +10,27 @@ app_opcf::~app_opcf()
 
 void app_opcf::run()
 {
-	model = std::make_shared<Model>();
-	viewmodel = std::make_shared<ViewModel>();
-	sp_function = std::make_shared<Function>();
+
 #ifndef NDEBUG
 	qDebug() << "In app_opcf.run()\n";
 #endif // !NDEBUG
 
-	//½«modelÓëviewmodel°ó¶¨¡£
+	//objects
+	model = std::make_shared<Model>();
+	viewmodel = std::make_shared<ViewModel>();
+
 	viewmodel->SetModel(model);
-	_mainwindow.SetViewModel(viewmodel);
+	
+	// binding properties
+	_mainwindow.set_function(model->getFunction());
 
+	//command
+	_mainwindow.set_runCommand(viewmodel->getQueryCommand());
 
-	sp_function = model->getFunction();
-	_mainwindow.set_function(sp_function);
+	//notifications
+	viewmodel->AddPropertyNotification(_mainwindow.get_updateSink());
 
-
-	sp_opcf_command = std::make_shared<opcf_command>(this);
-
-	_mainwindow.set_ptrCommand(std::static_pointer_cast<ICommandBase>(this->sp_opcf_command));
+	
 	_mainwindow.show();
 }
 
