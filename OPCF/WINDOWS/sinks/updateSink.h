@@ -2,7 +2,9 @@
 #define RUN_SINK_H
 
 #include "..//COMMON/etlbase.h"
+
 class MainWindow;
+
 class updateSink : public IPropertyNotification
 {
 public:

@@ -5,7 +5,7 @@
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
 
-class Model : public Proxy_PropertyNotification<Model>, public Proxy_CommandNotification<Model>
+class Model : public Proxy_PropertyNotification<Model>
 {
 public:
 	Model();

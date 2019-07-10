@@ -1,5 +1,6 @@
 #include "app.h"
 #include <QtDebug>
+
 app_opcf::app_opcf()
 {
 }
@@ -25,12 +26,12 @@ void app_opcf::run()
 	_mainwindow.set_function(model->getFunction());
 
 	//command
-	_mainwindow.set_runCommand(viewmodel->getQueryCommand());
+	_mainwindow.set_runCommand(viewmodel->get_fitCommand());
 
 	//notifications
 	viewmodel->AddPropertyNotification(_mainwindow.get_updateSink());
 
-	
+
 	_mainwindow.show();
 }
 

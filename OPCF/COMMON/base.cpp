@@ -1,4 +1,5 @@
 #include"base.h"
+
 Function& Function::operator=(const std::string& s)
 {
 	if (this->function != s) {
@@ -7,6 +8,7 @@ Function& Function::operator=(const std::string& s)
 	convert();
 	return *this;
 }
+
 Function& Function::operator=(std::string&& s)
 {
 	if (this->function != s) {
@@ -20,6 +22,7 @@ void Function::set_function(std::string& func)
 {
 	function = func;
 }
+
 bool Function::convert()
 {
 	int i = 0;
