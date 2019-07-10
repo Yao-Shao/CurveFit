@@ -9,7 +9,12 @@ Model::Model()
 
 std::shared_ptr<Function> Model::getFunction()
 {
-	return std::shared_ptr<Function>();
+	return sp_Function;
+}
+
+void Model::set_function(std::shared_ptr<Function> func)
+{
+	sp_Function = func;
 }
 
 void Model::opcf_createFunction(Param_opcf p)
@@ -52,7 +57,7 @@ void Model::opcf_createFunction(Param_opcf p)
 			func += '\0';
 		}
 		else if (a == 0) func += '\0';
-		(*sp_Function) = func;
+		sp_Function->set_function(func);
 	}
 	else if (t == QUADRATIC_FUNCTION) {
 		int n = sp_points.size();
@@ -97,7 +102,7 @@ void Model::opcf_createFunction(Param_opcf p)
 			}
 		}
 		func += '\0';
-		(*sp_Function) = func;
+		sp_Function->set_function(func);
 	}
 	else if (t == EXPONENTIAL_FUNCTION) {
 		int n = sp_points.size();
@@ -136,5 +141,5 @@ void Model::opcf_createFunction(Param_opcf p)
 
 	}
 	//告知其它模块，model里面的Function已经改变
-	Fire_OnPropertyChanged("Fuction");
+	Fire_OnPropertyChanged("Function");
 }
