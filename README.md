@@ -10,7 +10,7 @@
 
 ## 2.开发环境和工具
 
-本项目基于$Qt5.13.0$实现GUI界面。
+本项目基于Qt5.13.0​实现GUI界面。
 
 使用Visual studio 2019 以及 c++17特性进行编程。
 
@@ -30,3 +30,6 @@
 第一轮迭代包括1.0
 
 1.0版本实现了对左侧表格中数据进行线性拟合的方法，如图所示：
+
+![1.0版本图](https://github.com/zhou317/Experiment/blob/dev/img_of_repo/first_iter_01.png)
+
