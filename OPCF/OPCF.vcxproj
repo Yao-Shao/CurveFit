@@ -129,7 +129,7 @@
     <ClCompile Include="WINDOWS\sinks\updateSink.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="mainwindow.ui" />
+    <QtUic Include="WINDOWS/mainwindow.ui" />
   </ItemGroup>
   <ItemGroup>
     <QtRcc Include="OPCF.qrc" />
