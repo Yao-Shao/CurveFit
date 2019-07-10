@@ -13,12 +13,7 @@ std::shared_ptr<Function> Model::getFunction()
 	return sp_Function;
 }
 
-void Model::set_function(std::shared_ptr<Function> func)
-{
-	sp_Function = func;
-}
-
-void Model::opcf_createFunction(Param_opcf p)
+bool Model::opcf_fit(Param_opcf& p)
 {
 	Type t = p.get_type();
 	Points sp_points = p.get_points();
@@ -168,9 +163,11 @@ void Model::opcf_createFunction(Param_opcf p)
 
 	}
 #ifndef NDEBUG
-	qDebug() << "End of opcf and the function is" << QString::fromStdString((*sp_Function).get_function()) << "\n";
+	qDebug() << "End of opcf_fit and the function is" << QString::fromStdString((*sp_Function).get_function()) << "\n";
 	qDebug() <<"Fire_OnPropertyChanged(Function) \n";
 #endif // !NDEBUG
 	//告知其它模块，model里面的Function已经改变
+	//暂时不考虑错误拟合
 	Fire_OnPropertyChanged("Function");
+	return true;
 }
