@@ -1,5 +1,5 @@
 #include "app.h"
-
+#include <QtDebug>
 app_opcf::app_opcf()
 {
 }
@@ -13,13 +13,18 @@ void app_opcf::run()
 	model = std::make_shared<Model>();
 	viewmodel = std::make_shared<ViewModel>();
 	sp_function = std::make_shared<Function>();
+#ifndef NDEBUG
+	qDebug() << "In app_opcf.run()\n";
+#endif // !NDEBUG
 
 	//½«modelÓëviewmodel°ó¶¨¡£
 	viewmodel->SetModel(model);
 	_mainwindow.SetViewModel(viewmodel);
 
+
 	model->set_function(sp_function);
 	_mainwindow.set_function(sp_function);
+
 
 	sp_opcf_command = std::make_shared<opcf_command>(this);
 
