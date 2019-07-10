@@ -113,13 +113,51 @@ void Model::opcf_createFunction(Param_opcf p)
 	else if (t == EXPONENTIAL_FUNCTION) {
 		int n = sp_points.size();
 		double a, b, Inb;
-		double sumx = 0, sumy = 0, sumIny = 0, sumx2 = 0, sumxIny = 0;
+		double sumx = 0, sumIny = 0, sumx2 = 0, sumxIny = 0;
 		for (int i = 0; i < n; i++) {
-			//sumx +=
+			sumx += sp_points[i].getx();
+			sumIny += log(sp_points[i].gety());
+			sumx2 += sp_points[i].getx() * sp_points[i].getx();
+			sumxIny += sp_points[i].getx() * log(sp_points[i].gety());
 		}
+		a = (n * sumxIny - sumx * sumIny) / (n * sumx2 - sumx * sumx);
+		Inb = (sumx2 * sumIny - sumxIny * sumx) / (n * sumx2 - sumx * sumx);
+		b = exp(Inb);
+		std::string func;
+		if (b == 0)func += "0\0";
+		else {
+			func += std::to_string(b);
+			func += 'e';
+			if (a == 0)func += '\0';
+			else {
+				func += '^';
+				func += std::to_string(a);
+				func += "x\0";
+			}
+		}
+		sp_Function->set_function(func);
+
 
 	}
 	else if (t == LN_FUNCTION) {
+		int n = sp_points.size();
+		double Ina, a, b;
+		double sumyInx = 0, sumy = 0, sumInx = 0, sumInx2 = 0;
+		std::string func;
+		for (int i = 0; i < n; i++) {
+			sumyInx += sp_points[i].gety() * log(sp_points[i].getx());
+			sumy += sp_points[i].gety();
+			sumInx += log(sp_points[i].getx());
+			sumInx2 += log(sp_points[i].getx()) * log(sp_points[i].getx());
+		}
+		b = (n * sumyInx - sumy * sumInx) / (n * sumInx2 - sumInx * sumInx);
+		Ina = (sumy * sumInx - b * sumInx * sumInx) / (n * b * sumInx);
+		a = exp(Ina);
+		func += std::to_string(b);
+		func += "Ln";
+		func += std::to_string(a);
+		func += "x\0";
+		sp_Function->set_function(func);
 
 
 	}
