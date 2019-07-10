@@ -1,5 +1,5 @@
 #pragma once
-
+#include <QtDebug>
 #include "..//COMMON/etlbase.h"
 #include "..//COMMON/param.h"
 

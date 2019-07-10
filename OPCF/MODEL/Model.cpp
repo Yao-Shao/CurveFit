@@ -1,4 +1,5 @@
 #include "Model.h"
+#include <QtDebug>
 #define precision 1e-13
 
 Model::Model()
@@ -21,8 +22,13 @@ void Model::opcf_createFunction(Param_opcf p)
 {
 	Type t = p.get_type();
 	Points sp_points = p.get_points();
-	sp_Function = std::make_shared<Function>();
 	(*sp_Function).set_type(t);
+#ifndef NDEBUG
+	qDebug() << "Int Create Function\n";
+	qDebug() << "Type: " <<t;
+	qDebug() << "\n point number" << sp_points.size();
+	qDebug() << "\n";
+#endif // !NDEBUG
 	if (t == LINEAR_FUNCTION)
 	{
 		double ave_x, ave_y, sum_xy, sum_qx;
@@ -110,9 +116,8 @@ void Model::opcf_createFunction(Param_opcf p)
 		double sumx = 0, sumy = 0, sumIny = 0, sumx2 = 0, sumxIny = 0;
 		for (int i = 0; i < n; i++) {
 			//sumx +=
-
-	}
-	else if (t == LN_FUNCTION) {
+		}
+	}else if (t == LN_FUNCTION) {
 
 	}
 	else if (t == NORMAL_FUNCTION) {
@@ -121,6 +126,10 @@ void Model::opcf_createFunction(Param_opcf p)
 	else {
 
 	}
+#ifndef NDEBUG
+	qDebug() << "End of opcf and the function is" << QString::fromStdString((*sp_Function).get_function()) << "\n";
+	qDebug() <<"Fire_OnPropertyChanged(Function) \n";
+#endif // !NDEBUG
 	//告知其它模块，model里面的Function已经改变
 	Fire_OnPropertyChanged("Function");
 }
