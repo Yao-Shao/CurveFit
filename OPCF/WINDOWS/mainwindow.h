@@ -10,7 +10,6 @@
 #include <QCloseEvent>
 #include <QPixMap>
 #include <QLineEdit>
-#include "ui_mainwindow.h"
 #include "../COMMON/base.h"
 #include "drawgraph.h"
 #include "../COMMON/etlbase.h"
