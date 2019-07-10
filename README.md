@@ -1,6 +1,10 @@
-# Stupid Bird
+# 报告
 
-## Day1 Set up environment
+
+
+
+
+## 2019年袁昕
 
 1.  git
 2.  Jenkins download
