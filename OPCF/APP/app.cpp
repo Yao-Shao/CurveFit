@@ -22,7 +22,7 @@ void app_opcf::run()
 	_mainwindow.SetViewModel(viewmodel);
 
 
-	model->set_function(sp_function);
+	sp_function = model->getFunction();
 	_mainwindow.set_function(sp_function);
 
 

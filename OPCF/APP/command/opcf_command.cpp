@@ -18,7 +18,7 @@ void opcf_command::SetParameter(const std::any& param)
 	qDebug()<< "Int SetParameter:\n";
 #endif // !NDEBUG
 
-	(ptrapp->get_viewmodel())->Execc_QueryCommand(std::any_cast<Param_opcf>(param));
+	(ptrapp->get_viewmodel())->call_model_fit(std::any_cast<Param_opcf>(param));
 }
 
 void opcf_command::Exec()

@@ -9,6 +9,9 @@ ViewModel::ViewModel():m_cmdQuery(std::make_shared<QueryCommand>(this)),
 void ViewModel::SetModel(const std::shared_ptr<Model>& model)
 {
 	m_model = model;
+#ifndef NDEBUG
+	qDebug() << "Add m_sink of viewmodel to model\n";
+#endif // !NDEBUG
 	m_model->AddPropertyNotification(std::static_pointer_cast<IPropertyNotification>(m_sink));
 }
 
@@ -22,7 +25,7 @@ std::shared_ptr<ICommandBase> ViewModel::getQueryCommand()
 	return std::static_pointer_cast<ICommandBase>(m_cmdQuery);
 }
 
-void ViewModel::Execc_QueryCommand(Param_opcf p)
+bool ViewModel::call_model_fit(Param_opcf& p)
 {
 #ifndef NDEBUG
 	qDebug() << "Int send param to model Execc_QueryCommand:\n";
@@ -30,6 +33,7 @@ void ViewModel::Execc_QueryCommand(Param_opcf p)
 	qDebug() << "\n point number" << p.get_points().size();
 	qDebug() << "\n";
 #endif // !NDEBUG
-
-	m_model->opcf_createFunction(p);
+	bool whether_fit;
+	whether_fit = m_model->opcf_fit(p);
+	return whether_fit;
 }
