@@ -13,6 +13,6 @@ void updateSink::OnPropertyChanged(const std::string& str)
 #endif // !NDEBUG
 	if (str == "Function")
 	{
-		ptr_mainwindow->update();
+		ptr_mainwindow->update(true);
 	}
 }

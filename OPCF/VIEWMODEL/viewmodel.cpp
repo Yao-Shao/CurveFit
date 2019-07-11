@@ -20,6 +20,21 @@ std::shared_ptr<Function> ViewModel::getFunction()
 	return m_model->getFunction();
 }
 
+std::shared_ptr<Points> ViewModel::getRealPoints()
+{
+	return m_model->getRealPoints();
+}
+
+std::shared_ptr<Point> ViewModel::getRangeX()
+{
+	return m_model->getRangeX();
+}
+
+std::shared_ptr<Point> ViewModel::getRangeY()
+{
+	return m_model->getRangeY();
+}
+
 std::shared_ptr<ICommandBase> ViewModel::get_fitCommand()
 {
 	return std::static_pointer_cast<ICommandBase>(m_cmdFit);

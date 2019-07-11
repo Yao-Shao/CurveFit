@@ -11,6 +11,9 @@ public:
 	ViewModel();
 	void SetModel(const std::shared_ptr<Model>& model);
 	std::shared_ptr<Function> getFunction();
+	std::shared_ptr<Points>getRealPoints();
+	std::shared_ptr<Point>getRangeX();
+	std::shared_ptr<Point>getRangeY();
 	std::shared_ptr<ICommandBase> get_fitCommand();
 	bool call_model_fit(Param_opcf& p);
 

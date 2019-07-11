@@ -12,6 +12,7 @@ void RunFitCommand::SetParameter(const std::any& param)
 
 void RunFitCommand::Exec()
 {
-	ptr_viewmodel->call_model_fit(m_param);
-	ptr_viewmodel->Fire_OnCommandComplete("RunFitCommand", true);
+	bool b;
+	b = ptr_viewmodel->call_model_fit(m_param);
+	ptr_viewmodel->Fire_OnCommandComplete("RunFitCommand", b);
 }

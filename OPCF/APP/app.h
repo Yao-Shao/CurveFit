@@ -12,7 +12,7 @@ private:
 	MainWindow _mainwindow;
 	std::shared_ptr<Model> model;
 	std::shared_ptr<ViewModel> viewmodel;
-	std::shared_ptr<Function> sp_function;
+	//std::shared_ptr<Function> sp_function;
 
 public:
 	app_opcf();
