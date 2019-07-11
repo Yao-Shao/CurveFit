@@ -219,20 +219,22 @@ bool Model::opcf_fit(Param_opcf& p)
 				}
 				sort(mux_point, n);
 				for (int i = 0; i < n; i++)a[i] = mux_point.y[i];
-				for (int i = 0; i < n-1; i++)h[i] = mux_point.x[i + 1] - mux_point.x[i];
-				for (int i = 1; i < n-1; i++)afa[i] = 3 / h[i] * (a[i + 1] - a[i]) - 3 / h[i - 1] * (a[i] - a[i - 1]);
+				for (int i = 0; i < n - 1; i++)h[i] = mux_point.x[i + 1] - mux_point.x[i];
+				for (int i = 1; i < n - 1; i++)afa[i] = 3 / h[i] * (a[i + 1] - a[i]) - 3 / h[i - 1] * (a[i] - a[i - 1]);
 				L[0] = 1; mu[0] = 0; z[0] = 0;
-				for (int i = 1; i < n-1; i++) {
+				for (int i = 1; i < n - 1; i++) {
 					L[i] = 2 * (mux_point.x[i + 1] - mux_point.x[i - 1]) - h[i - 1] * mu[i - 1];
 					mu[i] = h[i] / L[i];
 					z[i] = (afa[i] - h[i - 1] * z[i - 1]) / L[i];
 				}
+				L[n - 1] = 1.0; z[n - 1] = 0.0; c[n - 1] = 0.0;
 				for (int j = n - 2; j >= 0; j--) {
 					c[j] = z[j] - mu[j] * c[j + 1];
 					b[j] = (a[j + 1] - a[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3;
 					d[j] = (c[j + 1] - c[j]) / (3 * h[j]);
 				}
 				std::string func;
+				for (int i = 0; i < n - 1; i++) {
 					bool init = true;
 					if (d != 0) {
 						func += std::to_string(d[i]);
@@ -456,15 +458,7 @@ double Model::get_max_sample_x()
 	return max;
 }
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 void Model::sort(Mux_Points & m, const int& n)
-=======
-void Model::sort(Mux_Points& m, const int& n)
->>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
-=======
-void Model::sort(Mux_Points& m, const int& n)
->>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
 {
 	int i, j;
 	double tempx, tempy;
@@ -472,18 +466,8 @@ void Model::sort(Mux_Points& m, const int& n)
 		tempx = m.x[i];
 		tempy = m.y[i];
 		for (j = i; j > 0; j--) {
-<<<<<<< HEAD
-<<<<<<< HEAD
 			if (m.x[j - 1] > tempx) {
 				m.x[j] = m.x[j - 1];
-=======
-			if (m.x[j-1] > tempx) {
-				m.x[j] = m.x[j-1];
->>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
-=======
-			if (m.x[j-1] > tempx) {
-				m.x[j] = m.x[j-1];
->>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
 			}
 			else break;
 		}
