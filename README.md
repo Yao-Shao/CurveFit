@@ -29,7 +29,7 @@
 
 v1.0 版本实现了对左侧表格中数据进行线性拟合的方法，如图所示：
 
-![1.0版本图](https://github.com/zhou317/Experiment/blob/dev/img_of_repo/first_iter_01.png)
+![1.0版本图](https://github.com/zhou317/Experiment/blob/dev/img_of_readme/first_iter_01.png)
 
 v1.1 版本完善了MVVM模型。运行效果与v1.0版本相同。
 
@@ -46,4 +46,4 @@ v1.2实现画出拟合函数图像的功能：
 * 底部输出框的错误提示
 * 画图模块的图像显示
 
-![错误输出](https://github.com/zhou317/Experiment/blob/dev/img_of_repo/error.png)
+![错误输出](https://github.com/zhou317/Experiment/blob/dev/img_of_readme/error.png)
