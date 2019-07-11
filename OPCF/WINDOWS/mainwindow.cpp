@@ -201,8 +201,66 @@ void MainWindow::createTable()
 
 void MainWindow::createFuncText()
 {
-	funcBox = new QLineEdit();
-	funcBox->setGeometry(500, 100, 500, 100);
+#ifndef DEBUG
+	qDebug() << "In create Function Text\n";
+#endif // !DEBUG
+
+
+	functionText = new QPlainTextEdit(this);
+	functionText->setGeometry(410, 600, 670, 100);
+	QFont font = functionText->font(); 
+	font.setPointSize(10);
+	functionText->setFont(font);
+	functionText->setPlainText("Hello world\nWellcome to our program...\n");
+}
+
+void MainWindow::createFuncView()
+{
+#ifndef NDEBUG
+	qDebug() << "In create Function View\n";
+#endif // !NDEBUG
+	function_view = new QChart();
+	function_view->setTitle("Function Curve");
+	QLineSeries* series = new QLineSeries();
+	qreal x, y;
+	for(auto i = 0; i < real_xy_points->size(); i++) {
+		x = ((*real_xy_points)[i]).getx();
+		y = ((*real_xy_points)[i]).gety();
+		series->append(x, y);
+	}
+	function_view->addSeries(series);
+#ifndef NDEBUG
+	qDebug() << " real_xy_points->size():\n"<<real_xy_points->size();
+	qDebug() << "x range" << range_x->getx() << " to  " << range_x->gety() << "\n";
+	qDebug()<<"y range "<< range_y->getx() << " to  " << range_y->gety() << "\n";
+#endif // !NDEBUG
+	QValueAxis* axisX = new QValueAxis;
+	axisX->setRange(range_x->getx(), range_x->gety());
+	axisX->setTitleText("x");
+	axisX->setLabelFormat("%.3f");
+	axisX->setTickCount(20);
+	axisX->setMinorTickCount(4);
+
+	QValueAxis* axisY = new QValueAxis;
+	axisY->setRange(range_y->getx(), range_y->gety());
+	axisY->setTitleText("y");
+	axisY->setLabelFormat("%.3f"); 
+	axisY->setTickCount(10);
+	axisY->setMinorTickCount(4);
+	function_view->setAxisX(axisX, series);
+	function_view->setAxisY(axisY, series);
+	chartview = new QChartView(function_view);
+	chartview->setGeometry(410, 100, 670, 500);
+	chartview->show();
+
+}
+
+
+void MainWindow::error_info()
+{
+
+	functionText->setPlainText("Sorry,we can't get a function from you sample points, check whether it's correct");
+	functionText->show();
 }
 
 void MainWindow::showType()
@@ -231,6 +289,7 @@ void MainWindow::getPoints()
 #endif // !NDEBUG
 
 	pointsData.clear();
+
 	for (int i = 0; i < ROW; i++)
 	{
 		QTableWidgetItem* item1 = table->item(i, 0);
@@ -251,10 +310,12 @@ void MainWindow::getPoints()
 			}
 		}
 	}
+
 #ifndef NDEBUG
 	qDebug() << "Points info " << endl;
 	qDebug() << pointsData.size() << endl;
 #endif // !NDEBUG
+
 }
 
 void MainWindow::set_function(std::shared_ptr<Function> spFunction)
@@ -262,14 +323,31 @@ void MainWindow::set_function(std::shared_ptr<Function> spFunction)
 	this->spFunction = spFunction;
 }
 
+void MainWindow::set_real_points(std::shared_ptr<Points> spRealPoints)
+{
+	this->real_xy_points = spRealPoints;
+}
+
+void MainWindow::set_range_x(std::shared_ptr<Point> range_xx)
+{
+	this->range_x = range_xx;
+}
+
+void MainWindow::set_range_y(std::shared_ptr<Point> range_yy)
+{
+	this->range_y = range_yy;
+}
+
 void MainWindow::update()
 {
+
 #ifndef NDEBUG
 	qDebug() << "update" << QString::fromStdString(spFunction->get_function()) << endl;
 #endif // !NDEBUG
-	
- 	funcBox->setText("y = " + QString::fromStdString(spFunction->get_function()));
-	funcBox->show();
+	functionText->setPlainText("Run successfully, and the function is: \n y = " + QString::fromStdString(spFunction->get_function()));
+	functionText->show();
+	createFuncView();
+
 }
 
 void MainWindow::runActionTrigger()
@@ -295,14 +373,14 @@ void MainWindow::runActionTrigger()
 #endif // !NDEBUG
 }
 
-std::shared_ptr<updateSink> MainWindow::get_updateSink()
+std::shared_ptr<IPropertyNotification> MainWindow::get_updateSink()
 {
-	return m_updateSink;
+	return std::static_pointer_cast<IPropertyNotification>(m_updateSink);
 }
 
-std::shared_ptr<runSink> MainWindow::get_runSink()
+std::shared_ptr<ICommandNotification> MainWindow::get_runSink()
 {
-	return m_runSink;
+	return std::static_pointer_cast<ICommandNotification>(m_runSink);
 }
 
 void MainWindow::set_runCommand(const std::shared_ptr<ICommandBase>& cmd)

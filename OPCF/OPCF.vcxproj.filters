@@ -19,9 +19,6 @@
     <ClCompile Include="MODEL\Model.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="APP\command\opcf_command.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="COMMON\param.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -37,7 +34,7 @@
     <ClCompile Include="WINDOWS\sinks\runSink.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VIEWMODEL\command\QueryCommand.cpp">
+    <ClCompile Include="VIEWMODEL\command\RunFitCommand.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -57,9 +54,6 @@
     <ClInclude Include="MODEL\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="APP\command\opcf_command.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="VIEWMODEL\viewmodel.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -75,6 +69,9 @@
     <ClInclude Include="WINDOWS\sinks\runSink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="VIEWMODEL\command\RunFitCommand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="OPCF.rc" />
@@ -83,7 +80,7 @@
     <QtRcc Include="OPCF.qrc" />
   </ItemGroup>
   <ItemGroup>
-    <QtUic Include="mainwindow.ui" />
+    <QtUic Include="WINDOWS/mainwindow.ui" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">

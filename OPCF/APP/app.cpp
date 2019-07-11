@@ -1,5 +1,6 @@
 #include "app.h"
 #include <QtDebug>
+
 app_opcf::app_opcf()
 {
 }
@@ -22,15 +23,17 @@ void app_opcf::run()
 	viewmodel->SetModel(model);
 	
 	// binding properties
-	_mainwindow.set_function(model->getFunction());
-
+	_mainwindow.set_function(viewmodel->getFunction());
+	_mainwindow.set_real_points(viewmodel->getRealPoints());
+	_mainwindow.set_range_x(viewmodel->getRangeX());
+	_mainwindow.set_range_y(viewmodel->getRangeY());
 	//command
-	_mainwindow.set_runCommand(viewmodel->getQueryCommand());
+	_mainwindow.set_runCommand(viewmodel->get_fitCommand());
 
 	//notifications
 	viewmodel->AddPropertyNotification(_mainwindow.get_updateSink());
+	viewmodel->AddCommandNotification(_mainwindow.get_runSink());
 
-	
 	_mainwindow.show();
 }
 
