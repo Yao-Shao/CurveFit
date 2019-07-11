@@ -15,4 +15,8 @@ void updateSink::OnPropertyChanged(const std::string& str)
 	{
 		ptr_mainwindow->update();
 	}
+	else {
+		//can't fit,and the error information is in str
+		ptr_mainwindow->run_error(str);
+	}
 }

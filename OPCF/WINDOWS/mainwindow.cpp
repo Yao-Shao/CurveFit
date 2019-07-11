@@ -263,6 +263,11 @@ void MainWindow::error_info()
 	functionText->show();
 }
 
+void MainWindow::run_error(const std::string& str)
+{
+	//show diffrent error infomation according to str
+}
+
 void MainWindow::showType()
 {
 	fitType = static_cast<Type>(styleComboBox->itemData(styleComboBox->currentIndex(), Qt::UserRole).toInt());
