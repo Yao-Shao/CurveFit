@@ -229,11 +229,13 @@ void MainWindow::createFuncView()
 		series->append(x, y);
 	}
 	function_view->addSeries(series);
+
 #ifndef NDEBUG
 	qDebug() << " real_xy_points->size():\n"<<real_xy_points->size();
 	qDebug() << "x range" << range_x->getx() << " to  " << range_x->gety() << "\n";
 	qDebug()<<"y range "<< range_y->getx() << " to  " << range_y->gety() << "\n";
 #endif // !NDEBUG
+
 	QValueAxis* axisX = new QValueAxis;
 	axisX->setRange(range_x->getx(), range_x->gety());
 	axisX->setTitleText("x");
@@ -247,8 +249,10 @@ void MainWindow::createFuncView()
 	axisY->setLabelFormat("%.3f"); 
 	axisY->setTickCount(10);
 	axisY->setMinorTickCount(4);
+
 	function_view->setAxisX(axisX, series);
 	function_view->setAxisY(axisY, series);
+
 	chartview = new QChartView(function_view);
 	chartview->setGeometry(410, 100, 670, 500);
 	chartview->show();
@@ -336,6 +340,7 @@ void MainWindow::update(bool bOK)
 #ifndef NDEBUG
 	qDebug() << "update" << QString::fromStdString(spFunction->get_function()) << endl;
 #endif // !NDEBUG
+
 	if (bOK) {
 		functionText->setPlainText("Run successfully, and the function is: \n y = " + QString::fromStdString(spFunction->get_function()));
 		functionText->show();

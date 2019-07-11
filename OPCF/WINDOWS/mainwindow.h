@@ -93,9 +93,9 @@ private:
 	Param_opcf m_param;
 
 	std::shared_ptr<Function> spFunction;
-	std::shared_ptr<Points>real_xy_points;
-	std::shared_ptr<Point>range_x;
-	std::shared_ptr<Point>range_y;
+	std::shared_ptr<Points> real_xy_points;
+	std::shared_ptr<Point> range_x;
+	std::shared_ptr<Point> range_y;
 	std::shared_ptr<QPixmap> pix;
 	Points pointsData;
 

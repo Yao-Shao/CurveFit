@@ -1,5 +1,5 @@
-#ifndef MAINWINDOW_SINK_H
-#define MAINWINDOW_SINK_H
+#ifndef RUN_SINK_H
+#define RUN_SINK_H
 
 #include "..//COMMON/etlbase.h"
 
