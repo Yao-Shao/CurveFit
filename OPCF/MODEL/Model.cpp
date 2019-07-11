@@ -122,11 +122,11 @@ bool Model::opcf_fit(Param_opcf& p)
 		if (b == 0)func += "0\0";
 		else {
 			func += std::to_string(b);
-			func += 'e';
 			if (a == 0)func += '\0';
 			else {
+				func += 'e';
 				func += '^';
-				func += std::to_string(a);
+				if(a != 1)func += std::to_string(a);
 				func += "x\0";
 			}
 		}
@@ -151,8 +151,6 @@ bool Model::opcf_fit(Param_opcf& p)
 		func += std::to_string(a);
 		func += "x\0";
 		sp_Function->set_function(func);
-
-
 	}
 	else if (t == NORMAL_FUNCTION) {
 
