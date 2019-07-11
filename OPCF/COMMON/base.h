@@ -29,11 +29,19 @@ private:
 private:
 	void add_power(bool pos, double num, int power);
 	void add_normalpower(bool pos, double num, int power, int place);
+<<<<<<< HEAD
 	void add_Exp(bool pos, double num, double com, bool com_pos);
 	void add_Ln(bool pos, double num, double com, bool com_pos);
 public:
 	bool convert();
 	Function()throw() {}
+=======
+	void add_Exp(bool pos, double num, double com,bool com_pos);
+	void add_Ln(bool pos, double num, double com,bool com_pos);
+public:
+	bool convert();
+    Function()throw(){}
+>>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
 	void set_type(Type t) { type = t; }
 	Function& operator=(const std::string& s);//you just need to give the function string
 	Function& operator=(std::string&& s);
