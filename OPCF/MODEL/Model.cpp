@@ -67,15 +67,19 @@ bool Model::opcf_fit(Param_opcf& p)
 		return true;
 	}
 	else if (sp_points.size() == 1) {
-
+		std::string func;
+		func += std::to_string(sp_points[0].gety());
+		func += '\0';
+		(*sp_Function).set_type(LINEAR_FUNCTION);
+		sp_Function->set_function(func);
 	}
 	else {
 		if (t == LINEAR_FUNCTION)
 		{
-
 			double ave_x, ave_y, sum_xy, sum_qx;
 			double a, b;
 			int n;
+			bool init = true;
 			std::string func;
 			ave_x = ave_y = sum_xy = sum_qx = 0.0;
 			n = sp_points.size();
@@ -90,17 +94,16 @@ bool Model::opcf_fit(Param_opcf& p)
 			b = (sum_xy - n * ave_x * ave_y) / (sum_qx - n * ave_x * ave_x);
 			a = ave_y - b * ave_x;
 			if (b != 0) {
+				init = false;
 				func += std::to_string(b);
 				func += "x";
 			}
 			if (a < 0) {
-				func += '-';
-				a *= -1;
 				func += std::to_string(a);
 				func += "\0";
 			}
 			else if (a > 0) {
-				func += '+';
+				if(init == 0)func += '+';
 				func += std::to_string(a);
 				func += '\0';
 			}
@@ -111,6 +114,7 @@ bool Model::opcf_fit(Param_opcf& p)
 			int n = sp_points.size();
 			double a, b, c, m1, m2, m3, z1, z2, z3;
 			double sumx = 0, sumx2 = 0, sumx3 = 0, sumx4 = 0, sumy = 0, sumxy = 0, sumx2y = 0;
+			bool init = true;
 			a = b = c = 0;
 			for (int i = 0; i < n; i++) {
 				sumx += sp_points[i].getx();
@@ -130,6 +134,7 @@ bool Model::opcf_fit(Param_opcf& p)
 			if (a != 0) {
 				func += std::to_string(a);
 				func += "x^2";
+				init = false;
 			}
 			if (b != 0) {
 				if (b < 0) {
@@ -137,15 +142,16 @@ bool Model::opcf_fit(Param_opcf& p)
 					func += 'x';
 				}
 				else {
-					func += '+';
+					if(init == 0)func += '+';
 					func += std::to_string(b);
 					func += 'x';
 				}
+				init = false;
 			}
 			if (c != 0) {
 				if (c < 0)func += std::to_string(c);
 				else {
-					func += '+';
+					if(init == 0)func += '+';
 					func += std::to_string(c);
 				}
 			}
@@ -200,13 +206,85 @@ bool Model::opcf_fit(Param_opcf& p)
 			sp_Function->set_function(func);
 		}
 		else if (t == NORMAL_FUNCTION) {
-			if (sp_points.size() < 3) {
+			if (sp_points.size() < 2) {
 				propertychanged = "NotEnoughForCubic";
 			}
 			else {
-
+				int n = sp_points.size();
+				Mux_Points mux_point;
+				double a[51], b[51], c[51], d[51], h[50], afa[50], L[51], mu[51], z[51];
+				for (int i = 0; i < n; i++) {
+					mux_point.x[i] = sp_points[i].getx();
+					mux_point.y[i] = sp_points[i].gety();
+				}
+				sort(mux_point, n);
+				for (int i = 0; i < n; i++)a[i] = mux_point.y[i];
+				for (int i = 0; i < n-1; i++)h[i] = mux_point.x[i + 1] - mux_point.x[i];
+				for (int i = 1; i < n-1; i++)afa[i] = 3 / h[i] * (a[i + 1] - a[i]) - 3 / h[i - 1] * (a[i] - a[i - 1]);
+				L[0] = 1; mu[0] = 0; z[0] = 0;
+				for (int i = 1; i < n-1; i++) {
+					L[i] = 2 * (mux_point.x[i + 1] - mux_point.x[i - 1]) - h[i - 1] * mu[i - 1];
+					mu[i] = h[i] / L[i];
+					z[i] = (afa[i] - h[i - 1] * z[i - 1]) / L[i];
+				}
+				L[n-1] = 1.0; z[n-1] = 0.0; c[n-1] = 0.0;
+				for (int j = n - 2; j >= 0; j--) {
+					c[j] = z[j] - mu[j] * c[j + 1];
+					b[j] = (a[j + 1] - a[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3;
+					d[j] = (c[j + 1] - c[j]) / (3 * h[j]);
+				}
+				std::string func;
+				for (int i = 0; i < n-1; i++) {
+					bool init = true;
+					if (d != 0) {
+						func += std::to_string(d[i]);
+						func += "x^3";
+						init = false;
+					}
+					if (c != 0) {
+						if (c < 0) {
+							func += std::to_string(c[i]);
+							func += "x^2";
+						}
+						else if (c > 0) {
+							func += '+';
+							func += std::to_string(c[i]);
+							func += "x^2";
+						}
+						init = false;
+					}
+					if (b != 0) {
+						if (b < 0) {
+							func += std::to_string(b[i]);
+							func += 'x';
+						}
+						else if (b > 0) {
+							func += '+';
+							func += std::to_string(b[i]);
+							func += 'x';
+						}
+						init = false;
+					}
+					if (a != 0) {
+						if (a < 0)func += std::to_string(a[i]);
+						else if (a > 0) {
+							func += '+';
+							func += std::to_string(a[i]);
+						}
+					}
+					func += '(';
+					func += std::to_string(mux_point.x[i]);
+					func += ',';
+					func += std::to_string(mux_point.x[i + 1]);
+					func += ')';
+					if (i != n - 2)func += '\n';
+					else func += '\0';
+					sp_Function->setnum(n);
+					sp_Function->set_function(func);
+				}
 			}
 		}
+		sp_Function->convert();
 	}
 
 		/*get xy*/
@@ -378,4 +456,22 @@ double Model::get_max_sample_x()
 		}
 	}
 	return max;
+}
+
+void Model::sort(Mux_Points& m, const int& n)
+{
+	int i, j;
+	double tempx, tempy;
+	for (i = 0; i < n; i++) {
+		tempx = m.x[i];
+		tempy = m.y[i];
+		for (j = i; j > 0; j--) {
+			if (m.x[j-1] > tempx) {
+				m.x[j] = m.x[j-1];
+			}
+			else break;
+		}
+		m.x[j] = tempx;
+		m.y[j] = tempy;
+	}
 }

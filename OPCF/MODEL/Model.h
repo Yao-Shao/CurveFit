@@ -5,7 +5,9 @@
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
 #define POINTSNUMBER 50
-
+struct Mux_Points {
+	double x[50], y[50];
+};
 class Model : public Proxy_PropertyNotification<Model>
 {
 public:
@@ -37,5 +39,6 @@ private:
 	std::shared_ptr<Points>map_to_img_xy;
 	std::shared_ptr<Point>range_x;
 	std::shared_ptr<Point>range_y;
+private:
+	void sort(Mux_Points& m, const int& n);
 };
-

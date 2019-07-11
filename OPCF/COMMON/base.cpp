@@ -132,7 +132,7 @@ bool Function::convert()
 	int i = 0, j = 0;
 		int power = 0, place = 0;
 		bool pos = true, If_point = false, If_power = false, init = true;
-		double num;
+		double num = 0.0;
 		normal_function.pointnum = 0;
 		while (function[i] != '\0') {
 			while (function[i] != '\n' && function[i] != '\0') {
@@ -252,11 +252,11 @@ double Function::get_y(const double& x)
 	}
 	else if (type == NORMAL_FUNCTION) {
 		if (x < normal_function.points[0])return normal_function.functions[0][0] + normal_function.functions[0][1] * x + normal_function.functions[0][2] * x * x + normal_function.functions[0][3] * x * x * x;
-		else if (x > normal_function.points[normal_function.pointnum - 1])return normal_function.functions[normal_function.pointnum][0] + normal_function.functions[normal_function.pointnum][1] * x + normal_function.functions[normal_function.pointnum][2] * x * x + normal_function.functions[normal_function.pointnum][3] * x * x * x;
+		else if (x > normal_function.points[normal_function.pointnum - 1])return normal_function.functions[normal_function.pointnum-2][0] + normal_function.functions[normal_function.pointnum-2][1] * x + normal_function.functions[normal_function.pointnum-2][2] * x * x + normal_function.functions[normal_function.pointnum-2][3] * x * x * x;
 		else {
-			for (int i = 0; i < normal_function.pointnum; i++) {
+			for (int i = 0; i < normal_function.pointnum-1; i++) {
 				if (x >= normal_function.points[i] && x <= normal_function.points[i + 1]) {
-					return normal_function.functions[i+1][0] + normal_function.functions[i+1][1] * x + normal_function.functions[i+2][2] * x * x + normal_function.functions[i+3][3] * x * x * x;
+					return normal_function.functions[i][0] + normal_function.functions[i][1] * x + normal_function.functions[i][2] * x * x + normal_function.functions[i][3] * x * x * x;
 				}
 			}
 		}
