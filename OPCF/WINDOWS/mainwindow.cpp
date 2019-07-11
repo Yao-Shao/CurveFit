@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QtDebug>
 #include <QGridLayout>
+#include <algorithm>
 #include "mainwindow.h"
 #include "math.h"
 
@@ -107,11 +108,13 @@ void MainWindow::createToolBar()
 
 	/* Runing */
 	QToolButton* runAction = new QToolButton();
+	runAction->setShortcut(Qt::CTRL | Qt::Key_R);
 	runAction->setIcon(QIcon(":/OPCF/img/running.png"));
-	runAction->setToolTip(tr("Draw fitted curve"));
+	runAction->setToolTip(tr("Show fit curve"));
 	toolBar->addWidget(runAction);
 	connect(runAction, SIGNAL(clicked()), this, SLOT(runActionTrigger()));
 
+	/*
 	/*
 	QAction* drawLineAction = new QAction("Line", toolBar);
 	drawLineAction->setIcon(QIcon(":/src/Line.png"));
@@ -222,6 +225,7 @@ void MainWindow::createFuncText()
 	functionText->setFont(font);
 
 	functionText->setPlainText("Hello world\nWellcome to our program...\n");
+	functionText->show();
 }
 
 void MainWindow::createFuncView()
@@ -333,9 +337,7 @@ void MainWindow::createFuncView()
 
 void MainWindow::error_info()
 {
-
 	functionText->setPlainText("Sorry,we can't get a function from you sample points, check whether it's correct");
-	functionText->show();
 }
 
 void MainWindow::run_error(const std::string& str)
@@ -343,14 +345,14 @@ void MainWindow::run_error(const std::string& str)
 	chartView->close();
 	//show diffrent error infomation according to str
 	if (str == "NoSamplePoints") {
-		functionText->setPlainText("Run orror C0001:  There is no sample points in the table...");
-		functionText->show();
+		functionText->setPlainText("Run error C0001:  There is no sample points in the table...");
 	}
 	else if (str == "NotEnoughForCubic") {
-		functionText->setPlainText("Run orror C0002:  Not enough sample points for Cubic Spline Method...");
-		functionText->show();
+		functionText->setPlainText("Run error C0002:  Not enough sample points for Cubic Spline Method...");
 	}
-	error_label_pic->setGeometry(410, 100, 670, 500);
+	else if (str == "conflictPoints") {
+		functionText->setPlainText("Run error C0003: Multiple points with the same x but different y");
+	}
 	error_label_pic->setPixmap(myPix);
 	error_label_pic->show();
 }
@@ -373,7 +375,7 @@ void MainWindow::showColor()
 }
 
 
-void MainWindow::getPoints()
+bool MainWindow::getPoints()
 {
 #ifndef NDEBUG
 	qDebug() << "In getPoints" << endl;
@@ -402,12 +404,32 @@ void MainWindow::getPoints()
 			}
 		}
 	}
-
+	
 #ifndef NDEBUG
 	qDebug() << "Points info " << endl;
 	qDebug() << pointsData.size() << endl;
 #endif // !NDEBUG
 
+	return checkPoints();
+}
+
+bool MainWindow::checkPoints()
+{
+	if (pointsData.size() == 0)
+		return true;
+	bool flag = true;
+	std::sort(pointsData.begin(), pointsData.end());
+	for (int i = 0; i < pointsData.size()-1; i++) {
+		if (pointsData[i].getx() == pointsData[i + 1].getx()) {
+			if (pointsData[i].gety() != pointsData[i+1].gety()) {
+				return false;
+			}
+			else {
+				pointsData.erase(pointsData.begin()+i);
+			}
+		}
+	}
+	return true;
 }
 
 void MainWindow::set_function(std::shared_ptr<Function> spFunction)
@@ -441,7 +463,12 @@ void MainWindow::runActionTrigger()
 	qDebug() << "In runAction Trigger" << endl;
 #endif // !NDEBUG
 
-	getPoints();
+	bool rep = getPoints();
+	if (rep == false)
+	{
+		run_error("conflictPoints");
+		return;
+	}
 
 #ifndef NDEBUG
 	qDebug() << "Out of getPoints" << endl;
@@ -466,7 +493,6 @@ void MainWindow::update()
 #endif // !NDEBUG
 
 	functionText->setPlainText("Run successfully, and the function is: \n y = " + QString::fromStdString(spFunction->get_function()));
-	functionText->show();
 	createFuncView();
 }
 
@@ -502,9 +528,12 @@ void MainWindow::setLayout()
 	m_layout->setColumnStretch(1, 5);
 	m_layout->setRowStretch(0, 2);
 	m_layout->setRowStretch(1, 1);
+
 	centralWidget->setLayout(m_layout);
 
+#ifndef NDEBUG
 	qDebug() << m_layout->rowCount() << " " << m_layout->columnCount() << "/n";
+#endif
 }
 
 
