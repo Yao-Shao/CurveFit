@@ -23,6 +23,11 @@ std::shared_ptr<Points> Model::getRealPoints()
 	return real_xy_points;
 }
 
+std::shared_ptr<Points> Model::getSamplePoints()
+{
+	return samplePoints;
+}
+
 std::shared_ptr<Point> Model::getRangeX()
 {
 	return range_x;
@@ -325,32 +330,32 @@ bool Model::get_realXYPoints(Type t)
 	switch (t)
 	{
 	case LINEAR_FUNCTION: {
-		start_x = start_x - length;
-		end_x = end_x + length;
+		start_x = start_x - length / 3;
+		end_x = end_x + length / 3;
 		start_x = floor(start_x);
 		end_x = ceil(end_x);
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
 						  break;
 	case QUADRATIC_FUNCTION: {
-		start_x = start_x - length;
-		end_x = end_x + length;
+		start_x = start_x - length / 3;
+		end_x = end_x + length / 3;
 		start_x = floor(start_x);
 		end_x = ceil(end_x);
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
 							 break;
 	case EXPONENTIAL_FUNCTION: {
-		start_x = start_x - length;
-		end_x = end_x + length;
+		start_x = start_x - length / 3;
+		end_x = end_x + length / 3;
 		start_x = floor(start_x);
 		end_x = ceil(end_x);
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
 							   break;
 	case LN_FUNCTION: {
-		start_x = start_x - length;
-		end_x = end_x + length;
+		start_x = start_x - length / 3;
+		end_x = end_x + length / 3;
 		if (start_x <= 0) start_x = STARTLNFUNCT;
 		end_x = ceil(end_x);
 		step = (end_x - start_x) / POINTSNUMBER;

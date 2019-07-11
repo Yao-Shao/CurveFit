@@ -25,6 +25,11 @@ std::shared_ptr<Points> ViewModel::getRealPoints()
 	return m_model->getRealPoints();
 }
 
+std::shared_ptr<Points> ViewModel::getSamplePoints()
+{
+	return m_model->getSamplePoints();
+}
+
 std::shared_ptr<Point> ViewModel::getRangeX()
 {
 	return m_model->getRangeX();
