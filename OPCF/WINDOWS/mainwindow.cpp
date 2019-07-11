@@ -5,6 +5,7 @@
 #include <QTableWidget>
 #include <QColorDialog>
 #include <QFileDialog>
+#include <QLabel>
 #include <QMessageBox>
 #include <QAbstractButton>
 #include <QPushButton>
@@ -129,11 +130,11 @@ void MainWindow::createToolBar()
 	/* fit type */
 	styleLabel = new QLabel(tr("Fit Type: "));
 	styleComboBox = new QComboBox;
-	styleComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
+	styleComboBox->addItem(tr("Linear"), static_cast<int>(LINEAR_FUNCTION));
 	styleComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
 	styleComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
 	styleComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
-	styleComboBox->addItem(tr("Free"), static_cast<int>(NORMAL_FUNCTION));
+	styleComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
 
 	connect(styleComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
 	toolBar->addWidget(styleLabel);
@@ -266,6 +267,20 @@ void MainWindow::error_info()
 void MainWindow::run_error(const std::string& str)
 {
 	//show diffrent error infomation according to str
+	if (str == "NoSamplePoints") {
+		functionText->setPlainText("Run orror C0001:  There is no sample points in the table...");
+		functionText->show();
+	}
+	else if (str == "NotEnoughForCubic") {
+		functionText->setPlainText("Run orror C0002:  Not enough sample points for Cubic Spline Method...");
+		functionText->show();
+	}
+	QPixmap myPix(":/OPCF/img/run_error.png");
+	QLabel* error_label_pic = new QLabel(this);
+	error_label_pic->setGeometry(410, 100, 670, 500);
+	error_label_pic->setPixmap(myPix);
+	error_label_pic->show();
+
 }
 
 void MainWindow::showType()
