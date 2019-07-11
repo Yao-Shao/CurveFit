@@ -36,7 +36,8 @@ public:
 	void error_info();
 	void run_error(const std::string &str);
 	void set_function(std::shared_ptr<Function> spFunction);
-	void set_real_points(std::shared_ptr<Points>spRealPoints);
+	void set_real_points(std::shared_ptr<Points>spRealPoints); 
+	void set_sample_points(std::shared_ptr<Points>spsamplePoints);
 	void set_range_x(std::shared_ptr<Point>range_xx);
 	void set_range_y(std::shared_ptr<Point>range_yy);
 
@@ -68,6 +69,8 @@ public slots:
 	void undoTrigger();
 	void redoTrigger();
 	
+	/*show points*/
+	void slotPointHoverd(const QPointF& point, bool state);
 
 private:
 	/* draw */
@@ -95,6 +98,9 @@ private:
 	QPixmap myPix;
 	QLabel* error_label_pic;
 
+	/*show points*/
+	QLabel* m_valueLabel;
+
 	/* param */
 	Type fitType;
 	Points pointsData;
@@ -102,6 +108,7 @@ private:
 
 	std::shared_ptr<Function> spFunction;
 	std::shared_ptr<Points> real_xy_points;
+	std::shared_ptr<Points> sample_points;
 	std::shared_ptr<Point> range_x;
 	std::shared_ptr<Point> range_y;
 	std::shared_ptr<QPixmap> pix;
