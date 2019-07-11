@@ -129,11 +129,6 @@ bool Function::convert()
 		}
 	}
 	else {
-<<<<<<< HEAD
-		int i = 0, j = 0;
-=======
-	int i = 0, j = 0;
->>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
 		int power = 0, place = 0;
 		bool pos = true, If_point = false, If_power = false, init = true;
 		double num = 0.0;
@@ -229,8 +224,11 @@ void Function::add_normalpower(bool pos, double num, int power, int place)
 	normal_function.functions[place][power] = num;
 }
 <<<<<<< HEAD
+<<<<<<< HEAD
 void Function::add_Exp(bool pos, double num, double com, bool com_pos)
 =======
+=======
+>>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
 void Function::add_Exp(bool pos, double num,double com, bool com_pos)
 >>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
 {
@@ -256,7 +254,11 @@ double Function::get_y(const double& x)
 		return other_function[0] * exp(other_function[1] * x);
 	}
 <<<<<<< HEAD
+<<<<<<< HEAD
 	else if (type == LINEAR_FUNCTION || type == QUADRATIC_FUNCTION) {
+=======
+	else if(type == LINEAR_FUNCTION || type == QUADRATIC_FUNCTION){
+>>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
 =======
 	else if(type == LINEAR_FUNCTION || type == QUADRATIC_FUNCTION){
 >>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
@@ -265,9 +267,15 @@ double Function::get_y(const double& x)
 	else if (type == NORMAL_FUNCTION) {
 		if (x < normal_function.points[0])return normal_function.functions[0][0] + normal_function.functions[0][1] * x + normal_function.functions[0][2] * x * x + normal_function.functions[0][3] * x * x * x;
 <<<<<<< HEAD
+<<<<<<< HEAD
 		else if (x > normal_function.points[normal_function.pointnum - 1])return normal_function.functions[normal_function.pointnum - 2][0] + normal_function.functions[normal_function.pointnum - 2][1] * x + normal_function.functions[normal_function.pointnum - 2][2] * x * x + normal_function.functions[normal_function.pointnum - 2][3] * x * x * x;
 		else {
 			for (int i = 0; i < normal_function.pointnum - 1; i++) {
+=======
+		else if (x > normal_function.points[normal_function.pointnum - 1])return normal_function.functions[normal_function.pointnum-2][0] + normal_function.functions[normal_function.pointnum-2][1] * x + normal_function.functions[normal_function.pointnum-2][2] * x * x + normal_function.functions[normal_function.pointnum-2][3] * x * x * x;
+		else {
+			for (int i = 0; i < normal_function.pointnum-1; i++) {
+>>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
 =======
 		else if (x > normal_function.points[normal_function.pointnum - 1])return normal_function.functions[normal_function.pointnum-2][0] + normal_function.functions[normal_function.pointnum-2][1] * x + normal_function.functions[normal_function.pointnum-2][2] * x * x + normal_function.functions[normal_function.pointnum-2][3] * x * x * x;
 		else {

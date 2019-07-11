@@ -29,19 +29,8 @@ private:
 private:
 	void add_power(bool pos, double num, int power);
 	void add_normalpower(bool pos, double num, int power, int place);
-<<<<<<< HEAD
-	void add_Exp(bool pos, double num, double com, bool com_pos);
-	void add_Ln(bool pos, double num, double com, bool com_pos);
-public:
-	bool convert();
-	Function()throw() {}
-=======
 	void add_Exp(bool pos, double num, double com,bool com_pos);
 	void add_Ln(bool pos, double num, double com,bool com_pos);
-public:
-	bool convert();
-    Function()throw(){}
->>>>>>> 10936b270a5186d8fee06cb472ab1f55e64e6353
 	void set_type(Type t) { type = t; }
 	Function& operator=(const std::string& s);//you just need to give the function string
 	Function& operator=(std::string&& s);
@@ -70,7 +59,7 @@ public:
 	void reset(const double& xx, const double& yy) { x = xx; y = yy; }
 };
 typedef std::vector<Point> Points;
-//“Ï≥£¿‡£¨ ø…“‘”√ throw XXXException("XXX error!")µ˜”√
+//ÂºÇÂ∏∏Á±ªÔºå ÂèØ‰ª•Áî® throw XXXException("XXX error!")Ë∞ÉÁî®
 class ValueException : public std::exception {
 public:
 	ValueException(std::string s) :text(s) {}
