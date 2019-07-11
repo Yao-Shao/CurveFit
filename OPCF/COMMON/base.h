@@ -13,21 +13,26 @@ enum Type {
 	LN_FUNCTION,
 	NORMAL_FUNCTION
 };
+struct point_with_range {
+	double functions[51][4];
+	int points[50];
+	int pointnum;
+};
 class Function
 {
  private:
 	std::string function;
 	Type type;
-	union {
-		double power_function[4];    //use by power function
-		double other_function[2];    //use by Exponential function or In function,0 place is coefficient
-	};
+	double power_function[4];    //use by power function
+	double other_function[2];    //use by Exponential function or In function,0 place is coefficient
+	point_with_range normal_function;//use for normal function
 private:
-	bool convert();
 	void add_power(bool pos, double num, int power);
+	void add_normalpower(bool pos, double num, int power, int place);
 	void add_Exp(bool pos, double num, double com,bool com_pos);
 	void add_Ln(bool pos, double num, double com,bool com_pos);
 public:
+	bool convert();
     Function()throw(){}
 	void set_type(Type t) { type = t; }
 	Function& operator=(const std::string& s);//you just need to give the function string
@@ -36,6 +41,7 @@ public:
 	double get_dy(const double& x);
 	std::string get_function() const;
 	void set_function(std::string& func);
+	void setnum(const int& n) { normal_function.pointnum = n; }
 };
 class Point
 {
