@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QtDebug>
 #include <QGridLayout>
+#include <algorithm>
 #include "mainwindow.h"
 
 
@@ -35,6 +36,9 @@ MainWindow::MainWindow(QWidget* parent) :
 	m_palette.setColor(QPalette::Background, QColor(Qt::gray));
 	centralWidget->setAutoFillBackground(true);
 	centralWidget->setPalette(m_palette);
+
+	myPix.load(":/OPCF/img/run_error.png");
+	error_label_pic = new QLabel(this);
 
 	createMenu();
 	createToolBar();
@@ -102,11 +106,13 @@ void MainWindow::createToolBar()
 
 	/* Runing */
 	QToolButton* runAction = new QToolButton();
+	runAction->setShortcut(Qt::CTRL | Qt::Key_R);
 	runAction->setIcon(QIcon(":/OPCF/img/running.png"));
-	runAction->setToolTip(tr("Draw fitted curve"));
+	runAction->setToolTip(tr("Show fit curve"));
 	toolBar->addWidget(runAction);
 	connect(runAction, SIGNAL(clicked()), this, SLOT(runActionTrigger()));
 
+	/*
 	/*
 	QAction* drawLineAction = new QAction("Line", toolBar);
 	drawLineAction->setIcon(QIcon(":/src/Line.png"));
@@ -148,7 +154,7 @@ void MainWindow::createToolBar()
 	styleComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
 	styleComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
 	styleComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
-	styleComboBox->addItem(tr("Free"), static_cast<int>(NORMAL_FUNCTION));
+	styleComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
 
 	connect(styleComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
 	toolBar->addWidget(styleLabel);
@@ -261,6 +267,7 @@ void MainWindow::createFuncView()
 	function_view->setAxisY(axisY, series);
 
 	chartView->setChart(function_view);
+	chartView->show();
 }
 
 
@@ -273,7 +280,24 @@ void MainWindow::error_info()
 
 void MainWindow::run_error(const std::string& str)
 {
+	chartView->close();
 	//show diffrent error infomation according to str
+<<<<<<< HEAD
+	functionText->setPlainText(QString::fromStdString(str));
+	functionText->show();
+=======
+	if (str == "NoSamplePoints") {
+		functionText->setPlainText("Run orror C0001:  There is no sample points in the table...");
+		functionText->show();
+	}
+	else if (str == "NotEnoughForCubic") {
+		functionText->setPlainText("Run orror C0002:  Not enough sample points for Cubic Spline Method...");
+		functionText->show();
+	}
+	error_label_pic->setGeometry(410, 100, 670, 500);
+	error_label_pic->setPixmap(myPix);
+	error_label_pic->show();
+>>>>>>> 8bc30d5f6ea4019d26e2c7925e9ac91b1bd5453d
 }
 
 void MainWindow::showType()
@@ -294,7 +318,7 @@ void MainWindow::showColor()
 }
 
 
-void MainWindow::getPoints()
+bool MainWindow::getPoints()
 {
 #ifndef NDEBUG
 	qDebug() << "In getPoints" << endl;
@@ -323,12 +347,30 @@ void MainWindow::getPoints()
 			}
 		}
 	}
-
+	
 #ifndef NDEBUG
 	qDebug() << "Points info " << endl;
 	qDebug() << pointsData.size() << endl;
 #endif // !NDEBUG
 
+	return checkPoints();
+}
+
+bool MainWindow::checkPoints()
+{
+	bool flag = true;
+	std::sort(pointsData.begin(), pointsData.end());
+	for (int i = 0; i < pointsData.size()-1; i++) {
+		if (pointsData[i].getx() == pointsData[i + 1].getx()) {
+			if (pointsData[i].gety() != pointsData[i+1].gety()) {
+				return false;
+			}
+			else {
+				pointsData.erase(pointsData.begin()+i);
+			}
+		}
+	}
+	return true;
 }
 
 void MainWindow::set_function(std::shared_ptr<Function> spFunction)
@@ -357,7 +399,12 @@ void MainWindow::runActionTrigger()
 	qDebug() << "In runAction Trigger" << endl;
 #endif // !NDEBUG
 
-	getPoints();
+	bool rep = getPoints();
+	if (rep == false)
+	{
+		run_error("ERROR: Two poins with the same x, but has different y");
+		return;
+	}
 
 #ifndef NDEBUG
 	qDebug() << "Out of getPoints" << endl;
@@ -377,6 +424,7 @@ void MainWindow::runActionTrigger()
 
 void MainWindow::update()
 {
+	error_label_pic->close();
 #ifndef NDEBUG
 	qDebug() << "update" << QString::fromStdString(spFunction->get_function()) << endl;
 #endif // !NDEBUG
@@ -419,9 +467,12 @@ void MainWindow::setLayout()
 	m_layout->setColumnStretch(1, 5);
 	m_layout->setRowStretch(0, 2);
 	m_layout->setRowStretch(1, 1);
+
 	centralWidget->setLayout(m_layout);
 
+#ifndef NDEBUG
 	qDebug() << m_layout->rowCount() << " " << m_layout->columnCount() << "/n";
+#endif
 }
 
 
