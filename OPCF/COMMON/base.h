@@ -21,10 +21,12 @@ class Function
 	union {
 		double power_function[4];    //use by power function
 		double other_function[2];    //use by Exponential function or In function,0 place is coefficient
+		point_with_range normal_function;//use for normal function
 	};
 private:
 	bool convert();
 	void add_power(bool pos, double num, int power);
+	void add_normalpower(bool pos, double num, int power, int place);
 	void add_Exp(bool pos, double num, double com,bool com_pos);
 	void add_Ln(bool pos, double num, double com,bool com_pos);
 public:
@@ -65,4 +67,9 @@ public:
 	};
 private:
 	std::string text;
+};
+struct point_with_range{
+	double functions[51][4];
+	int points[50];
+	int pointnum;
 };

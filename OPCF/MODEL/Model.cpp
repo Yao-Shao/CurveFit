@@ -189,9 +189,6 @@ bool Model::opcf_fit(Param_opcf& p)
 	else if (t == NORMAL_FUNCTION) {
 
 	}
-	else {
-
-	}
 
 	/*get xy*/
 	bool whether_get_real_points;
