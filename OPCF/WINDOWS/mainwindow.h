@@ -73,8 +73,8 @@ public slots:
 
 private:
 	/* draw */
-	QLabel* styleLabel;
-	QComboBox* styleComboBox;
+	QLabel* fitTypeLabel;
+	QComboBox* fitTypeComboBox;
 	QLabel* widthLable;
 	QSpinBox* widthSpinBox;
 	QToolButton* colorBtn;

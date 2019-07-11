@@ -14,13 +14,12 @@
 #include "mainwindow.h"
 #include "math.h"
 
-
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent),
 	m_updateSink(std::make_shared<updateSink>(this)),
 	m_runSink(std::make_shared<runSink>(this)),
-	chartView(new QChartView()),
-	m_layout(new QGridLayout),
+	chartView(new QChartView(this)),
+	m_layout(new QGridLayout(this)),
 	fitType(LINEAR_FUNCTION)
 {
 	centralWidget = new QWidget;
@@ -51,10 +50,6 @@ MainWindow::MainWindow(QWidget* parent) :
 
 MainWindow::~MainWindow()
 {
-	delete chartView;
-	delete m_layout;
-	delete centralWidget;
-
 }
 
 void MainWindow::createMenu()
@@ -70,17 +65,17 @@ void MainWindow::createMenu()
 	connect(openAction, SIGNAL(triggered()), this, SLOT(openFile()));
 	*/
 
-	QAction * saveDataAction = new QAction("Save data");
+	QAction * saveDataAction = new QAction("Save data", this);
 	saveDataAction->setShortcut((Qt::CTRL | Qt::Key_S));
 	fileMenu->addAction(saveDataAction);
 	connect(saveDataAction, SIGNAL(triggered()), this, SLOT(saveData()));
 
-	QAction* saveGraphAction = new QAction("Save graph");
+	QAction* saveGraphAction = new QAction("Save graph", this);
 	saveGraphAction->setShortcut((Qt::CTRL | Qt::ALT | Qt::Key_S));
 	fileMenu->addAction(saveGraphAction);
 	connect(saveGraphAction, SIGNAL(triggered()), this, SLOT(saveGraph()));
 
-	QAction * saveAsAction = new QAction("Save as");
+	QAction * saveAsAction = new QAction("Save as", this);
 	saveAsAction->setShortcut((Qt::CTRL | Qt::SHIFT | Qt::Key_S));
 	fileMenu->addAction(saveAsAction);
 	connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
@@ -88,12 +83,12 @@ void MainWindow::createMenu()
 	/* Edit */
 	QMenu* editMenu = pmenuBar->addMenu("Edit");
 
-	QAction * redoAction = new QAction("Redo");
+	QAction * redoAction = new QAction("Redo", this);
 	redoAction->setShortcut((Qt::CTRL | Qt::Key_R));
 	editMenu->addAction(redoAction);
 	connect(redoAction, SIGNAL(triggered()), this, SLOT(redoTrigger()));
 
-	QAction * undoAction = new QAction("Undo");
+	QAction * undoAction = new QAction("Undo", this);
 	undoAction->setShortcut((Qt::CTRL | Qt::Key_Z));
 	editMenu->addAction(undoAction);
 	connect(undoAction, SIGNAL(triggered()), this, SLOT(undoTrigger()));
@@ -107,7 +102,7 @@ void MainWindow::createToolBar()
 	QToolBar* toolBar = addToolBar("Tool");             /*add tool bar object*/
 
 	/* Runing */
-	QToolButton* runAction = new QToolButton();
+	QToolButton* runAction = new QToolButton(this);
 	runAction->setShortcut(Qt::CTRL | Qt::Key_R);
 	runAction->setIcon(QIcon(":/OPCF/img/running.png"));
 	runAction->setToolTip(tr("Show fit curve"));
@@ -150,17 +145,17 @@ void MainWindow::createToolBar()
 	*/
 
 	/* fit type */
-	styleLabel = new QLabel(tr("Fit Type: "));
-	styleComboBox = new QComboBox;
-	styleComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
-	styleComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
-	styleComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
-	styleComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
-	styleComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
+	fitTypeLabel = new QLabel(tr("Fit Type: "), this);
+	fitTypeComboBox = new QComboBox(this);
+	fitTypeComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
+	fitTypeComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
+	fitTypeComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
+	fitTypeComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
+	fitTypeComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
 
-	connect(styleComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
-	toolBar->addWidget(styleLabel);
-	toolBar->addWidget(styleComboBox);
+	connect(fitTypeComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
+	toolBar->addWidget(fitTypeLabel);
+	toolBar->addWidget(fitTypeComboBox);
 	
 	
 
@@ -174,7 +169,7 @@ void MainWindow::createToolBar()
 
 
 	/* Color */
-	colorBtn = new QToolButton;
+	colorBtn = new QToolButton(this);
 	QPixmap pixmap(20, 20);
 	pixmap.fill(Qt::black);
 	colorBtn->setIcon(QIcon(pixmap));
@@ -235,8 +230,8 @@ void MainWindow::createFuncView()
 #endif // !NDEBUG
 	//function_view->setTitle("Function Curve");
 	function_view = new QChart();
-	QScatterSeries* all_points = new QScatterSeries();
-	QLineSeries* series = new QLineSeries();
+	QScatterSeries* all_points = new QScatterSeries(this);
+	QLineSeries* series = new QLineSeries(this);
 	qreal x, y;
 	for(auto i = 0; i < real_xy_points->size(); i++) {
 		x = ((*real_xy_points)[i]).getx();
@@ -245,8 +240,8 @@ void MainWindow::createFuncView()
 		all_points->append(x, y);
 	}
 	function_view->addSeries(series);
-	QScatterSeries* samplepoints = new QScatterSeries();
-	QScatterSeries* samplepoints_o = new QScatterSeries();
+	QScatterSeries* samplepoints = new QScatterSeries(this);
+	QScatterSeries* samplepoints_o = new QScatterSeries(this);
 	for (auto i = 0; i < sample_points->size(); i++) {
 		x = ((*sample_points)[i]).getx();
 		y = ((*sample_points)[i]).gety();
@@ -300,14 +295,14 @@ void MainWindow::createFuncView()
 		end_y = ceil((end_y + length_y / 10) * 100) / 100;
 	}
 
-	QValueAxis* axisX = new QValueAxis;
+	QValueAxis* axisX = new QValueAxis(this);
 	axisX->setRange(start_x,end_x);
 	axisX->setTitleText("x");
 	axisX->setLabelFormat("%.2f");
 	axisX->setTickCount(21);
 	axisX->setMinorTickCount(4);
 
-	QValueAxis* axisY = new QValueAxis;
+	QValueAxis* axisY = new QValueAxis(this);
 	axisY->setRange(start_y,end_y);
 	axisY->setTitleText("y");
 	axisY->setLabelFormat("%.2f"); 
@@ -359,7 +354,7 @@ void MainWindow::run_error(const std::string& str)
 
 void MainWindow::showType()
 {
-	fitType = static_cast<Type>(styleComboBox->itemData(styleComboBox->currentIndex(), Qt::UserRole).toInt());
+	fitType = static_cast<Type>(fitTypeComboBox->itemData(fitTypeComboBox->currentIndex(), Qt::UserRole).toInt());
 }
 
 void MainWindow::showColor()
