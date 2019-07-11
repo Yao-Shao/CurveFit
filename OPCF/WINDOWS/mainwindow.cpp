@@ -483,6 +483,7 @@ void MainWindow::setLayout()
 	table->setMaximumWidth(400);
 	m_layout->addWidget(table, 0, 0, 2, 1);
 	m_layout->addWidget(chartView, 0, 1);
+	m_layout->addWidget(error_label_pic, 0, 1);
 	m_layout->addWidget(functionText, 1, 1);
 
 	m_layout->setColumnStretch(0, 3);
