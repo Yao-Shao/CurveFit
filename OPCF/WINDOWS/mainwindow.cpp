@@ -255,6 +255,14 @@ void MainWindow::createFuncView()
 
 }
 
+
+void MainWindow::error_info()
+{
+
+	functionText->setPlainText("Sorry,we can't get a function from you sample points, check whether it's correct");
+	functionText->show();
+}
+
 void MainWindow::showType()
 {
 	fitType = static_cast<Type>(styleComboBox->itemData(styleComboBox->currentIndex(), Qt::UserRole).toInt());
@@ -330,21 +338,16 @@ void MainWindow::set_range_y(std::shared_ptr<Point> range_yy)
 	this->range_y = range_yy;
 }
 
-void MainWindow::update(bool bOK)
+void MainWindow::update()
 {
 
 #ifndef NDEBUG
 	qDebug() << "update" << QString::fromStdString(spFunction->get_function()) << endl;
 #endif // !NDEBUG
-	if (bOK) {
-		functionText->setPlainText("Run successfully, and the function is: \n y = " + QString::fromStdString(spFunction->get_function()));
-		functionText->show();
-		createFuncView();
-	}
-	else {
-		functionText->setPlainText("Sorry,we can't get a function from you sample points, check whether it's correct");
-		functionText->show();
-	}
+	functionText->setPlainText("Run successfully, and the function is: \n y = " + QString::fromStdString(spFunction->get_function()));
+	functionText->show();
+	createFuncView();
+
 }
 
 void MainWindow::runActionTrigger()

@@ -38,7 +38,8 @@ public:
 	void createFuncText();
 	void createFuncView();
 
-	void update(bool bOK);
+	void update();
+	void error_info();
 	void set_function(std::shared_ptr<Function> spFunction);
 	void set_real_points(std::shared_ptr<Points>spRealPoints);
 	void set_range_x(std::shared_ptr<Point>range_xx);
