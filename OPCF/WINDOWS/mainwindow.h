@@ -92,6 +92,9 @@ private:
 	QPlainTextEdit* functionText;
 	QTableWidget* table;
 
+	QPixmap myPix;
+	QLabel* error_label_pic;
+
 	/* param */
 	Type fitType;
 	Points pointsData;
