@@ -103,7 +103,7 @@ bool Model::opcf_fit(Param_opcf& p)
 				func += "\0";
 			}
 			else if (a > 0) {
-				if(init == 0)func += '+';
+				if (init == 0)func += '+';
 				func += std::to_string(a);
 				func += '\0';
 			}
@@ -142,7 +142,7 @@ bool Model::opcf_fit(Param_opcf& p)
 					func += 'x';
 				}
 				else {
-					if(init == 0)func += '+';
+					if (init == 0)func += '+';
 					func += std::to_string(b);
 					func += 'x';
 				}
@@ -151,7 +151,7 @@ bool Model::opcf_fit(Param_opcf& p)
 			if (c != 0) {
 				if (c < 0)func += std::to_string(c);
 				else {
-					if(init == 0)func += '+';
+					if (init == 0)func += '+';
 					func += std::to_string(c);
 				}
 			}
@@ -219,22 +219,22 @@ bool Model::opcf_fit(Param_opcf& p)
 				}
 				sort(mux_point, n);
 				for (int i = 0; i < n; i++)a[i] = mux_point.y[i];
-				for (int i = 0; i < n-1; i++)h[i] = mux_point.x[i + 1] - mux_point.x[i];
-				for (int i = 1; i < n-1; i++)afa[i] = 3 / h[i] * (a[i + 1] - a[i]) - 3 / h[i - 1] * (a[i] - a[i - 1]);
+				for (int i = 0; i < n - 1; i++)h[i] = mux_point.x[i + 1] - mux_point.x[i];
+				for (int i = 1; i < n - 1; i++)afa[i] = 3 / h[i] * (a[i + 1] - a[i]) - 3 / h[i - 1] * (a[i] - a[i - 1]);
 				L[0] = 1; mu[0] = 0; z[0] = 0;
-				for (int i = 1; i < n-1; i++) {
+				for (int i = 1; i < n - 1; i++) {
 					L[i] = 2 * (mux_point.x[i + 1] - mux_point.x[i - 1]) - h[i - 1] * mu[i - 1];
 					mu[i] = h[i] / L[i];
 					z[i] = (afa[i] - h[i - 1] * z[i - 1]) / L[i];
 				}
-				L[n-1] = 1.0; z[n-1] = 0.0; c[n-1] = 0.0;
+				L[n - 1] = 1.0; z[n - 1] = 0.0; c[n - 1] = 0.0;
 				for (int j = n - 2; j >= 0; j--) {
 					c[j] = z[j] - mu[j] * c[j + 1];
 					b[j] = (a[j + 1] - a[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3;
 					d[j] = (c[j + 1] - c[j]) / (3 * h[j]);
 				}
 				std::string func;
-				for (int i = 0; i < n-1; i++) {
+				for (int i = 0; i < n - 1; i++) {
 					bool init = true;
 					if (d != 0) {
 						func += std::to_string(d[i]);
@@ -287,23 +287,23 @@ bool Model::opcf_fit(Param_opcf& p)
 		sp_Function->convert();
 	}
 
-		/*get xy*/
-		bool whether_get_real_points;
-		whether_get_real_points = get_realXYPoints(t);
-		range_x->setx((this->get_min_real_x()));
-		range_x->sety((this->get_max_real_x()));
-		range_y->setx((this->get_min_real_y()));
-		range_y->sety((this->get_max_real_y()));
+	/*get xy*/
+	bool whether_get_real_points;
+	whether_get_real_points = get_realXYPoints(t);
+	range_x->setx((this->get_min_real_x()));
+	range_x->sety((this->get_max_real_x()));
+	range_y->setx((this->get_min_real_y()));
+	range_y->sety((this->get_max_real_y()));
 
-		/*map to x y in img*/
+	/*map to x y in img*/
 
 #ifndef NDEBUG
-		qDebug() << "End of opcf_fit and the function is" << QString::fromStdString((*sp_Function).get_function()) << "\n";
-		qDebug() << "And we have " << real_xy_points->size() << " points to be painted\n";
-		qDebug() << "Fire_OnPropertyChanged(Function) \n";
+	qDebug() << "End of opcf_fit and the function is" << QString::fromStdString((*sp_Function).get_function()) << "\n";
+	qDebug() << "And we have " << real_xy_points->size() << " points to be painted\n";
+	qDebug() << "Fire_OnPropertyChanged(Function) \n";
 #endif // !NDEBUG
-		Fire_OnPropertyChanged(propertychanged);
-		return true;
+	Fire_OnPropertyChanged(propertychanged);
+	return true;
 }
 
 bool Model::get_realXYPoints(Type t)
@@ -318,8 +318,8 @@ bool Model::get_realXYPoints(Type t)
 	end_x = get_max_sample_x();
 	length = end_x - start_x;
 #ifndef NDEBUG
-	qDebug() << "In get_realXYPoints(Type):\n" << "X Range of sample Points  " << start_x << "-" << end_x<<"\n";
-	qDebug()<<"Function: "<< QString::fromStdString(sp_Function->get_function());
+	qDebug() << "In get_realXYPoints(Type):\n" << "X Range of sample Points  " << start_x << "-" << end_x << "\n";
+	qDebug() << "Function: " << QString::fromStdString(sp_Function->get_function());
 #endif // !NDEBUG
 	switch (t)
 	{
@@ -328,34 +328,34 @@ bool Model::get_realXYPoints(Type t)
 		end_x = end_x + length;
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
-		break;
+						  break;
 	case QUADRATIC_FUNCTION: {
 		start_x = start_x - length;
 		end_x = end_x + length;
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
-		break;
+							 break;
 	case EXPONENTIAL_FUNCTION: {
 		start_x = start_x - length;
 		end_x = end_x + length;
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
-		break;
+							   break;
 	case LN_FUNCTION: {
 		start_x = start_x - length;
 		end_x = end_x + length;
 		if (start_x <= 0) start_x = STARTLNFUNCT;
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
-		break;
+					  break;
 	case NORMAL_FUNCTION: {
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
-		break;
+						  break;
 	default: {
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
-		break;
+			 break;
 	}
 
 	real_xy_points->clear();
@@ -417,7 +417,7 @@ double Model::get_min_real_y()
 		}
 	}
 #ifndef NDEBUG
-	qDebug() << "min"<<min<<"\n";
+	qDebug() << "min" << min << "\n";
 #endif // !NDEBUG
 	return min;
 }
@@ -458,7 +458,7 @@ double Model::get_max_sample_x()
 	return max;
 }
 
-void Model::sort(Mux_Points& m, const int& n)
+void Model::sort(Mux_Points & m, const int& n)
 {
 	int i, j;
 	double tempx, tempy;
@@ -466,8 +466,8 @@ void Model::sort(Mux_Points& m, const int& n)
 		tempx = m.x[i];
 		tempy = m.y[i];
 		for (j = i; j > 0; j--) {
-			if (m.x[j-1] > tempx) {
-				m.x[j] = m.x[j-1];
+			if (m.x[j - 1] > tempx) {
+				m.x[j] = m.x[j - 1];
 			}
 			else break;
 		}

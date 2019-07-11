@@ -5,11 +5,11 @@
 #include <QTableWidget>
 #include <QColorDialog>
 #include <QFileDialog>
-#include <QLabel>
 #include <QMessageBox>
 #include <QAbstractButton>
 #include <QPushButton>
 #include <QtDebug>
+#include <QGridLayout>
 #include "mainwindow.h"
 
 
@@ -17,9 +17,11 @@ MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent),
 	m_updateSink(std::make_shared<updateSink>(this)),
 	m_runSink(std::make_shared<runSink>(this)),
+	chartView(new QChartView()),
+	m_layout(new QGridLayout),
 	fitType(LINEAR_FUNCTION)
 {
-	QWidget* centralWidget = new QWidget;
+	centralWidget = new QWidget;
 	setCentralWidget(centralWidget);
 	setMinimumSize(LENGTH, WIDTH);
 
@@ -30,6 +32,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	createToolBar();
 	createTable();
 	createFuncText();
+	setLayout();
 }
 
 MainWindow::~MainWindow()
@@ -130,11 +133,11 @@ void MainWindow::createToolBar()
 	/* fit type */
 	styleLabel = new QLabel(tr("Fit Type: "));
 	styleComboBox = new QComboBox;
-	styleComboBox->addItem(tr("Linear"), static_cast<int>(LINEAR_FUNCTION));
+	styleComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
 	styleComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
 	styleComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
 	styleComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
-	styleComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
+	styleComboBox->addItem(tr("Free"), static_cast<int>(NORMAL_FUNCTION));
 
 	connect(styleComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
 	toolBar->addWidget(styleLabel);
@@ -170,9 +173,6 @@ void MainWindow::createToolBar()
 void MainWindow::createTable()
 {
 	table = new QTableWidget(ROW, COLUMN, this);
-	//set position
-	table->setGeometry(10, 100, 400, 600);
-
 
 	//set column title
 	QStringList columnHeaders;
@@ -190,14 +190,6 @@ void MainWindow::createTable()
 	table->setSelectionBehavior(QAbstractItemView::SelectItems);
 	table->setEditTriggers(QAbstractItemView::DoubleClicked);
 
-	/* init
-	QTableWidgetItem* item0 = new QTableWidgetItem;
-	QTableWidgetItem* item1 = new QTableWidgetItem;
-	item0->setText("0");
-	item1->setText("0");
-	table->setItem(0, 0, item0);
-	table->setItem(0, 1, item1
-	*/
 }
 
 void MainWindow::createFuncText()
@@ -208,7 +200,7 @@ void MainWindow::createFuncText()
 
 
 	functionText = new QPlainTextEdit(this);
-	functionText->setGeometry(410, 600, 670, 100);
+	//functionText->setGeometry(410, 600, 670, 100);
 	QFont font = functionText->font(); 
 	font.setPointSize(10);
 	functionText->setFont(font);
@@ -220,8 +212,10 @@ void MainWindow::createFuncView()
 #ifndef NDEBUG
 	qDebug() << "In create Function View\n";
 #endif // !NDEBUG
+
 	function_view = new QChart();
-	function_view->setTitle("Function Curve");
+	//function_view->setTitle("Function Curve");
+
 	QLineSeries* series = new QLineSeries();
 	qreal x, y;
 	for(auto i = 0; i < real_xy_points->size(); i++) {
@@ -230,30 +224,31 @@ void MainWindow::createFuncView()
 		series->append(x, y);
 	}
 	function_view->addSeries(series);
+
 #ifndef NDEBUG
 	qDebug() << " real_xy_points->size():\n"<<real_xy_points->size();
 	qDebug() << "x range" << range_x->getx() << " to  " << range_x->gety() << "\n";
 	qDebug()<<"y range "<< range_y->getx() << " to  " << range_y->gety() << "\n";
 #endif // !NDEBUG
+
 	QValueAxis* axisX = new QValueAxis;
 	axisX->setRange(range_x->getx(), range_x->gety());
 	axisX->setTitleText("x");
-	axisX->setLabelFormat("%.3f");
+	axisX->setLabelFormat("%.2f");
 	axisX->setTickCount(20);
 	axisX->setMinorTickCount(4);
 
 	QValueAxis* axisY = new QValueAxis;
 	axisY->setRange(range_y->getx(), range_y->gety());
 	axisY->setTitleText("y");
-	axisY->setLabelFormat("%.3f"); 
+	axisY->setLabelFormat("%.2f"); 
 	axisY->setTickCount(10);
 	axisY->setMinorTickCount(4);
+
 	function_view->setAxisX(axisX, series);
 	function_view->setAxisY(axisY, series);
-	chartview = new QChartView(function_view);
-	chartview->setGeometry(410, 100, 670, 500);
-	chartview->show();
 
+	chartView->setChart(function_view);
 }
 
 
@@ -267,20 +262,6 @@ void MainWindow::error_info()
 void MainWindow::run_error(const std::string& str)
 {
 	//show diffrent error infomation according to str
-	if (str == "NoSamplePoints") {
-		functionText->setPlainText("Run orror C0001:  There is no sample points in the table...");
-		functionText->show();
-	}
-	else if (str == "NotEnoughForCubic") {
-		functionText->setPlainText("Run orror C0002:  Not enough sample points for Cubic Spline Method...");
-		functionText->show();
-	}
-	QPixmap myPix(":/OPCF/img/run_error.png");
-	QLabel* error_label_pic = new QLabel(this);
-	error_label_pic->setGeometry(410, 100, 670, 500);
-	error_label_pic->setPixmap(myPix);
-	error_label_pic->show();
-
 }
 
 void MainWindow::showType()
@@ -358,18 +339,6 @@ void MainWindow::set_range_y(std::shared_ptr<Point> range_yy)
 	this->range_y = range_yy;
 }
 
-void MainWindow::update()
-{
-
-#ifndef NDEBUG
-	qDebug() << "update" << QString::fromStdString(spFunction->get_function()) << endl;
-#endif // !NDEBUG
-	functionText->setPlainText("Run successfully, and the function is: \n y = " + QString::fromStdString(spFunction->get_function()));
-	functionText->show();
-	createFuncView();
-
-}
-
 void MainWindow::runActionTrigger()
 {
 #ifndef NDEBUG
@@ -393,6 +362,20 @@ void MainWindow::runActionTrigger()
 #endif // !NDEBUG
 }
 
+
+void MainWindow::update()
+{
+#ifndef NDEBUG
+	qDebug() << "update" << QString::fromStdString(spFunction->get_function()) << endl;
+#endif // !NDEBUG
+
+	functionText->setPlainText("Run successfully, and the function is: \n y = " + QString::fromStdString(spFunction->get_function()));
+	functionText->show();
+	createFuncView();
+}
+
+
+
 std::shared_ptr<IPropertyNotification> MainWindow::get_updateSink()
 {
 	return std::static_pointer_cast<IPropertyNotification>(m_updateSink);
@@ -408,8 +391,26 @@ void MainWindow::set_runCommand(const std::shared_ptr<ICommandBase>& cmd)
 	m_cmdRun = cmd;
 }
 
+void MainWindow::setLayout()
+{
 
+	//chartView->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	//table->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+	//functionText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
+	table->setMaximumWidth(400);
+	m_layout->addWidget(table, 0, 0, 2, 1);
+	m_layout->addWidget(chartView, 0, 1);
+	m_layout->addWidget(functionText, 1, 1);
+
+	m_layout->setColumnStretch(0, 3);
+	m_layout->setColumnStretch(1, 5);
+	m_layout->setRowStretch(0, 2);
+	m_layout->setRowStretch(1, 1);
+	centralWidget->setLayout(m_layout);
+
+	qDebug() << m_layout->rowCount() << " " << m_layout->columnCount() << "/n";
+}
 
 
 

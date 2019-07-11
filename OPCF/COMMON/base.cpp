@@ -128,7 +128,6 @@ bool Function::convert()
 			add_power(pos, num, power);
 		}
 	}
-	else {
 	    for (int i = 0; i < normal_function.pointnum; i++)
 		      for (int j = 0; j < 4; j++)normal_function.functions[i][j] = 0;
 	    int i = 0, j = 0;
@@ -229,7 +228,7 @@ void Function::add_normalpower(bool pos, double num, int power, int place)
 	if (pos == 0)num *= -1;
 	normal_function.functions[place][power] = num;
 }
-void Function::add_Exp(bool pos, double num,double com, bool com_pos)
+void Function::add_Exp(bool pos, double num, double com, bool com_pos)
 {
 	if (pos == 0)num *= -1;
 	if (com_pos == 0)com *= -1;
@@ -250,16 +249,16 @@ double Function::get_y(const double& x)
 		else return other_function[0] * log(other_function[1] * x);
 	}
 	else if (type == EXPONENTIAL_FUNCTION) {
-		return other_function[0] * exp(other_function[1]*x);
+		return other_function[0] * exp(other_function[1] * x);
 	}
-	else if(type == LINEAR_FUNCTION || type == QUADRATIC_FUNCTION){
+	else if (type == LINEAR_FUNCTION || type == QUADRATIC_FUNCTION) {
 		return power_function[0] + power_function[1] * x + power_function[2] * x * x + power_function[3] * x * x * x;
 	}
 	else if (type == NORMAL_FUNCTION) {
 		if (x < normal_function.points[0])return normal_function.functions[0][0] + normal_function.functions[0][1] * x + normal_function.functions[0][2] * x * x + normal_function.functions[0][3] * x * x * x;
-		else if (x > normal_function.points[normal_function.pointnum - 1])return normal_function.functions[normal_function.pointnum-2][0] + normal_function.functions[normal_function.pointnum-2][1] * x + normal_function.functions[normal_function.pointnum-2][2] * x * x + normal_function.functions[normal_function.pointnum-2][3] * x * x * x;
+		else if (x > normal_function.points[normal_function.pointnum - 1])return normal_function.functions[normal_function.pointnum - 2][0] + normal_function.functions[normal_function.pointnum - 2][1] * x + normal_function.functions[normal_function.pointnum - 2][2] * x * x + normal_function.functions[normal_function.pointnum - 2][3] * x * x * x;
 		else {
-			for (int i = 0; i < normal_function.pointnum-1; i++) {
+			for (int i = 0; i < normal_function.pointnum - 1; i++) {
 				if (x >= normal_function.points[i] && x <= normal_function.points[i + 1]) {
 					return normal_function.functions[i][0] + normal_function.functions[i][1] * x + normal_function.functions[i][2] * x * x + normal_function.functions[i][3] * x * x * x;
 				}
@@ -285,17 +284,17 @@ std::string Function::get_function() const
 {
 	return function;
 }
-Point::Point(Point&& p) noexcept
+Point::Point(Point && p) noexcept
 {
 	x = static_cast<double&&>(p.x);
 	y = static_cast<double&&>(p.y);
 }
-bool Point::operator!=(Point& p)
+bool Point::operator!=(Point & p)
 {
 	if (x == p.getx() && this->y == p.gety())return 0;
 	else return 1;
 }
-Point& Point::operator=(const Point& p)
+Point& Point::operator=(const Point & p)
 {
 	if (this != &p) {
 		x = p.x;
@@ -303,7 +302,7 @@ Point& Point::operator=(const Point& p)
 	}
 	return *this;
 }
-Point& Point::operator=(Point&& p) 
+Point& Point::operator=(Point && p)
 {
 	if (this != &p) {
 		x = static_cast<double&&>(p.x);
@@ -315,7 +314,7 @@ void Point::setx(const double& xx) throw()
 {
 	x = xx;
 }
-void Point::sety(const double& yy) throw() 
+void Point::sety(const double& yy) throw()
 {
 	y = yy;
 }

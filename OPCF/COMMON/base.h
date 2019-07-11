@@ -20,7 +20,7 @@ struct point_with_range {
 };
 class Function
 {
- private:
+private:
 	std::string function;
 	Type type;
 	double power_function[4];    //use by power function
@@ -29,11 +29,11 @@ class Function
 private:
 	void add_power(bool pos, double num, int power);
 	void add_normalpower(bool pos, double num, int power, int place);
-	void add_Exp(bool pos, double num, double com,bool com_pos);
-	void add_Ln(bool pos, double num, double com,bool com_pos);
+	void add_Exp(bool pos, double num, double com, bool com_pos);
+	void add_Ln(bool pos, double num, double com, bool com_pos);
 public:
 	bool convert();
-    Function()throw(){}
+	Function()throw() {}
 	void set_type(Type t) { type = t; }
 	Function& operator=(const std::string& s);//you just need to give the function string
 	Function& operator=(std::string&& s);
@@ -49,8 +49,8 @@ private:
 	double x;
 	double y;
 public:
-	Point(double xx = 0.0, double yy = 0.0) throw(): x(xx), y(yy){}
-	Point(const Point& p): x(p.x),y(p.y){}
+	Point(double xx = 0.0, double yy = 0.0) throw() : x(xx), y(yy) {}
+	Point(const Point& p) : x(p.x), y(p.y) {}
 	Point(Point&& p) noexcept;
 	bool operator!=(Point& p);
 	Point& operator=(const Point& p);

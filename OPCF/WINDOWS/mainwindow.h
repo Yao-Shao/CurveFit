@@ -32,12 +32,6 @@ public:
 	MainWindow(QWidget* parent = 0);
 	~MainWindow();
 
-	void createToolBar();
-	void createMenu();
-	void createTable();
-	void createFuncText();
-	void createFuncView();
-
 	void update();
 	void error_info();
 	void run_error(const std::string &str);
@@ -83,24 +77,32 @@ private:
 	QSpinBox* widthSpinBox;
 	QToolButton* colorBtn;
 	QToolButton* clearBtn;
-	QPlainTextEdit* functionText;
 	
-	/*chart*/
-	
-	QChartView* chartview;
-	QChart* function_view;
+	/*layout */
+	QGridLayout* m_layout;
+	void setLayout();
 
+	/*central widget*/
+	QWidget* centralWidget;
+
+	/* table chart functionText*/
+	QChartView* chartView;
+	QGraphicsScene* chartscene;
+	QChart* function_view;
+	QPlainTextEdit* functionText;
 	QTableWidget* table;
+
+	/* param */
 	Type fitType;
+	Points pointsData;
 	Param_opcf m_param;
 
 	std::shared_ptr<Function> spFunction;
-	std::shared_ptr<Points>real_xy_points;
-	std::shared_ptr<Point>range_x;
-	std::shared_ptr<Point>range_y;
+	std::shared_ptr<Points> real_xy_points;
+	std::shared_ptr<Point> range_x;
+	std::shared_ptr<Point> range_y;
 	std::shared_ptr<QPixmap> pix;
-	Points pointsData;
-
+	
 	std::shared_ptr<updateSink> m_updateSink;
 	std::shared_ptr<ICommandBase> m_cmdRun;
 	std::shared_ptr<runSink> m_runSink;
@@ -110,6 +112,11 @@ private:
 	QString saveFileAddr;
 
 	void getPoints();
+	void createToolBar();
+	void createMenu();
+	void createTable();
+	void createFuncText();
+	void createFuncView();
 };
 
 #endif // MAINWINDOW_H

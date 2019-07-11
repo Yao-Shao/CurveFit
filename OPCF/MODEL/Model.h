@@ -30,7 +30,7 @@ public:
 	double get_max_real_y();
 	double get_min_sample_x();
 	double get_max_sample_x();
-	
+
 
 private:
 	std::shared_ptr<Function>sp_Function;

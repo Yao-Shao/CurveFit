@@ -1,5 +1,5 @@
-#ifndef RUN_SINK_H
-#define RUN_SINK_H
+#ifndef UPDATE_SINK_H
+#define UPDATE_SINK_H
 
 #include "..//COMMON/etlbase.h"
 
@@ -16,4 +16,4 @@ private:
 };
 
 
-#endif // !RUN_SINK_h
+#endif // !UPDATE_SINK_h
