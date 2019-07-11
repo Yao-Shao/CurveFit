@@ -353,23 +353,9 @@ void MainWindow::update()
 #ifndef NDEBUG
 	qDebug() << "update" << QString::fromStdString(spFunction->get_function()) << endl;
 #endif // !NDEBUG
-<<<<<<< HEAD
-
-	if (bOK) {
-		functionText->setPlainText("Run successfully, and the function is: \n y = " + QString::fromStdString(spFunction->get_function()));
-		functionText->show();
-		createFuncView();
-	}
-	else {
-		functionText->setPlainText("Sorry,we can't get a function from you sample points, check whether it's correct");
-		functionText->show();
-	}
-=======
 	functionText->setPlainText("Run successfully, and the function is: \n y = " + QString::fromStdString(spFunction->get_function()));
 	functionText->show();
 	createFuncView();
-
->>>>>>> 5465ce899af591c14db552b5e57992afb3c87689
 }
 
 void MainWindow::runActionTrigger()
