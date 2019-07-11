@@ -11,6 +11,7 @@
 #include <QtDebug>
 #include <QGridLayout>
 #include "mainwindow.h"
+#include "math.h"
 
 
 MainWindow::MainWindow(QWidget* parent) :
@@ -38,6 +39,7 @@ MainWindow::MainWindow(QWidget* parent) :
 
 	myPix.load(":/OPCF/img/run_error.png");
 	error_label_pic = new QLabel(this);
+	m_valueLabel = new QLabel(this);
 
 	createMenu();
 	createToolBar();
@@ -227,41 +229,102 @@ void MainWindow::createFuncView()
 #ifndef NDEBUG
 	qDebug() << "In create Function View\n";
 #endif // !NDEBUG
-
-	function_view = new QChart();
 	//function_view->setTitle("Function Curve");
-
+	function_view = new QChart();
+	QScatterSeries* all_points = new QScatterSeries();
 	QLineSeries* series = new QLineSeries();
 	qreal x, y;
 	for(auto i = 0; i < real_xy_points->size(); i++) {
 		x = ((*real_xy_points)[i]).getx();
 		y = ((*real_xy_points)[i]).gety();
 		series->append(x, y);
+		all_points->append(x, y);
 	}
 	function_view->addSeries(series);
+	QScatterSeries* samplepoints = new QScatterSeries();
+	QScatterSeries* samplepoints_o = new QScatterSeries();
+	for (auto i = 0; i < sample_points->size(); i++) {
+		x = ((*sample_points)[i]).getx();
+		y = ((*sample_points)[i]).gety();
+		samplepoints->append(x, y);
+		samplepoints_o->append(x, y);
+	}
+
+	all_points->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+	all_points->setBorderColor(QColor(21, 100, 255));
+	all_points->setBrush(QColor(21, 100, 255));
+	all_points->setMarkerSize(1);
+
+	samplepoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+	samplepoints->setBorderColor(QColor(21, 100, 255));
+	samplepoints->setBrush(QColor(21, 100, 255));
+	samplepoints->setMarkerSize(10);
+
+	samplepoints_o->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+	samplepoints_o->setBorderColor(Qt::white);
+	samplepoints_o->setBrush(Qt::white);
+	samplepoints_o->setMarkerSize(5);
+
+	function_view->addSeries(all_points);
+	function_view->addSeries(samplepoints);
+	function_view->addSeries(samplepoints_o);
 
 #ifndef NDEBUG
 	qDebug() << " real_xy_points->size():\n"<<real_xy_points->size();
 	qDebug() << "x range" << range_x->getx() << " to  " << range_x->gety() << "\n";
 	qDebug()<<"y range "<< range_y->getx() << " to  " << range_y->gety() << "\n";
 #endif // !NDEBUG
+	double start_x = range_x->getx();
+	double end_x = range_x->gety();
+	double start_y = range_y->getx();
+	double end_y = range_y->gety();
+	if (start_y == end_y) {
+		double length_x = end_x - start_x;
+
+		start_x = floor((start_x - length_x / 10) * 100) / 100;
+		end_x = ceil((end_x + length_x / 10) * 100) / 100;
+		start_y = start_y - 1;
+		end_y = end_y + 1;
+	}
+	else {
+		double length_x = end_x - start_x;
+		double length_y = end_y - start_y;
+
+		start_x = floor((start_x - length_x / 10) * 100) / 100;
+		end_x = ceil((end_x + length_x / 10) * 100) / 100;
+		start_y = floor((start_y - length_y / 10) * 100) / 100;
+		end_y = ceil((end_y + length_y / 10) * 100) / 100;
+	}
 
 	QValueAxis* axisX = new QValueAxis;
-	axisX->setRange(range_x->getx(), range_x->gety());
+	axisX->setRange(start_x,end_x);
 	axisX->setTitleText("x");
 	axisX->setLabelFormat("%.2f");
-	axisX->setTickCount(20);
+	axisX->setTickCount(21);
 	axisX->setMinorTickCount(4);
 
 	QValueAxis* axisY = new QValueAxis;
-	axisY->setRange(range_y->getx(), range_y->gety());
+	axisY->setRange(start_y,end_y);
 	axisY->setTitleText("y");
 	axisY->setLabelFormat("%.2f"); 
-	axisY->setTickCount(10);
+	axisY->setTickCount(11);
 	axisY->setMinorTickCount(4);
 
 	function_view->setAxisX(axisX, series);
 	function_view->setAxisY(axisY, series);
+
+	function_view->setAxisX(axisX, all_points);
+	function_view->setAxisY(axisY, all_points);
+
+	function_view->setAxisX(axisX, samplepoints);
+	function_view->setAxisY(axisY, samplepoints);
+
+	function_view->setAxisX(axisX, samplepoints_o);
+	function_view->setAxisY(axisY, samplepoints_o);
+
+	/*show points' value*/
+	connect(samplepoints_o, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
+	connect(all_points, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
 
 	chartView->setChart(function_view);
 	chartView->show();
@@ -357,6 +420,11 @@ void MainWindow::set_real_points(std::shared_ptr<Points> spRealPoints)
 	this->real_xy_points = spRealPoints;
 }
 
+void MainWindow::set_sample_points(std::shared_ptr<Points> spsamplePoints)
+{
+	this->sample_points = spsamplePoints;
+}
+
 void MainWindow::set_range_x(std::shared_ptr<Point> range_xx)
 {
 	this->range_x = range_xx;
@@ -390,7 +458,6 @@ void MainWindow::runActionTrigger()
 #endif // !NDEBUG
 }
 
-
 void MainWindow::update()
 {
 	error_label_pic->close();
@@ -402,8 +469,6 @@ void MainWindow::update()
 	functionText->show();
 	createFuncView();
 }
-
-
 
 std::shared_ptr<IPropertyNotification> MainWindow::get_updateSink()
 {
@@ -430,6 +495,7 @@ void MainWindow::setLayout()
 	table->setMaximumWidth(400);
 	m_layout->addWidget(table, 0, 0, 2, 1);
 	m_layout->addWidget(chartView, 0, 1);
+	m_layout->addWidget(error_label_pic, 0, 1);
 	m_layout->addWidget(functionText, 1, 1);
 
 	m_layout->setColumnStretch(0, 3);
@@ -440,65 +506,6 @@ void MainWindow::setLayout()
 
 	qDebug() << m_layout->rowCount() << " " << m_layout->columnCount() << "/n";
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -616,6 +623,21 @@ void MainWindow::undoTrigger()
 
 void MainWindow::redoTrigger()
 {
+
+}
+
+void MainWindow::slotPointHoverd(const QPointF& point, bool state)
+{
+	if (state) {
+		m_valueLabel->setText(QString::asprintf("%.3f,%.3f",point.x(), point.y()));
+
+		QPoint curPos = mapFromGlobal(QCursor::pos());
+		m_valueLabel->move(curPos.x() - m_valueLabel->width() / 2, curPos.y() - m_valueLabel->height() * 1.5);
+
+		m_valueLabel->show();
+	}
+	else
+		m_valueLabel->hide();
 
 }
 

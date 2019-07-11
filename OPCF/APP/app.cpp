@@ -27,6 +27,7 @@ void app_opcf::run()
 	_mainwindow.set_real_points(viewmodel->getRealPoints());
 	_mainwindow.set_range_x(viewmodel->getRangeX());
 	_mainwindow.set_range_y(viewmodel->getRangeY());
+	_mainwindow.set_sample_points(viewmodel->getSamplePoints());
 	//command
 	_mainwindow.set_runCommand(viewmodel->get_fitCommand());
 

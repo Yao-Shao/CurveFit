@@ -4,7 +4,7 @@
 #include <memory>
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
-#define POINTSNUMBER 50
+#define POINTSNUMBER 500
 struct Mux_Points {
 	double x[50], y[50];
 };
@@ -15,6 +15,7 @@ public:
 	~Model() {}
 	std::shared_ptr<Function> getFunction();
 	std::shared_ptr<Points>getRealPoints();
+	std::shared_ptr<Points>getSamplePoints();
 	std::shared_ptr<Point>getRangeX();
 	std::shared_ptr<Point>getRangeY();
 	/*ÄâºÏº¯Êý*/
