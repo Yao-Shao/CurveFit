@@ -123,7 +123,6 @@
     <ClCompile Include="VIEWMODEL\command\RunFitCommand.cpp" />
     <ClCompile Include="VIEWMODEL\sinks\ViewModelSink.cpp" />
     <ClCompile Include="VIEWMODEL\viewmodel.cpp" />
-    <ClCompile Include="WINDOWS\DrawGraph.cpp" />
     <ClCompile Include="WINDOWS\mainwindow.cpp" />
     <ClCompile Include="WINDOWS\sinks\runSink.cpp" />
     <ClCompile Include="WINDOWS\sinks\updateSink.cpp" />
@@ -146,7 +145,6 @@
     <ClInclude Include="VIEWMODEL\command\RunFitCommand.h" />
     <ClInclude Include="VIEWMODEL\sinks\ViewModelSink.h" />
     <ClInclude Include="VIEWMODEL\viewmodel.h" />
-    <ClInclude Include="WINDOWS\DrawGraph.h" />
     <ClInclude Include="WINDOWS\sinks\runSink.h" />
     <ClInclude Include="WINDOWS\sinks\updateSink.h" />
     <QtMoc Include="WINDOWS\mainwindow.h" />

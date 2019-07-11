@@ -13,7 +13,6 @@
 #include <QLineEdit>
 #include <QtCharts>
 #include "../COMMON/base.h"
-#include "drawgraph.h"
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
 #include "sinks/updateSink.h"
