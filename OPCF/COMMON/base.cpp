@@ -128,8 +128,9 @@ bool Function::convert()
 			add_power(pos, num, power);
 		}
 	}
-	else {
-		int i = 0, j = 0;
+	    for (int i = 0; i < normal_function.pointnum; i++)
+		      for (int j = 0; j < 4; j++)normal_function.functions[i][j] = 0;
+	    int i = 0, j = 0;
 		int power = 0, place = 0;
 		bool pos = true, If_point = false, If_power = false, init = true;
 		double num = 0.0;
@@ -210,7 +211,10 @@ bool Function::convert()
 				}
 				i++;
 			}
-			if (function[i] == '\n')i++;
+			if (function[i] == '\n') {
+				i++;
+				j++;
+			}
 		}
 	}
 	return 1;
