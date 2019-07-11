@@ -23,10 +23,18 @@ MainWindow::MainWindow(QWidget* parent) :
 {
 	centralWidget = new QWidget;
 	setCentralWidget(centralWidget);
+	
 	setMinimumSize(LENGTH, WIDTH);
+	showMaximized();
 
 	setWindowTitle("OPCF");
 	setWindowIcon(QIcon(":/OPCF/img/logo.png"));
+	
+	/* set background color */
+	QPalette m_palette(centralWidget->palette());
+	m_palette.setColor(QPalette::Background, QColor(Qt::gray));
+	centralWidget->setAutoFillBackground(true);
+	centralWidget->setPalette(m_palette);
 
 	createMenu();
 	createToolBar();
@@ -37,7 +45,10 @@ MainWindow::MainWindow(QWidget* parent) :
 
 MainWindow::~MainWindow()
 {
-	//delete ui;
+	delete chartView;
+	delete m_layout;
+	delete centralWidget;
+
 }
 
 void MainWindow::createMenu()
@@ -198,12 +209,13 @@ void MainWindow::createFuncText()
 	qDebug() << "In create Function Text\n";
 #endif // !DEBUG
 
-
 	functionText = new QPlainTextEdit(this);
-	//functionText->setGeometry(410, 600, 670, 100);
+	functionText->setReadOnly(true);
+
 	QFont font = functionText->font(); 
 	font.setPointSize(10);
 	functionText->setFont(font);
+
 	functionText->setPlainText("Hello world\nWellcome to our program...\n");
 }
 
