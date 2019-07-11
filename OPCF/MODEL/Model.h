@@ -4,7 +4,7 @@
 #include <memory>
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
-#define POINTSNUMBER 50
+#define POINTSNUMBER 500
 struct Mux_Points {
 	double x[50], y[50];
 };

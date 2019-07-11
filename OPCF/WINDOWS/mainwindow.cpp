@@ -11,6 +11,7 @@
 #include <QtDebug>
 #include <QGridLayout>
 #include "mainwindow.h"
+#include "math.h"
 
 
 MainWindow::MainWindow(QWidget* parent) :
@@ -233,19 +234,40 @@ void MainWindow::createFuncView()
 	qDebug() << "x range" << range_x->getx() << " to  " << range_x->gety() << "\n";
 	qDebug()<<"y range "<< range_y->getx() << " to  " << range_y->gety() << "\n";
 #endif // !NDEBUG
+	double start_x = range_x->getx();
+	double end_x = range_x->gety();
+	double start_y = range_y->getx();
+	double end_y = range_y->gety();
+	if (start_y == end_y) {
+		double length_x = end_x - start_x;
+
+		start_x = floor((start_x - length_x / 10) * 100) / 100;
+		end_x = ceil((end_x + length_x / 10) * 100) / 100;
+		start_y = start_y - 1;
+		end_y = end_y + 1;
+	}
+	else {
+		double length_x = end_x - start_x;
+		double length_y = end_y - start_y;
+
+		start_x = floor((start_x - length_x / 10) * 100) / 100;
+		end_x = ceil((end_x + length_x / 10) * 100) / 100;
+		start_y = floor((start_y - length_y / 10) * 100) / 100;
+		end_y = ceil((end_y + length_y / 10) * 100) / 100;
+	}
 
 	QValueAxis* axisX = new QValueAxis;
-	axisX->setRange(range_x->getx(), range_x->gety());
+	axisX->setRange(start_x,end_x);
 	axisX->setTitleText("x");
 	axisX->setLabelFormat("%.2f");
-	axisX->setTickCount(20);
+	axisX->setTickCount(21);
 	axisX->setMinorTickCount(4);
 
 	QValueAxis* axisY = new QValueAxis;
-	axisY->setRange(range_y->getx(), range_y->gety());
+	axisY->setRange(start_y,end_y);
 	axisY->setTitleText("y");
 	axisY->setLabelFormat("%.2f"); 
-	axisY->setTickCount(10);
+	axisY->setTickCount(11);
 	axisY->setMinorTickCount(4);
 
 	function_view->setAxisX(axisX, series);

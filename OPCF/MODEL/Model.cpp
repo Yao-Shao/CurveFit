@@ -1,5 +1,6 @@
 #include <QtDebug>
 #include "Model.h"
+#include "math.h"
 #define precision 1e-13
 #define STARTLNFUNCT 1e-4
 
@@ -326,18 +327,24 @@ bool Model::get_realXYPoints(Type t)
 	case LINEAR_FUNCTION: {
 		start_x = start_x - length;
 		end_x = end_x + length;
+		start_x = floor(start_x);
+		end_x = ceil(end_x);
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
 						  break;
 	case QUADRATIC_FUNCTION: {
 		start_x = start_x - length;
 		end_x = end_x + length;
+		start_x = floor(start_x);
+		end_x = ceil(end_x);
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
 							 break;
 	case EXPONENTIAL_FUNCTION: {
 		start_x = start_x - length;
 		end_x = end_x + length;
+		start_x = floor(start_x);
+		end_x = ceil(end_x);
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
 							   break;
@@ -345,6 +352,7 @@ bool Model::get_realXYPoints(Type t)
 		start_x = start_x - length;
 		end_x = end_x + length;
 		if (start_x <= 0) start_x = STARTLNFUNCT;
+		end_x = ceil(end_x);
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
 					  break;
@@ -359,18 +367,48 @@ bool Model::get_realXYPoints(Type t)
 	}
 
 	real_xy_points->clear();
-	x = start_x;
-	y = sp_Function->get_y(x);
-	for (int i = 0; i < POINTSNUMBER; i++) {
-		Point t;
-		t.setx(x);
-		t.sety(y);
-#ifndef NDEBUG
-		qDebug() << "In get_realXYPoints(Type):\n" << "x  " << x << "y " << y << "\n";
-#endif // !NDEBUG
-		real_xy_points->push_back(t);
-		x += step;
+	if (t == LN_FUNCTION) {
+		x = start_x;
 		y = sp_Function->get_y(x);
+		step = 0.01;
+		for (int i = 0; i < 100; i++) {
+			Point t;
+			t.setx(x);
+			t.sety(y);
+#ifndef NDEBUG
+			qDebug() << "In get_realXYPoints(Type):\n" << "x  " << x << "y " << y << "\n";
+#endif // !NDEBUG
+			real_xy_points->push_back(t);
+			x += step;
+			y = sp_Function->get_y(x);
+		}
+		step = (end_x - start_x - 1) / (POINTSNUMBER - 100);
+		for (int i = 100; i < POINTSNUMBER; i++) {
+			Point t;
+			t.setx(x);
+			t.sety(y);
+#ifndef NDEBUG
+			qDebug() << "In get_realXYPoints(Type):\n" << "x  " << x << "y " << y << "\n";
+#endif // !NDEBUG
+			real_xy_points->push_back(t);
+			x += step;
+			y = sp_Function->get_y(x);
+		}
+	}
+	else {
+		x = start_x;
+		y = sp_Function->get_y(x);
+		for (int i = 0; i < POINTSNUMBER; i++) {
+			Point t;
+			t.setx(x);
+			t.sety(y);
+#ifndef NDEBUG
+			qDebug() << "In get_realXYPoints(Type):\n" << "x  " << x << "y " << y << "\n";
+#endif // !NDEBUG
+			real_xy_points->push_back(t);
+			x += step;
+			y = sp_Function->get_y(x);
+		}
 	}
 	return true;
 }
