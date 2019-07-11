@@ -13,6 +13,10 @@ void updateSink::OnPropertyChanged(const std::string& str)
 #endif // !NDEBUG
 	if (str == "Function")
 	{
-		ptr_mainwindow->update(true);
+		ptr_mainwindow->update();
+	}
+	else {
+		//can't fit,and the error information is in str
+		ptr_mainwindow->run_error(str);
 	}
 }
