@@ -36,6 +36,9 @@ MainWindow::MainWindow(QWidget* parent) :
 	centralWidget->setAutoFillBackground(true);
 	centralWidget->setPalette(m_palette);
 
+	myPix.load(":/OPCF/img/run_error.png");
+	error_label_pic = new QLabel(this);
+
 	createMenu();
 	createToolBar();
 	createTable();
@@ -148,7 +151,7 @@ void MainWindow::createToolBar()
 	styleComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
 	styleComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
 	styleComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
-	styleComboBox->addItem(tr("Free"), static_cast<int>(NORMAL_FUNCTION));
+	styleComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
 
 	connect(styleComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
 	toolBar->addWidget(styleLabel);
@@ -261,6 +264,7 @@ void MainWindow::createFuncView()
 	function_view->setAxisY(axisY, series);
 
 	chartView->setChart(function_view);
+	chartView->show();
 }
 
 
@@ -273,7 +277,19 @@ void MainWindow::error_info()
 
 void MainWindow::run_error(const std::string& str)
 {
+	chartView->close();
 	//show diffrent error infomation according to str
+	if (str == "NoSamplePoints") {
+		functionText->setPlainText("Run orror C0001:  There is no sample points in the table...");
+		functionText->show();
+	}
+	else if (str == "NotEnoughForCubic") {
+		functionText->setPlainText("Run orror C0002:  Not enough sample points for Cubic Spline Method...");
+		functionText->show();
+	}
+	error_label_pic->setGeometry(410, 100, 670, 500);
+	error_label_pic->setPixmap(myPix);
+	error_label_pic->show();
 }
 
 void MainWindow::showType()
@@ -377,6 +393,7 @@ void MainWindow::runActionTrigger()
 
 void MainWindow::update()
 {
+	error_label_pic->close();
 #ifndef NDEBUG
 	qDebug() << "update" << QString::fromStdString(spFunction->get_function()) << endl;
 #endif // !NDEBUG
