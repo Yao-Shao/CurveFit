@@ -216,9 +216,10 @@ bool Function::convert()
 				j++;
 			}
 		}
-	}
 	return 1;
 }
+	
+
 void Function::add_power(bool pos, double num, int power) {
 	if (pos == 0)num *= -1;
 	power_function[power] = num;
