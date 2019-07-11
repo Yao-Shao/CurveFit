@@ -1,5 +1,6 @@
 #include"base.h"
 
+
 Function& Function::operator=(const std::string& s)
 {
 	if (this->function != s) {
@@ -128,9 +129,8 @@ bool Function::convert()
 			add_power(pos, num, power);
 		}
 	}
-	    for (int i = 0; i < normal_function.pointnum; i++)
-		      for (int j = 0; j < 4; j++)normal_function.functions[i][j] = 0;
-	    int i = 0, j = 0;
+	else {
+		int i = 0, j = 0;
 		int power = 0, place = 0;
 		bool pos = true, If_point = false, If_power = false, init = true;
 		double num = 0.0;
@@ -211,10 +211,7 @@ bool Function::convert()
 				}
 				i++;
 			}
-			if (function[i] == '\n') {
-				i++;
-				j++;
-			}
+			if (function[i] == '\n')i++;
 		}
 	}
 	return 1;
@@ -325,4 +322,16 @@ double& Point::getx() throw()
 double& Point::gety() throw()
 {
 	return y;
+}
+
+
+bool Point::operator<(const Point& p)
+{
+	if (x != p.x)
+	{
+		return x < p.x;
+	}
+	else {
+		return y < p.y;
+	}
 }

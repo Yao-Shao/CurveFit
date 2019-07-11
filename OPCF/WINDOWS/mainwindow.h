@@ -111,7 +111,8 @@ private:
 	QString openFileAddr;
 	QString saveFileAddr;
 
-	void getPoints();
+	bool getPoints();
+	bool checkPoints();
 	void createToolBar();
 	void createMenu();
 	void createTable();

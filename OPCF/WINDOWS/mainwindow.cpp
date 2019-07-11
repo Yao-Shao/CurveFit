@@ -10,6 +10,7 @@
 #include <QPushButton>
 #include <QtDebug>
 #include <QGridLayout>
+#include <algorithm>
 #include "mainwindow.h"
 
 
@@ -102,11 +103,13 @@ void MainWindow::createToolBar()
 
 	/* Runing */
 	QToolButton* runAction = new QToolButton();
+	runAction->setShortcut(Qt::CTRL | Qt::Key_R);
 	runAction->setIcon(QIcon(":/OPCF/img/running.png"));
-	runAction->setToolTip(tr("Draw fitted curve"));
+	runAction->setToolTip(tr("Show fit curve"));
 	toolBar->addWidget(runAction);
 	connect(runAction, SIGNAL(clicked()), this, SLOT(runActionTrigger()));
 
+	/*
 	/*
 	QAction* drawLineAction = new QAction("Line", toolBar);
 	drawLineAction->setIcon(QIcon(":/src/Line.png"));
@@ -274,6 +277,8 @@ void MainWindow::error_info()
 void MainWindow::run_error(const std::string& str)
 {
 	//show diffrent error infomation according to str
+	functionText->setPlainText(QString::fromStdString(str));
+	functionText->show();
 }
 
 void MainWindow::showType()
@@ -294,7 +299,7 @@ void MainWindow::showColor()
 }
 
 
-void MainWindow::getPoints()
+bool MainWindow::getPoints()
 {
 #ifndef NDEBUG
 	qDebug() << "In getPoints" << endl;
@@ -323,12 +328,30 @@ void MainWindow::getPoints()
 			}
 		}
 	}
-
+	
 #ifndef NDEBUG
 	qDebug() << "Points info " << endl;
 	qDebug() << pointsData.size() << endl;
 #endif // !NDEBUG
 
+	return checkPoints();
+}
+
+bool MainWindow::checkPoints()
+{
+	bool flag = true;
+	std::sort(pointsData.begin(), pointsData.end());
+	for (int i = 0; i < pointsData.size()-1; i++) {
+		if (pointsData[i].getx() == pointsData[i + 1].getx()) {
+			if (pointsData[i].gety() != pointsData[i+1].gety()) {
+				return false;
+			}
+			else {
+				pointsData.erase(pointsData.begin()+i);
+			}
+		}
+	}
+	return true;
 }
 
 void MainWindow::set_function(std::shared_ptr<Function> spFunction)
@@ -357,7 +380,12 @@ void MainWindow::runActionTrigger()
 	qDebug() << "In runAction Trigger" << endl;
 #endif // !NDEBUG
 
-	getPoints();
+	bool rep = getPoints();
+	if (rep == false)
+	{
+		run_error("ERROR: Two poins with the same x, but has different y");
+		return;
+	}
 
 #ifndef NDEBUG
 	qDebug() << "Out of getPoints" << endl;
@@ -419,9 +447,12 @@ void MainWindow::setLayout()
 	m_layout->setColumnStretch(1, 5);
 	m_layout->setRowStretch(0, 2);
 	m_layout->setRowStretch(1, 1);
+
 	centralWidget->setLayout(m_layout);
 
+#ifndef NDEBUG
 	qDebug() << m_layout->rowCount() << " " << m_layout->columnCount() << "/n";
+#endif
 }
 
 
