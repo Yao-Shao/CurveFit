@@ -282,22 +282,19 @@ void MainWindow::run_error(const std::string& str)
 {
 	chartView->close();
 	//show diffrent error infomation according to str
-<<<<<<< HEAD
-	functionText->setPlainText(QString::fromStdString(str));
-	functionText->show();
-=======
 	if (str == "NoSamplePoints") {
-		functionText->setPlainText("Run orror C0001:  There is no sample points in the table...");
+		functionText->setPlainText("Run error C0001:  There is no sample points in the table...");
 		functionText->show();
 	}
 	else if (str == "NotEnoughForCubic") {
-		functionText->setPlainText("Run orror C0002:  Not enough sample points for Cubic Spline Method...");
+		functionText->setPlainText("Run error C0002:  Not enough sample points for Cubic Spline Method...");
 		functionText->show();
 	}
-	error_label_pic->setGeometry(410, 100, 670, 500);
+	else if (str == "conflictPoints") {
+		functionText->setPlainText("Run error C0003: Multiple points with the same x but different y");
+	}
 	error_label_pic->setPixmap(myPix);
 	error_label_pic->show();
->>>>>>> 8bc30d5f6ea4019d26e2c7925e9ac91b1bd5453d
 }
 
 void MainWindow::showType()
@@ -358,6 +355,8 @@ bool MainWindow::getPoints()
 
 bool MainWindow::checkPoints()
 {
+	if (pointsData.size() == 0)
+		return true;
 	bool flag = true;
 	std::sort(pointsData.begin(), pointsData.end());
 	for (int i = 0; i < pointsData.size()-1; i++) {
@@ -402,7 +401,7 @@ void MainWindow::runActionTrigger()
 	bool rep = getPoints();
 	if (rep == false)
 	{
-		run_error("ERROR: Two poins with the same x, but has different y");
+		run_error("conflictPoints");
 		return;
 	}
 
@@ -461,6 +460,7 @@ void MainWindow::setLayout()
 	table->setMaximumWidth(400);
 	m_layout->addWidget(table, 0, 0, 2, 1);
 	m_layout->addWidget(chartView, 0, 1);
+	m_layout->addWidget(error_label_pic, 0, 1);
 	m_layout->addWidget(functionText, 1, 1);
 
 	m_layout->setColumnStretch(0, 3);
