@@ -40,6 +40,7 @@ public:
 
 	void update();
 	void error_info();
+	void run_error(const std::string &str);
 	void set_function(std::shared_ptr<Function> spFunction);
 	void set_real_points(std::shared_ptr<Points>spRealPoints);
 	void set_range_x(std::shared_ptr<Point>range_xx);
