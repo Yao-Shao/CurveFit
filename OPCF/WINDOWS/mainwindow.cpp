@@ -20,6 +20,12 @@ MainWindow::MainWindow(QWidget* parent) :
 	m_runSink(std::make_shared<runSink>(this)),
 	chartView(new QChartView(this)),
 	m_layout(new QGridLayout(this)),
+	pressAddingBtn(false),
+	function_view(NULL),
+	error(false),
+	initFuncView(true),
+	m_coordX(new QGraphicsSimpleTextItem()),
+	m_coordY(new QGraphicsSimpleTextItem()),
 	fitType(LINEAR_FUNCTION)
 {
 	centralWidget = new QWidget;
@@ -45,11 +51,14 @@ MainWindow::MainWindow(QWidget* parent) :
 	createToolBar();
 	createTable();
 	createFuncText();
+	createFuncView();
 	setLayout();
 }
 
 MainWindow::~MainWindow()
 {
+	delete m_coordX;
+	delete m_coordY;
 }
 
 void MainWindow::createMenu()
@@ -109,16 +118,37 @@ void MainWindow::createToolBar()
 	toolBar->addWidget(runAction);
 	connect(runAction, SIGNAL(clicked()), this, SLOT(runActionTrigger()));
 
-	/*
-	/*
-	QAction* drawLineAction = new QAction("Line", toolBar);
-	drawLineAction->setIcon(QIcon(":/src/Line.png"));
-	drawLineAction->setToolTip(tr("Line"));
-	drawLineAction->setCheckable(true);
-	graghGroup->addAction(drawLineAction);
-	toolBar->addAction(drawLineAction);
-	connect(drawLineAction, SIGNAL(triggered()), this, SLOT(drawLineActionTrigger()));
+	/* adding points */
+	QAction* isAddingAction = new QAction("Add Point", toolBar);
+	isAddingAction->setIcon(QIcon(":/OPCF/img/addPoint.png"));
+	isAddingAction->setToolTip(tr("Add Point"));
+	isAddingAction->setCheckable(true);
+	toolBar->addAction(isAddingAction);
+	connect(isAddingAction, SIGNAL(changed()), this, SLOT(isAddingActionTrigger()));
 
+	/* fit type */
+	fitTypeLabel = new QLabel(tr("Fit Type: "), this);
+	fitTypeComboBox = new QComboBox(this);
+	fitTypeComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
+	fitTypeComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
+	fitTypeComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
+	fitTypeComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
+	fitTypeComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
+
+	connect(fitTypeComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
+	toolBar->addWidget(fitTypeLabel);
+	toolBar->addWidget(fitTypeComboBox);
+
+
+	/* Color */
+	colorBtn = new QToolButton(this);
+	QPixmap pixmap(20, 20);
+	pixmap.fill(Qt::black);
+	colorBtn->setIcon(QIcon(pixmap));
+	connect(colorBtn, SIGNAL(clicked()), this, SLOT(showColor()));
+	toolBar->addWidget(colorBtn);
+
+	/*
 	QAction* drawEclipseAction = new QAction("Eclipse", toolBar);
 	drawEclipseAction->setIcon(QIcon(":/src/Eclipse.png"));
 	drawEclipseAction->setToolTip(tr("Eclipse(ctrl for circle)"));
@@ -144,18 +174,7 @@ void MainWindow::createToolBar()
 	connect(drawTriangleAction, SIGNAL(triggered()), this, SLOT(drawTriangleActionTrigger()));
 	*/
 
-	/* fit type */
-	fitTypeLabel = new QLabel(tr("Fit Type: "), this);
-	fitTypeComboBox = new QComboBox(this);
-	fitTypeComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
-	fitTypeComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
-	fitTypeComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
-	fitTypeComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
-	fitTypeComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
 
-	connect(fitTypeComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
-	toolBar->addWidget(fitTypeLabel);
-	toolBar->addWidget(fitTypeComboBox);
 	
 	
 
@@ -168,13 +187,7 @@ void MainWindow::createToolBar()
 	*/
 
 
-	/* Color */
-	colorBtn = new QToolButton(this);
-	QPixmap pixmap(20, 20);
-	pixmap.fill(Qt::black);
-	colorBtn->setIcon(QIcon(pixmap));
-	connect(colorBtn, SIGNAL(clicked()), this, SLOT(showColor()));
-	toolBar->addWidget(colorBtn);
+
 
 	/* Run 
 	clearBtn = new QToolButton;
@@ -229,104 +242,138 @@ void MainWindow::createFuncView()
 	qDebug() << "In create Function View\n";
 #endif // !NDEBUG
 	//function_view->setTitle("Function Curve");
+	/*
+		if (function_view != NULL) {
+		delete function_view;
+	}
+	*/
+
+
 	function_view = new QChart();
-	QScatterSeries* all_points = new QScatterSeries(this);
-	QLineSeries* series = new QLineSeries(this);
-	qreal x, y;
-	for(auto i = 0; i < real_xy_points->size(); i++) {
-		x = ((*real_xy_points)[i]).getx();
-		y = ((*real_xy_points)[i]).gety();
-		series->append(x, y);
-		all_points->append(x, y);
-	}
-	function_view->addSeries(series);
-	QScatterSeries* samplepoints = new QScatterSeries(this);
-	QScatterSeries* samplepoints_o = new QScatterSeries(this);
-	for (auto i = 0; i < sample_points->size(); i++) {
-		x = ((*sample_points)[i]).getx();
-		y = ((*sample_points)[i]).gety();
-		samplepoints->append(x, y);
-		samplepoints_o->append(x, y);
-	}
+	function_view->setTheme(QChart::ChartThemeQt);
 
-	all_points->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	all_points->setBorderColor(QColor(21, 100, 255));
-	all_points->setBrush(QColor(21, 100, 255));
-	all_points->setMarkerSize(1);
+	if (initFuncView == true) {
+		initFuncView = false;
+		QValueAxis* axisX = new QValueAxis(this);
+		axisX->setRange(-100, 100);
+		axisX->setTitleText("x");
+		axisX->setLabelFormat("%.2f");
+		axisX->setTickCount(11);
+		axisX->setMinorTickCount(4);
 
-	samplepoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	samplepoints->setBorderColor(QColor(21, 100, 255));
-	samplepoints->setBrush(QColor(21, 100, 255));
-	samplepoints->setMarkerSize(10);
+		QValueAxis* axisY = new QValueAxis(this);
+		axisY->setRange(-100, 100);
+		axisY->setTitleText("y");
+		axisY->setLabelFormat("%.2f");
+		axisY->setTickCount(11);
+		axisY->setMinorTickCount(4);
 
-	samplepoints_o->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	samplepoints_o->setBorderColor(Qt::white);
-	samplepoints_o->setBrush(Qt::white);
-	samplepoints_o->setMarkerSize(5);
-
-	function_view->addSeries(all_points);
-	function_view->addSeries(samplepoints);
-	function_view->addSeries(samplepoints_o);
-
-#ifndef NDEBUG
-	qDebug() << " real_xy_points->size():\n"<<real_xy_points->size();
-	qDebug() << "x range" << range_x->getx() << " to  " << range_x->gety() << "\n";
-	qDebug()<<"y range "<< range_y->getx() << " to  " << range_y->gety() << "\n";
-#endif // !NDEBUG
-	double start_x = range_x->getx();
-	double end_x = range_x->gety();
-	double start_y = range_y->getx();
-	double end_y = range_y->gety();
-	if (start_y == end_y) {
-		double length_x = end_x - start_x;
-
-		start_x = floor((start_x - length_x / 10) * 100) / 100;
-		end_x = ceil((end_x + length_x / 10) * 100) / 100;
-		start_y = start_y - 1;
-		end_y = end_y + 1;
+		function_view->setAxisX(axisX);
+		function_view->setAxisY(axisY);
+		
 	}
 	else {
-		double length_x = end_x - start_x;
-		double length_y = end_y - start_y;
+		QScatterSeries* all_points = new QScatterSeries(this);
+		QLineSeries* series = new QLineSeries(this);
+		qreal x, y;
+		for (auto i = 0; i < real_xy_points->size(); i++) {
+			x = ((*real_xy_points)[i]).getx();
+			y = ((*real_xy_points)[i]).gety();
+			series->append(x, y);
+			all_points->append(x, y);
+		}
+		function_view->addSeries(series);
+		QScatterSeries* samplepoints = new QScatterSeries(this);
+		QScatterSeries* samplepoints_o = new QScatterSeries(this);
+		for (auto i = 0; i < sample_points->size(); i++) {
+			x = ((*sample_points)[i]).getx();
+			y = ((*sample_points)[i]).gety();
+			samplepoints->append(x, y);
+			samplepoints_o->append(x, y);
+		}
 
-		start_x = floor((start_x - length_x / 10) * 100) / 100;
-		end_x = ceil((end_x + length_x / 10) * 100) / 100;
-		start_y = floor((start_y - length_y / 10) * 100) / 100;
-		end_y = ceil((end_y + length_y / 10) * 100) / 100;
+		all_points->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+		all_points->setBorderColor(QColor(21, 100, 255));
+		all_points->setBrush(QColor(21, 100, 255));
+		all_points->setMarkerSize(1);
+
+		samplepoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+		samplepoints->setBorderColor(QColor(21, 100, 255));
+		samplepoints->setBrush(QColor(21, 100, 255));
+		samplepoints->setMarkerSize(10);
+
+		samplepoints_o->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+		samplepoints_o->setBorderColor(Qt::white);
+		samplepoints_o->setBrush(Qt::white);
+		samplepoints_o->setMarkerSize(5);
+
+		function_view->addSeries(all_points);
+		function_view->addSeries(samplepoints);
+		function_view->addSeries(samplepoints_o);
+
+#ifndef NDEBUG
+		qDebug() << " real_xy_points->size():\n" << real_xy_points->size();
+		qDebug() << "x range" << range_x->getx() << " to  " << range_x->gety() << "\n";
+		qDebug() << "y range " << range_y->getx() << " to  " << range_y->gety() << "\n";
+#endif // !NDEBUG
+
+		double start_x = range_x->getx();
+		double end_x = range_x->gety();
+		double start_y = range_y->getx();
+		double end_y = range_y->gety();
+		if (start_y == end_y) {
+			double length_x = end_x - start_x;
+
+			start_x = floor((start_x - length_x / 10) * 100) / 100;
+			end_x = ceil((end_x + length_x / 10) * 100) / 100;
+			start_y = start_y - 1;
+			end_y = end_y + 1;
+		}
+		else {
+			double length_x = end_x - start_x;
+			double length_y = end_y - start_y;
+
+			start_x = floor((start_x - length_x / 10) * 100) / 100;
+			end_x = ceil((end_x + length_x / 10) * 100) / 100;
+			start_y = floor((start_y - length_y / 10) * 100) / 100;
+			end_y = ceil((end_y + length_y / 10) * 100) / 100;
+		}
+
+		axisX = new QValueAxis(this);
+		axisX->setRange(start_x, end_x);
+		axisX->setTitleText("x");
+		axisX->setLabelFormat("%.2f");
+		axisX->setTickCount(21);
+		axisX->setMinorTickCount(4);
+
+		axisY = new QValueAxis(this);
+		axisY->setRange(start_y, end_y);
+		axisY->setTitleText("y");
+		axisY->setLabelFormat("%.2f");
+		axisY->setTickCount(11);
+		axisY->setMinorTickCount(4);
+
+		function_view->setAxisX(axisX, series);
+		function_view->setAxisY(axisY, series);
+		function_view->setAxisX(axisX, all_points);
+		function_view->setAxisY(axisY, all_points);
+
+		function_view->setAxisX(axisX, samplepoints);
+		function_view->setAxisY(axisY, samplepoints);
+
+		function_view->setAxisX(axisX, samplepoints_o);
+		function_view->setAxisY(axisY, samplepoints_o);
+
+		/*show points' value*/
+		connect(samplepoints_o, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
+		//connect(all_points, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
 	}
-
-	QValueAxis* axisX = new QValueAxis(this);
-	axisX->setRange(start_x,end_x);
-	axisX->setTitleText("x");
-	axisX->setLabelFormat("%.2f");
-	axisX->setTickCount(21);
-	axisX->setMinorTickCount(4);
-
-	QValueAxis* axisY = new QValueAxis(this);
-	axisY->setRange(start_y,end_y);
-	axisY->setTitleText("y");
-	axisY->setLabelFormat("%.2f"); 
-	axisY->setTickCount(11);
-	axisY->setMinorTickCount(4);
-
-	function_view->setAxisX(axisX, series);
-	function_view->setAxisY(axisY, series);
-
-	function_view->setAxisX(axisX, all_points);
-	function_view->setAxisY(axisY, all_points);
-
-	function_view->setAxisX(axisX, samplepoints);
-	function_view->setAxisY(axisY, samplepoints);
-
-	function_view->setAxisX(axisX, samplepoints_o);
-	function_view->setAxisY(axisY, samplepoints_o);
-
-	/*show points' value*/
-	connect(samplepoints_o, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
-	connect(all_points, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
+	
 
 	chartView->setChart(function_view);
 	chartView->show();
+
+	error = false;
 }
 
 
@@ -350,6 +397,7 @@ void MainWindow::run_error(const std::string& str)
 	}
 	error_label_pic->setPixmap(myPix);
 	error_label_pic->show();
+	error = true;
 }
 
 void MainWindow::showType()
@@ -531,9 +579,82 @@ void MainWindow::setLayout()
 #endif
 }
 
+void MainWindow::mouseMoveEvent(QMouseEvent* e)
+{
+	/*
+	// Setting the mouse position label on the axis from value to position 
+	qreal x = (e->pos()).x();
+	qreal y = (e->pos()).y();
 
+	qreal xVal = function_view->mapToValue(e->pos()).x();
+	qreal yVal = function_view->mapToValue(e->pos()).y();
 
+	qreal maxX = axisX->max();
+	qreal minX = axisX->min();
+	qreal maxY = axisY->max();
+	qreal minY = axisY->min();
 
+	if (xVal <= maxX && xVal >= minX && yVal <= maxY && yVal >= minY)
+	{
+		QPointF xPosOnAxis = function_view->mapToPosition(QPointF(x, 0));
+		QPointF yPosOnAxis = function_view->mapToPosition(QPointF(0, y));
+
+		// m_coordX and m_coordY are `QGraphicsSimpleTextItem` 
+		m_coordX->setPos(x, xPosOnAxis.y() + 5);
+		m_coordY->setPos(yPosOnAxis.x() - 27, y);
+
+		// Displaying value of the mouse on the label 
+		m_coordX->setText(QString("%1").arg(xVal, 4, 'f', 1, '0'));
+		m_coordY->setText(QString("%1").arg(yVal, 4, 'f', 1, '0'));
+	
+	}
+	m_coordX->show();
+	m_coordY->show();
+	mouseMoveEvent(e);
+	*/
+}
+
+void MainWindow::mousePressEvent(QMouseEvent* e)
+{
+	if (!initFuncView && pressAddingBtn) {
+
+		auto const widgetPos = e->localPos();
+		auto const scenePos = function_view->mapToScene(QPoint(static_cast<int>(widgetPos.x()), static_cast<int>(widgetPos.y())));
+		auto const chartItemPos = chartView->mapFromScene(scenePos);
+		auto const valueGivenSeries = function_view->mapToValue(chartItemPos);
+		qDebug() << "widgetPos:" << widgetPos;
+		qDebug() << "scenePos:" << scenePos;
+		qDebug() << "chartItemPos:" << chartItemPos;
+		qDebug() << "valSeries:" << valueGivenSeries;
+
+		QPointF pos = this->function_view->mapToValue(function_view->mapFromScene(chartView->mapToScene(e->pos())));
+		addPoint(pos);
+	}
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent* e)
+{
+}
+
+bool MainWindow::addPoint(QPointF p)
+{
+	//pointsData.push_back(Point(p.rx(), p.ry()));
+	for (int i = 0; i < ROW; i++)
+	{
+		QTableWidgetItem* item1 = table->item(i, 0);
+		QTableWidgetItem* item2 = table->item(i, 1);
+		if (item1 == NULL || item2 == NULL) {
+			item1 = new QTableWidgetItem;
+			item2 = new QTableWidgetItem;
+			item1->setText(QString::number(p.rx()));
+			item2->setText(QString::number(p.ry()));
+			table->setItem(i, 0, item1);
+			table->setItem(i, 1, item2);
+			break;
+		}
+	}
+	return true;
+}
 
 /*
 void MainWindow::setActionStatus()
@@ -560,8 +681,9 @@ void MainWindow::setActionStatus()
 
 
 
-void MainWindow::drawLineActionTrigger()
+void MainWindow::isAddingActionTrigger()
 {
+	pressAddingBtn = !pressAddingBtn;
 }
 
 
@@ -659,6 +781,8 @@ void MainWindow::slotPointHoverd(const QPointF& point, bool state)
 		m_valueLabel->move(curPos.x() - m_valueLabel->width() / 2, curPos.y() - m_valueLabel->height() * 1.5);
 
 		m_valueLabel->show();
+
+
 	}
 	else
 		m_valueLabel->hide();

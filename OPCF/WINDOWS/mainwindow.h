@@ -12,6 +12,7 @@
 #include <QPlainTextEdit>
 #include <QLineEdit>
 #include <QtCharts>
+#include <QEvent>
 #include "../COMMON/base.h"
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
@@ -58,11 +59,9 @@ public slots:
 	bool saveGraph();
 	bool saveAs();
 	void openFile();
-	void drawLineActionTrigger();
+	void isAddingActionTrigger();
 	void runActionTrigger();
-	void drawEclipseActionTrigger();
-	void drawRectangleActionTrigger();
-	void drawTriangleActionTrigger();
+
 
 	/* undo redo*/
 	void undoTrigger();
@@ -89,8 +88,13 @@ private:
 
 	/* table chart functionText*/
 	QChartView* chartView;
-	QGraphicsScene* chartscene;
 	QChart* function_view;
+	bool initFuncView;
+	QValueAxis* axisX;
+	QValueAxis* axisY;
+	QGraphicsSimpleTextItem* m_coordX;
+	QGraphicsSimpleTextItem* m_coordY;
+	bool error;
 	QPlainTextEdit* functionText;
 	QTableWidget* table;
 
@@ -116,6 +120,9 @@ private:
 	std::shared_ptr<ICommandBase> m_cmdRun;
 	std::shared_ptr<runSink> m_runSink;
 
+	/*tool bar*/
+	bool pressAddingBtn;
+
 	/* file */
 	QString openFileAddr;
 	QString saveFileAddr;
@@ -127,6 +134,17 @@ private:
 	void createTable();
 	void createFuncText();
 	void createFuncView();
+	void mouseMoveEvent(QMouseEvent* e);
+	void mousePressEvent(QMouseEvent* e);
+	void mouseReleaseEvent(QMouseEvent* e);
+	bool addPoint(QPointF p);
+
+
+
+	void drawEclipseActionTrigger();
+	void drawRectangleActionTrigger();
+	void drawTriangleActionTrigger();
+	
 };
 
 #endif // MAINWINDOW_H
