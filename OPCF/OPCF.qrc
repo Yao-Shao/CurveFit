@@ -3,5 +3,6 @@
         <file>img/running.png</file>
         <file>img/logo.png</file>
         <file>img/run_error.png</file>
+        <file>HelpDoc/HelpDoc.pdf</file>
     </qresource>
 </RCC>

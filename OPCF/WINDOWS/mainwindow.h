@@ -71,6 +71,9 @@ public slots:
 	/*show points*/
 	void slotPointHoverd(const QPointF& point, bool state);
 
+	/*seek help file*/
+	void openHelpFile();
+
 private:
 	/* draw */
 	QLabel* fitTypeLabel;
@@ -119,6 +122,10 @@ private:
 	/* file */
 	QString openFileAddr;
 	QString saveFileAddr;
+	QString LastFileName;
+	bool FileIsNew;
+	bool FileChanged;
+	bool flag_isOpen;
 
 	bool getPoints();
 	bool checkPoints();
