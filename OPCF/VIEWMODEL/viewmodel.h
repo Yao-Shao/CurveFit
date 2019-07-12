@@ -12,6 +12,7 @@ public:
 	void SetModel(const std::shared_ptr<Model>& model);
 	std::shared_ptr<Function> getFunction();
 	std::shared_ptr<Points>getRealPoints();
+	std::shared_ptr<Points>getDyPoints();
 	std::shared_ptr<Points>getSamplePoints();
 	std::shared_ptr<Point>getRangeX();
 	std::shared_ptr<Point>getRangeY();

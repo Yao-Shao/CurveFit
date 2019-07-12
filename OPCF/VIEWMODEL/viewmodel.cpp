@@ -25,6 +25,11 @@ std::shared_ptr<Points> ViewModel::getRealPoints()
 	return m_model->getRealPoints();
 }
 
+std::shared_ptr<Points> ViewModel::getDyPoints()
+{
+	return m_model->getDyPoints();
+}
+
 std::shared_ptr<Points> ViewModel::getSamplePoints()
 {
 	return m_model->getSamplePoints();

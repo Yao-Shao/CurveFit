@@ -15,6 +15,7 @@ public:
 	~Model() {}
 	std::shared_ptr<Function> getFunction();
 	std::shared_ptr<Points>getRealPoints();
+	std::shared_ptr<Points>getDyPoints();
 	std::shared_ptr<Points>getSamplePoints();
 	std::shared_ptr<Point>getRangeX();
 	std::shared_ptr<Point>getRangeY();
@@ -37,7 +38,7 @@ private:
 	std::shared_ptr<Function>sp_Function;
 	std::shared_ptr<Points>samplePoints;
 	std::shared_ptr<Points>real_xy_points;
-	std::shared_ptr<Points>map_to_img_xy;
+	std::shared_ptr<Points>dxy_points;
 	std::shared_ptr<Point>range_x;
 	std::shared_ptr<Point>range_y;
 private:

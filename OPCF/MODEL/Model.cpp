@@ -9,7 +9,7 @@ Model::Model()
 	sp_Function = std::make_shared<Function>();
 	samplePoints = std::make_shared<Points>();
 	real_xy_points = std::make_shared<Points>();
-	map_to_img_xy = std::make_shared<Points>();
+	dxy_points = std::make_shared<Points>();
 	range_x = std::make_shared<Point>();
 	range_y = std::make_shared<Point>();
 }
@@ -21,6 +21,11 @@ std::shared_ptr<Function> Model::getFunction()
 std::shared_ptr<Points> Model::getRealPoints()
 {
 	return real_xy_points;
+}
+
+std::shared_ptr<Points> Model::getDyPoints()
+{
+	return dxy_points;
 }
 
 std::shared_ptr<Points> Model::getSamplePoints()
@@ -169,6 +174,13 @@ bool Model::opcf_fit(Param_opcf& p)
 			double a, b, Inb;
 			double sumx = 0, sumIny = 0, sumx2 = 0, sumxIny = 0;
 			for (int i = 0; i < n; i++) {
+				if (sp_points[i].gety() <= 0) {
+					propertychanged = "Expwithwrongy";
+					Fire_OnPropertyChanged(propertychanged);
+					return true;
+				}
+			}
+			for (int i = 0; i < n; i++) {
 				sumx += sp_points[i].getx();
 				sumIny += log(sp_points[i].gety());
 				sumx2 += sp_points[i].getx() * sp_points[i].getx();
@@ -197,6 +209,13 @@ bool Model::opcf_fit(Param_opcf& p)
 			double sumyInx = 0, sumy = 0, sumInx = 0, sumInx2 = 0;
 			std::string func;
 			for (int i = 0; i < n; i++) {
+				if (sp_points[i].getx() <= 0) {
+					propertychanged = "Lnwithwrongx";
+					Fire_OnPropertyChanged(propertychanged);
+					return true;
+				}
+			}
+			for (int i = 0; i < n; i++) {
 				sumyInx += sp_points[i].gety() * log(sp_points[i].getx());
 				sumy += sp_points[i].gety();
 				sumInx += log(sp_points[i].getx());
@@ -212,82 +231,83 @@ bool Model::opcf_fit(Param_opcf& p)
 			sp_Function->set_function(func);
 		}
 		else if (t == NORMAL_FUNCTION) {
-			if (sp_points.size() < 2) {
-				propertychanged = "NotEnoughForCubic";
+			int n = sp_points.size();
+			Mux_Points mux_point;
+			double a[51], b[51], c[51], d[51], h[50], afa[50], L[51], mu[51], z[51];
+			for (int i = 0; i < n; i++) {
+				mux_point.x[i] = sp_points[i].getx();
+				mux_point.y[i] = sp_points[i].gety();
 			}
-			else {
-				int n = sp_points.size();
-				Mux_Points mux_point;
-				double a[51], b[51], c[51], d[51], h[50], afa[50], L[51], mu[51], z[51];
-				for (int i = 0; i < n; i++) {
-					mux_point.x[i] = sp_points[i].getx();
-					mux_point.y[i] = sp_points[i].gety();
+			sort(mux_point, n);
+			for (int i = 0; i < n; i++)a[i] = mux_point.y[i];
+			for (int i = 0; i < n - 1; i++)h[i] = mux_point.x[i + 1] - mux_point.x[i];
+			for (int i = 1; i < n - 1; i++)afa[i] = 3 / h[i] * (a[i + 1] - a[i]) - 3 / h[i - 1] * (a[i] - a[i - 1]);
+			L[0] = 1; mu[0] = 0; z[0] = 0;
+			for (int i = 1; i < n - 1; i++) {
+				L[i] = 2 * (mux_point.x[i + 1] - mux_point.x[i - 1]) - h[i - 1] * mu[i - 1];
+				mu[i] = h[i] / L[i];
+				z[i] = (afa[i] - h[i - 1] * z[i - 1]) / L[i];
+			}
+			L[n - 1] = 1.0; z[n - 1] = 0.0; c[n - 1] = 0.0;
+			for (int j = n - 2; j >= 0; j--) {
+				c[j] = z[j] - mu[j] * c[j + 1];
+				b[j] = (a[j + 1] - a[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3;
+				d[j] = (c[j + 1] - c[j]) / (3 * h[j]);
+			}
+			for (int j = 0; j < n - 1; j++) {
+				double tempa = a[j], tempb = b[j], tempc = c[j];
+				c[j] = tempc - 3 * d[j] * mux_point.x[j];
+				b[j] = 3 * d[j] * mux_point.x[j] * mux_point.x[j] - 2 * tempc * mux_point.x[j] + tempb;
+				a[j] = tempa - tempb * mux_point.x[j] + tempc * mux_point.x[j] * mux_point.x[j] - d[j] * mux_point.x[j] * mux_point.x[j] * mux_point.x[j];
+			}
+			std::string func;
+			for (int i = 0; i < n - 1; i++) {
+				bool init = true;
+				if (d[i] != 0.0) {
+					func += std::to_string(d[i]);
+					func += "x^3";
+					init = false;
 				}
-				sort(mux_point, n);
-				for (int i = 0; i < n; i++)a[i] = mux_point.y[i];
-				for (int i = 0; i < n - 1; i++)h[i] = mux_point.x[i + 1] - mux_point.x[i];
-				for (int i = 1; i < n - 1; i++)afa[i] = 3 / h[i] * (a[i + 1] - a[i]) - 3 / h[i - 1] * (a[i] - a[i - 1]);
-				L[0] = 1; mu[0] = 0; z[0] = 0;
-				for (int i = 1; i < n - 1; i++) {
-					L[i] = 2 * (mux_point.x[i + 1] - mux_point.x[i - 1]) - h[i - 1] * mu[i - 1];
-					mu[i] = h[i] / L[i];
-					z[i] = (afa[i] - h[i - 1] * z[i - 1]) / L[i];
+				if (c[i] != 0.0) {
+					if (c[i] < 0.0) {
+						func += std::to_string(c[i]);
+						func += "x^2";
+					}
+					else if (c[i] > 0.0) {
+						if (init == 0)func += '+';
+						func += std::to_string(c[i]);
+						func += "x^2";
+					}
+					init = false;
 				}
-				L[n - 1] = 1.0; z[n - 1] = 0.0; c[n - 1] = 0.0;
-				for (int j = n - 2; j >= 0; j--) {
-					c[j] = z[j] - mu[j] * c[j + 1];
-					b[j] = (a[j + 1] - a[j]) / h[j] - h[j] * (c[j + 1] + 2 * c[j]) / 3;
-					d[j] = (c[j + 1] - c[j]) / (3 * h[j]);
+				if (b[i] != 0.0) {
+					if (b[i] < 0.0) {
+						func += std::to_string(b[i]);
+						func += 'x';
+					}
+					else if (b[i] > 0.0) {
+						if (init == 0)func += '+';
+						func += std::to_string(b[i]);
+						func += 'x';
+					}
+					init = false;
 				}
-				std::string func;
-				for (int i = 0; i < n - 1; i++) {
-					bool init = true;
-					if (d != 0) {
-						func += std::to_string(d[i]);
-						func += "x^3";
-						init = false;
+				if (a[i] != 0.0) {
+					if (a[i] < 0.0)func += std::to_string(a[i]);
+					else if (a[i] > 0.0) {
+						if (init == 0)func += '+';
+						func += std::to_string(a[i]);
 					}
-					if (c != 0) {
-						if (c < 0) {
-							func += std::to_string(c[i]);
-							func += "x^2";
-						}
-						else if (c > 0) {
-							func += '+';
-							func += std::to_string(c[i]);
-							func += "x^2";
-						}
-						init = false;
-					}
-					if (b != 0) {
-						if (b < 0) {
-							func += std::to_string(b[i]);
-							func += 'x';
-						}
-						else if (b > 0) {
-							func += '+';
-							func += std::to_string(b[i]);
-							func += 'x';
-						}
-						init = false;
-					}
-					if (a != 0) {
-						if (a < 0)func += std::to_string(a[i]);
-						else if (a > 0) {
-							func += '+';
-							func += std::to_string(a[i]);
-						}
-					}
-					func += '(';
-					func += std::to_string(mux_point.x[i]);
-					func += ',';
-					func += std::to_string(mux_point.x[i + 1]);
-					func += ')';
-					if (i != n - 2)func += '\n';
-					else func += '\0';
-					sp_Function->setnum(n);
-					sp_Function->set_function(func);
 				}
+				func += '(';
+				func += std::to_string(mux_point.x[i]);
+				func += ',';
+				func += std::to_string(mux_point.x[i + 1]);
+				func += ')';
+				if (i != n - 2)func += '\n';
+				else func += '\0';
+				sp_Function->setnum(n);
+				sp_Function->set_function(func);
 			}
 		}
 		sp_Function->convert();
@@ -316,6 +336,7 @@ bool Model::get_realXYPoints(Type t)
 {
 	double x;
 	double y;
+	double dy;
 	double start_x;
 	double end_x;
 	double length;
@@ -372,38 +393,56 @@ bool Model::get_realXYPoints(Type t)
 	}
 
 	real_xy_points->clear();
+	dxy_points->clear();
 	if (t == LN_FUNCTION) {
 		x = start_x;
 		y = sp_Function->get_y(x);
+		dy = sp_Function->get_dy(x);
 		step = 0.01;
 		for (int i = 0; i < 100; i++) {
 			Point t;
+			Point dt;
 			t.setx(x);
 			t.sety(y);
+			dt.setx(x);
+			dt.sety(dy);
 			real_xy_points->push_back(t);
+			dxy_points->push_back(dt);
 			x += step;
 			y = sp_Function->get_y(x);
+			dy = sp_Function->get_dy(x);
 		}
 		step = (end_x - start_x - 1) / (POINTSNUMBER - 100);
 		for (int i = 100; i < POINTSNUMBER; i++) {
 			Point t;
+			Point dt;
 			t.setx(x);
 			t.sety(y);
+			dt.setx(x);
+			dt.sety(dy);
 			real_xy_points->push_back(t);
+			dxy_points->push_back(dt);
 			x += step;
 			y = sp_Function->get_y(x);
+			dy = sp_Function->get_dy(x);
 		}
 	}
 	else {
 		x = start_x;
 		y = sp_Function->get_y(x);
+		dy = sp_Function->get_dy(x);
 		for (int i = 0; i < POINTSNUMBER; i++) {
 			Point t;
+			Point dt;
 			t.setx(x);
 			t.sety(y);
+			dt.setx(x);
+			dt.sety(dy);
 			real_xy_points->push_back(t);
+			dxy_points->push_back(dt);
 			x += step;
 			y = sp_Function->get_y(x);
+			dy = sp_Function->get_dy(x);
 		}
 	}
 	return true;
@@ -492,7 +531,7 @@ double Model::get_max_sample_x()
 	return max;
 }
 
-void Model::sort(Mux_Points & m, const int& n)
+void Model::sort(Mux_Points& m, const int& n)
 {
 	int i, j;
 	double tempx, tempy;
