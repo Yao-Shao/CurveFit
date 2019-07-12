@@ -1148,10 +1148,12 @@ void MainWindow::openHelpFile()
 
 void MainWindow::loadExcelFile()
 {
+	functionText->setPlainText("Loading excel file, please wait for a second :)");
 	QString fileName;
 	fileName = QFileDialog::getOpenFileName(this, "Open File", "", "Text File(*.xlsx *.xls)");
 	if (NULL == fileName || fileName == "")
 	{
+		functionText->setPlainText("Loading failed, no file seleted!");
 		return;
 	}
 	else
@@ -1189,9 +1191,6 @@ void MainWindow::loadExcelFile()
 					}
 				}
 				table->clear();
-
-				functionText->setPlainText("Loading excel file, please wait for a second :)");
-
 				QAxObject excel("Excel.Application");
 				excel.setProperty("Visible", false); 
 				QAxObject* workbooks = excel.querySubObject("WorkBooks");
@@ -1224,7 +1223,7 @@ void MainWindow::loadExcelFile()
 				workbooks->dynamicCall("Close()");
 				excel.dynamicCall("Quit()");
 				FileChanged = false;
-				functionText->setPlainText("Loading success!");
+				functionText->setPlainText("Loading excel file successfully!");
 			}
 		}
 	}
