@@ -1,5 +1,5 @@
 #include"base.h"
-
+#include <QDebug>
 
 Function& Function::operator=(const std::string& s)
 {
@@ -130,9 +130,11 @@ bool Function::convert()
 		}
 	}
 	else {
+		for (int i = 0; i < normal_function.pointnum; i++)
+			for (int j = 0; j < 4; j++)normal_function.functions[i][j] = 0.0;
 		int i = 0, j = 0;
 		int power = 0, place = 0;
-		bool pos = true, If_point = false, If_power = false, init = true;
+		bool pos = true, If_point = false, If_power = false;
 		double num = 0.0;
 		normal_function.pointnum = 0;
 		while (function[i] != '\0') {
@@ -146,25 +148,17 @@ bool Function::convert()
 				else if (function[i] == '-') {
 					if (i == 0)pos = false;
 					else {
-						if (init) {
-							for (int k = 0; k < 4; k++)normal_function.functions[j][k] = 0;
-							init = false;
-						}
 						add_normalpower(pos, num, power, j);
 						pos = false;
 						If_power = false;
-						num = power = 0;
+						num = 0.0; power = 0;
 					}
 				}
 				else if (function[i] == '+') {
-					if (init) {
-						for (int j = 0; j < 4; j++)power_function[j] = 0;
-						init = false;
-					}
 					add_normalpower(pos, num, power, j);
 					pos = true;
 					If_power = false;
-					num = power = 0;
+					num = 0.0; power = 0;
 				}
 				else if (function[i] == 'x') {
 					If_power = true;
@@ -177,46 +171,57 @@ bool Function::convert()
 					power = 1;
 				}
 				else if (function[i] == '(') {
-					if (init) {
-						for (int j = 0; j < 4; j++)power_function[j] = 0;
-					}
 					if (power == 0) {
 						if (If_point == true) {
-							for (int j = 0; j < place; j++)num /= 10.0;
+							for (int k = 0; k < place; k++)num /= 10.0;
+							place = 0;
+							If_point = 0;
 						}
 					}
 					add_normalpower(pos, num, power, j);
 					j++;
-					init = true;
+					num = 0.0; power = 0; pos = 1;
 				}
 				else if (function[i] == ',') {
 					if (pos == false) num *= -1;
 					if (If_point == true) {
-						for (int j = 0; j < place; j++)num /= 10.0;
+						for (int k = 0; k < place; k++)num /= 10.0;
 					}
 					normal_function.points[normal_function.pointnum++] = num;
 					pos = true;
 					If_power = false;
-					num = power = 0;
+					num = 0.0;
+					place = 0; If_point = 0;
 				}
 				else if (function[i] == ')') {
 					if (pos == false) num *= -1;
 					if (If_point == true) {
-						for (int j = 0; j < place; j++)num /= 10.0;
+						for (int k = 0; k < place; k++)num /= 10.0;
 					}
-					if (function[i + 1] == '\0')normal_function.points[normal_function.pointnum] = num;
+					if (function[i + 1] == '\0')normal_function.points[normal_function.pointnum++] = num;
 					pos = true;
 					If_power = false;
-					num = power = 0;
+					num = 0.0;
+					place = 0;
+					If_point = 0;
 				}
 				i++;
 			}
 			if (function[i] == '\n')i++;
 		}
 	}
+#ifndef NDEBUG
+	qDebug() << "flag--------------------------------------------------------------------" << "\n";
+	for (int i = 0; i < normal_function.pointnum - 1; i++) {
+		qDebug() << normal_function.functions[i][0] << " " << normal_function.functions[i][1] << " " << normal_function.functions[i][2] << " " << normal_function.functions[i][3] << "\n";
+	}
+	for (int i = 0; i < normal_function.pointnum; i++) {
+		qDebug() << normal_function.points[i] << " " << get_y(normal_function.points[i]) << "\n";
+	}
+#endif // !NDEBUG
 	return 1;
 }
-	
+
 
 void Function::add_power(bool pos, double num, int power) {
 	if (pos == 0)num *= -1;
@@ -274,26 +279,38 @@ double Function::get_dy(const double& x)
 	else if (type == EXPONENTIAL_FUNCTION) {
 		return other_function[0] * other_function[1] * exp(other_function[1] * x);
 	}
-	else {
+	else if (type == LINEAR_FUNCTION || type == QUADRATIC_FUNCTION) {
 		return power_function[1] + 2 * power_function[2] * x + 3 * power_function[3] * x * x;
 	}
+	else {
+		if (x < normal_function.points[0])return normal_function.functions[0][1] + 2 * normal_function.functions[0][2] * x + 3 * normal_function.functions[0][3] * x * x;
+		else if (x > normal_function.points[normal_function.pointnum - 1])return normal_function.functions[normal_function.pointnum - 2][1] + 2 * normal_function.functions[normal_function.pointnum - 2][2] * x + 3 * normal_function.functions[normal_function.pointnum - 2][3] * x * x;
+		else {
+			for (int i = 0; i < normal_function.pointnum - 1; i++) {
+				if (x >= normal_function.points[i] && x <= normal_function.points[i + 1]) {
+					return normal_function.functions[i][1] + 2 * normal_function.functions[i][2] * x + 3 * normal_function.functions[i][3] * x * x;
+				}
+			}
+		}
+	}
 }
+
 
 std::string Function::get_function() const
 {
 	return function;
 }
-Point::Point(Point && p) noexcept
+Point::Point(Point&& p) noexcept
 {
 	x = static_cast<double&&>(p.x);
 	y = static_cast<double&&>(p.y);
 }
-bool Point::operator!=(Point & p)
+bool Point::operator!=(Point& p)
 {
 	if (x == p.getx() && this->y == p.gety())return 0;
 	else return 1;
 }
-Point& Point::operator=(const Point & p)
+Point& Point::operator=(const Point& p)
 {
 	if (this != &p) {
 		x = p.x;
@@ -301,7 +318,7 @@ Point& Point::operator=(const Point & p)
 	}
 	return *this;
 }
-Point& Point::operator=(Point && p)
+Point& Point::operator=(Point&& p)
 {
 	if (this != &p) {
 		x = static_cast<double&&>(p.x);

@@ -38,6 +38,7 @@ public:
 	void set_function(std::shared_ptr<Function> spFunction);
 	void set_real_points(std::shared_ptr<Points>spRealPoints); 
 	void set_sample_points(std::shared_ptr<Points>spsamplePoints);
+	void set_dy_points(std::shared_ptr<Points>dyPoints);
 	void set_range_x(std::shared_ptr<Point>range_xx);
 	void set_range_y(std::shared_ptr<Point>range_yy);
 
@@ -65,6 +66,7 @@ public slots:
 	void drawRectangleActionTrigger();
 	void drawTriangleActionTrigger();
 
+	void showDerivedActionTrigger();
 	/* undo redo*/
 	void undoTrigger();
 	void redoTrigger();
@@ -98,6 +100,7 @@ private:
 	QPlainTextEdit* functionText;
 	QTableWidget* table;
 
+
 	QPixmap myPix;
 	QLabel* error_label_pic;
 
@@ -111,6 +114,7 @@ private:
 
 	std::shared_ptr<Function> spFunction;
 	std::shared_ptr<Points> real_xy_points;
+	std::shared_ptr<Points> dyPoints;
 	std::shared_ptr<Points> sample_points;
 	std::shared_ptr<Point> range_x;
 	std::shared_ptr<Point> range_y;

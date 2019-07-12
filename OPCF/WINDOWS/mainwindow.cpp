@@ -122,6 +122,7 @@ void MainWindow::createToolBar()
 	toolBar->addWidget(runAction);
 	connect(runAction, SIGNAL(clicked()), this, SLOT(runActionTrigger()));
 
+
 	/*
 	/*
 	QAction* drawLineAction = new QAction("Line", toolBar);
@@ -188,6 +189,12 @@ void MainWindow::createToolBar()
 	colorBtn->setIcon(QIcon(pixmap));
 	connect(colorBtn, SIGNAL(clicked()), this, SLOT(showColor()));
 	toolBar->addWidget(colorBtn);
+
+	QToolButton* showDerivedAction = new QToolButton(this);
+	showDerivedAction->setIcon(QIcon(":/OPCF/img/showD.png"));
+	showDerivedAction->setToolTip(tr("Show Derived"));
+	toolBar->addWidget(showDerivedAction);
+	connect(showDerivedAction, SIGNAL(clicked()), this, SLOT(showDerivedActionTrigger()));
 
 	/* Run 
 	clearBtn = new QToolButton;
@@ -360,6 +367,12 @@ void MainWindow::run_error(const std::string& str)
 	else if (str == "conflictPoints") {
 		functionText->setPlainText("Run error C0003: Multiple points with the same x but different y");
 	}
+	else if (str == "Lnwithwrongx") {
+		functionText->setPlainText("Run error C0004: The x points int the ln fit should be positive");
+	}
+	else if (str == "Expwithwrongy") {
+		functionText->setPlainText("Run error C0005: The y points int the Exp fit should be positive");
+	}
 	error_label_pic->setPixmap(myPix);
 	error_label_pic->show();
 }
@@ -454,6 +467,11 @@ void MainWindow::set_sample_points(std::shared_ptr<Points> spsamplePoints)
 	this->sample_points = spsamplePoints;
 }
 
+void MainWindow::set_dy_points(std::shared_ptr<Points> dyPoints)
+{
+	this->dyPoints = dyPoints;
+}
+
 void MainWindow::set_range_x(std::shared_ptr<Point> range_xx)
 {
 	this->range_x = range_xx;
@@ -531,6 +549,7 @@ void MainWindow::setLayout()
 	table->setMaximumWidth(400);
 	m_layout->addWidget(table, 0, 0, 2, 1);
 	m_layout->addWidget(chartView, 0, 1);
+	m_layout->addWidget(chartView, 0, 1);
 	m_layout->addWidget(error_label_pic, 0, 1);
 	m_layout->addWidget(functionText, 1, 1);
 
@@ -567,6 +586,72 @@ void MainWindow::drawTriangleActionTrigger()
 
 }
 
+void MainWindow::showDerivedActionTrigger()
+{
+	QChartView* DyChartView = new QChartView();
+	QChart* dy_function_view;
+#ifndef NDEBUG
+	qDebug() << "showDerivedActionTrigger()\n";
+#endif // !NDEBUG
+	//function_view->setTitle("Function Curve");
+	dy_function_view = new QChart();
+	QLineSeries* series = new QLineSeries(this);
+	qreal x, y;
+	for (auto i = 0; i < dyPoints->size(); i++) {
+		x = ((*dyPoints)[i]).getx();
+		y = ((*dyPoints)[i]).gety();
+		series->append(x, y);
+	}
+	dy_function_view->addSeries(series);
+#ifndef NDEBUG
+	qDebug() << " dy_points->size():\n" << dyPoints->size() << "\n";
+	qDebug() << "x range" << range_x->getx() << " to  " << range_x->gety() << "\n";
+	qDebug() << "y range " << range_y->getx() << " to  " << range_y->gety() << "\n";
+#endif // !NDEBUG
+	double start_x = range_x->getx();
+	double end_x = range_x->gety();
+	double start_y = range_y->getx();
+	double end_y = range_y->gety();
+	if (start_y == end_y) {
+		double length_x = end_x - start_x;
+
+		start_x = floor((start_x - length_x / 10) * 100) / 100;
+		end_x = ceil((end_x + length_x / 10) * 100) / 100;
+		start_y = start_y - 1;
+		end_y = end_y + 1;
+	}
+	else {
+		double length_x = end_x - start_x;
+		double length_y = end_y - start_y;
+
+		start_x = floor((start_x - length_x / 10) * 100) / 100;
+		end_x = ceil((end_x + length_x / 10) * 100) / 100;
+		start_y = floor((start_y - length_y / 10) * 100) / 100;
+		end_y = ceil((end_y + length_y / 10) * 100) / 100;
+	}
+
+	QValueAxis* axisX = new QValueAxis(this);
+	axisX->setRange(start_x, end_x);
+	axisX->setTitleText("x");
+	axisX->setLabelFormat("%.2f");
+	axisX->setTickCount(21);
+	axisX->setMinorTickCount(4);
+
+	QValueAxis* axisY = new QValueAxis(this);
+	axisY->setRange(start_y, end_y);
+	axisY->setTitleText("y");
+	axisY->setLabelFormat("%.2f");
+	axisY->setTickCount(11);
+	axisY->setMinorTickCount(4);
+
+	dy_function_view->setAxisX(axisX, series);
+	dy_function_view->setAxisY(axisY, series);
+
+	DyChartView->setChart(dy_function_view);
+	DyChartView->setGeometry(400, 400, 600, 500);
+	DyChartView->show();
+}
+
 
 void MainWindow::openFile() {
 
@@ -595,7 +680,7 @@ void MainWindow::openFile() {
 					QMessageBox box;
 					box.setWindowTitle(tr("Warning"));
 					box.setIcon(QMessageBox::Warning);
-					box.setText(tr(" Unsaved, do you wnat to save?"));
+					box.setText(tr(" Unsaved, do you want to save?"));
 					QPushButton* yesBtn = box.addButton(tr("Yes(&Y)"), QMessageBox::YesRole);
 					box.addButton(tr("No(&N)"), QMessageBox::NoRole);
 					box.exec();
@@ -681,7 +766,7 @@ bool MainWindow::saveAs()
 			}
 
 		}
-		FileChanged = true;
+		FileChanged = false;
 		QMessageBox::information(this, "Save File", "Save File Success", QMessageBox::Ok);
 		filename.close();
 		FileIsNew = false;
