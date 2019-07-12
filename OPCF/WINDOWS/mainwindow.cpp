@@ -15,6 +15,7 @@
 #include <QtDebug>
 #include <QGridLayout>
 #include <algorithm>
+#include <QAxObject>
 #include "mainwindow.h"
 #include "math.h"
 
@@ -81,6 +82,11 @@ void MainWindow::createMenu()
 	openAction->setShortcut((Qt::CTRL | Qt::Key_O));
 	fileMenu->addAction(openAction);
 	connect(openAction, SIGNAL(triggered()), this, SLOT(openFile()));
+
+	QAction* loadExcelAction = new QAction("Load Excel");
+	loadExcelAction->setShortcut((Qt::CTRL | Qt::Key_E));
+	fileMenu->addAction(loadExcelAction);
+	connect(loadExcelAction, SIGNAL(triggered()), this, SLOT(loadExcelFile()));
 	
 
 	QAction * saveDataAction = new QAction("Save Project");
@@ -687,8 +693,8 @@ bool MainWindow::addPoint(QPointF p)
 		QTableWidgetItem* item1 = table->item(i, 0);
 		QTableWidgetItem* item2 = table->item(i, 1);
 		if (item1 == NULL || item2 == NULL) {
-			item1 = new QTableWidgetItem;
-			item2 = new QTableWidgetItem;
+			if(item1 == NULL) item1 = new QTableWidgetItem;
+			if(item2 == NULL) item2 = new QTableWidgetItem;
 			item1->setText(QString::number(p.rx()));
 			item2->setText(QString::number(p.ry()));
 			table->setItem(i, 0, item1);
@@ -1140,3 +1146,86 @@ void MainWindow::openHelpFile()
 	QDesktopServices::openUrl(QUrl::fromLocalFile(qtManulFile));
 }
 
+void MainWindow::loadExcelFile()
+{
+	QString fileName;
+	fileName = QFileDialog::getOpenFileName(this, "Open File", "", "Text File(*.xlsx *.xls)");
+	if (NULL == fileName || fileName == "")
+	{
+		return;
+	}
+	else
+	{
+		QFile file(fileName);
+		if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+			QMessageBox::warning(this, "error", "open file error!");
+			return;
+		}
+		else
+		{
+			if (!file.isReadable())
+				QMessageBox::warning(this, "error", "this file is not readable!");
+			else
+			{
+				if (FileChanged == true)
+				{
+					QMessageBox box;
+					box.setWindowTitle(tr("Warning"));
+					box.setIcon(QMessageBox::Warning);
+					box.setText(tr(" Unsaved, do you want to save?"));
+					QPushButton* yesBtn = box.addButton(tr("Yes(&Y)"), QMessageBox::YesRole);
+					box.addButton(tr("No(&N)"), QMessageBox::NoRole);
+					box.exec();
+					if (box.clickedButton() == yesBtn)
+					{
+						if (FileIsNew) {
+							this->saveAs();
+						}
+						else
+						{
+							this->saveData();
+						}
+					}
+				}
+				table->clear();
+
+				functionText->setPlainText("Loading excel file, please wait for a second :)");
+
+				QAxObject excel("Excel.Application");
+				excel.setProperty("Visible", false); 
+				QAxObject* workbooks = excel.querySubObject("WorkBooks");
+				QAxObject* workbook = workbooks->querySubObject("Open(QString, QVariant)",fileName); 
+				QAxObject* worksheet = workbook->querySubObject("WorkSheets(int)", 1); 
+				QAxObject* usedrange = worksheet->querySubObject("UsedRange");
+				QAxObject* rows = usedrange->querySubObject("Rows");
+				int intRows = rows->property("Count").toInt(); 
+
+				QString Range = "A1:B" + QString::number(intRows);
+				QAxObject* allEnvData = worksheet->querySubObject("Range(QString)", Range); 
+				QVariant allEnvDataQVariant = allEnvData->property("Value");
+				QVariantList allEnvDataList = allEnvDataQVariant.toList();
+				if (intRows > ROW) {
+					intRows = ROW;
+				}
+				for (int i = 0; i < intRows; i++)
+				{
+					QVariantList allEnvDataList_i = allEnvDataList[i].toList();
+					QString data1 = allEnvDataList_i[0].toString(); 
+					QString data2 = allEnvDataList_i[1].toString();
+					QTableWidgetItem *item1 = new QTableWidgetItem;
+					QTableWidgetItem *item2 = new QTableWidgetItem;
+					item1->setText(data1);
+					item2->setText(data2);
+					table->setItem(i, 0, item1);
+					table->setItem(i, 1, item2);
+				}
+				table->show();
+				workbooks->dynamicCall("Close()");
+				excel.dynamicCall("Quit()");
+				FileChanged = false;
+				functionText->setPlainText("Loading success!");
+			}
+		}
+	}
+}

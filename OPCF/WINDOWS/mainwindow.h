@@ -61,6 +61,7 @@ public slots:
 	bool saveGraph();
 	bool saveAs();
 	void openFile();
+	void loadExcelFile();
 	void isAddingActionTrigger();
 	void runActionTrigger();
 
