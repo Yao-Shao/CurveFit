@@ -6,5 +6,6 @@
         <file>img/addPoint.png</file>
         <file>HelpDoc/HelpDoc.pdf</file>
         <file>img/showD.png</file>
+        <file>img/dot.png</file>
     </qresource>
 </RCC>

@@ -775,8 +775,20 @@ void MainWindow::showDerivedActionTrigger()
 #endif // !NDEBUG
 	double start_x = range_x->getx();
 	double end_x = range_x->gety();
-	double start_y = range_y->getx();
-	double end_y = range_y->gety();
+	double start_y = ((*dyPoints)[0]).gety();
+	for (auto i = 1; i < dyPoints->size(); i++) {
+		if (start_y > ((*dyPoints)[i]).gety())
+		{
+			start_y = ((*dyPoints)[i]).gety();
+		}
+	}
+	double end_y = ((*dyPoints)[0]).gety();
+	for (auto i = 1; i < dyPoints->size(); i++) {
+		if (end_y < ((*dyPoints)[i]).gety())
+		{
+			end_y = ((*dyPoints)[i]).gety();
+		}
+	}
 	if (start_y == end_y) {
 		double length_x = end_x - start_x;
 
