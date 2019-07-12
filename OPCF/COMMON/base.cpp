@@ -1,5 +1,6 @@
 #include"base.h"
 
+
 Function& Function::operator=(const std::string& s)
 {
 	if (this->function != s) {
@@ -215,6 +216,8 @@ bool Function::convert()
 	}
 	return 1;
 }
+	
+
 void Function::add_power(bool pos, double num, int power) {
 	if (pos == 0)num *= -1;
 	power_function[power] = num;
@@ -321,4 +324,16 @@ double& Point::getx() throw()
 double& Point::gety() throw()
 {
 	return y;
+}
+
+
+bool Point::operator<(const Point& p)
+{
+	if (x != p.x)
+	{
+		return x < p.x;
+	}
+	else {
+		return y < p.y;
+	}
 }

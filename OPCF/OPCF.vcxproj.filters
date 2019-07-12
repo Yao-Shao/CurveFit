@@ -7,9 +7,6 @@
     <ClCompile Include="COMMON\base.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="WINDOWS\DrawGraph.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="APP\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -43,9 +40,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="COMMON\base.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="WINDOWS\DrawGraph.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="COMMON\etlbase.h">

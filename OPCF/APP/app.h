@@ -3,7 +3,6 @@
 
 #include "../MODEL/Model.h"
 #include "../VIEWMODEL/viewmodel.h"
-#include "../WINDOWS/DrawGraph.h"
 #include "../WINDOWS/mainwindow.h"
 
 class app_opcf
