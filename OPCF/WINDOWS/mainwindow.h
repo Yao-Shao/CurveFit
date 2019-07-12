@@ -12,6 +12,7 @@
 #include <QPlainTextEdit>
 #include <QLineEdit>
 #include <QtCharts>
+#include <stack>
 #include "../COMMON/base.h"
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
@@ -126,6 +127,12 @@ private:
 	bool FileIsNew;
 	bool FileChanged;
 	bool flag_isOpen;
+	
+	/*ReDo and UnDo stack*/
+	std::stack<Param_opcf> redo_stack;
+	std::stack<Param_opcf> undo_stack;
+	bool undo_flag;
+	bool redo_flag;
 
 	bool getPoints();
 	bool checkPoints();

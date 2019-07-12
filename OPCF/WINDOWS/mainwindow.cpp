@@ -46,7 +46,10 @@ MainWindow::MainWindow(QWidget* parent) :
 	m_valueLabel = new QLabel(this);
 	m_valueLabel->setGeometry(100, 100,120, 15);
 	FileIsNew = true;
+	undo_flag = false;
+	redo_flag = false;
 
+	showMaximized();
 	createMenu();
 	createToolBar();
 	createTable();
@@ -484,6 +487,9 @@ void MainWindow::runActionTrigger()
 	m_cmdRun->SetParameter(m_param);
 	m_cmdRun->Exec();
 	FileChanged = true;
+
+	Param_opcf t = m_param;
+	undo_stack.push(t);
 #ifndef NDEBUG
 	qDebug() << "End of pass para" << endl;
 #endif // !NDEBUG
@@ -541,38 +547,9 @@ void MainWindow::setLayout()
 }
 
 
-
-
-
-/*
-void MainWindow::setActionStatus()
-{
-	if(drawWidget->getUndoSize() > 0){
-		undoAct->setEnabled(true);
-	}else{
-		undoAct->setEnabled(false);
-	}
-	if(drawWidget->getRedoSize() > 0){
-		redoAct->setEnabled(true);
-	}else{
-		redoAct->setEnabled(false);
-	}
-}
-*/
-
-
-
-
-
-
-
-
-
-
 void MainWindow::drawLineActionTrigger()
 {
 }
-
 
 
 void MainWindow::drawEclipseActionTrigger()
@@ -593,23 +570,84 @@ void MainWindow::drawTriangleActionTrigger()
 
 void MainWindow::openFile() {
 
+	QString fileName;
+	fileName = QFileDialog::getOpenFileName(this, "Open File", "", "Text File(*.txt)");
+	if (fileName == "")
+	{
+		return;
+	}
+	else
+	{
+		QFile file(fileName);
+		if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+			QMessageBox::warning(this, "error", "open file error!");
+			return;
+		}
+		else
+		{
+			if (!file.isReadable())
+				QMessageBox::warning(this, "error", "this file is not readable!");
+			else
+			{
+				if (FileChanged == true)
+				{
+					QMessageBox box;
+					box.setWindowTitle(tr("Warning"));
+					box.setIcon(QMessageBox::Warning);
+					box.setText(tr(" Unsaved, do you wnat to save?"));
+					QPushButton* yesBtn = box.addButton(tr("Yes(&Y)"), QMessageBox::YesRole);
+					box.addButton(tr("No(&N)"), QMessageBox::NoRole);
+					box.exec();
+					if (box.clickedButton() == yesBtn)
+					{
+						if (FileIsNew) {
+							this->saveAs();
+						}
+						else
+						{
+							this->saveData();
+						}
+					}
+				}
+				//将文件数据导入表格
+				int r_count = 0;        //统计文件的行数
+				QStringList textList;   //记录文件中每一行的数据
+				QTextStream in(&file);
+				QString t = in.readLine();
+				while (!in.atEnd())
+				{
+					QString line = in.readLine();
+					textList.append(line);          //保存文件的数据
+					r_count++;                      //记录文件的行数 前两行为表头
+				}
+				file.close();
+				table->clear();
+				if (!textList.isEmpty()) {
+					for (int i = 0; i < r_count; i++) {
+						QStringList temp;
+						temp = textList.at(i).split("\t");
+						for (int j = 0; j < 2; j++) {
+							QTableWidgetItem* item = new QTableWidgetItem(temp.at(j));
+							table->setItem(i, j, item);
+						}
+					}
+				}
+				table->show();
+				flag_isOpen = 1;
+				LastFileName = fileName;
+				fitType = (Type)t.toInt();
+				m_param.set_type(fitType);
+				m_param.set_point(pointsData);
+				m_cmdRun->SetParameter(m_param);
+				m_cmdRun->Exec();
+				FileChanged = false;
+			}
+		}
+	}
 }
-/*
-{
 
-#ifndef NDEBUG
-	qDebug() << "Out of getPoints" << endl;
-	qDebug() << pointsData.size() << endl;
-#endif // !NDEBUG
 
-	m_param.set_type(fitType);
-	m_param.set_point(pointsData);
-	m_cmdRun->SetParameter(m_param);
-	m_cmdRun->Exec();
-	openFileAddr = QFileDialog::getOpenFileName(this, "Open File", "/", "png files(*.png *.jpg)");
-	//drawWidget->openFile(openFileAddr);
-}
-*/
 bool MainWindow::saveAs()
 {
 	if (sample_points->size() == 0)
@@ -639,7 +677,7 @@ bool MainWindow::saveAs()
 				double x, y;
 				x = (*sample_points)[i].getx();
 				y = (*sample_points)[i].gety();
-				textStream << x << "   " << y << "\n";
+				textStream << x << "\t" << y << "\n";
 			}
 
 		}
@@ -683,7 +721,7 @@ bool MainWindow::saveData()
 					double x, y;
 					x = (*sample_points)[i].getx();
 					y = (*sample_points)[i].gety();
-					textStream << x << "   " << y << "\n";
+					textStream << x << "\t" << y << "\n";
 				}
 
 			}
@@ -713,7 +751,7 @@ bool MainWindow::saveData()
 					double x, y;
 					x = (*sample_points)[i].getx();
 					y = (*sample_points)[i].gety();
-					textStream << x << "   " << y << "\n";
+					textStream << x << "\t" << y << "\n";
 				}
 				file.close();
 				QMessageBox::information(this, "Save File", "Save File Success", QMessageBox::Ok);
@@ -731,7 +769,19 @@ bool MainWindow::saveData()
 
 bool MainWindow::saveGraph()
 {
-	return true;
+	QScreen* screen = QGuiApplication::primaryScreen();
+	QPixmap p = screen->grabWindow(chartView->winId());
+	QFileDialog fileDialog;
+	QString str = fileDialog.getSaveFileName(this, "Save Pic", "", "Text File(*.png)");
+	if (str == "")
+	{
+		return false;
+	}
+	else {
+		QImage image = p.toImage();
+		image.save(str);
+		QMessageBox::information(this, "Save Pic", "Save Picture Success", QMessageBox::Ok);
+	}
 }
 
 void MainWindow::closeEvent(QCloseEvent* e)
@@ -765,12 +815,60 @@ void MainWindow::closeEvent(QCloseEvent* e)
 
 void MainWindow::undoTrigger()
 {
-
+	if (undo_stack.size() > 1) {
+		Param_opcf t = undo_stack.top();
+		undo_stack.pop();
+		redo_stack.push(t);
+		t = undo_stack.top();
+		table->clear();
+		Points p = t.get_points();
+		for (int i = 0; i < p.size(); i++) {
+			double x = p[i].getx();
+			double y = p[i].gety();
+			QString s_x = QString::number(x);
+			QString s_y = QString::number(y);
+			QTableWidgetItem* item = new QTableWidgetItem(s_x);
+			table->setItem(i, 0, item);
+			QTableWidgetItem* item2 = new QTableWidgetItem(s_y);
+			table->setItem(i, 1, item2);
+		}
+		table->show();
+		m_param = t;
+		m_cmdRun->SetParameter(m_param);
+		m_cmdRun->Exec();
+		FileChanged = true;
+	}
+	else {
+		QMessageBox::information(this, "Undo", "No more steps", QMessageBox::Ok);
+	}
 }
 
 void MainWindow::redoTrigger()
 {
-
+	if (redo_stack.size() > 0) {
+		Param_opcf t = redo_stack.top();
+		redo_stack.pop();
+		undo_stack.push(t);
+		table->clear();
+		Points p = t.get_points();
+		for (int i = 0; i < p.size(); i++) {
+			double x = p[i].getx();
+			double y = p[i].gety();
+			QString s_x = QString::number(x);
+			QString s_y = QString::number(y);
+			QTableWidgetItem* item = new QTableWidgetItem(s_x);
+			table->setItem(i, 0, item);
+			QTableWidgetItem* item2 = new QTableWidgetItem(s_y);
+			table->setItem(i, 1, item2);
+		}
+		m_param = t;
+		m_cmdRun->SetParameter(m_param);
+		m_cmdRun->Exec();
+		FileChanged = true;
+	}
+	else {
+		QMessageBox::information(this, "Rndo", "No more steps", QMessageBox::Ok);
+	}
 }
 
 void MainWindow::slotPointHoverd(const QPointF& point, bool state)
@@ -789,41 +887,10 @@ void MainWindow::slotPointHoverd(const QPointF& point, bool state)
 }
 
 void MainWindow::openHelpFile()
-{/*
-	QString fileName;
-	fileName = QFileDialog::getOpenFileName(this, "Open File", "", "Text File(*.txt)");
-	if (fileName == "")
-	{
-		return;
-	}
-	else
-	{
-		QFile file(fileName);
-		if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
-		{
-			QMessageBox::warning(this, "error", "open file error!");
-			return;
-		}
-		else
-		{
-			if (!file.isReadable())
-				QMessageBox::warning(this, "error", "this file is not readable!");
-			else
-			{
-				QTextStream textStream(&file);
-				
-				textStream >> t;
-				while (!textStream.atEnd())
-				{
-					
-				}
-				ui->textEdit->show();
-				file.close();
-				flag_isOpen = 1;
-				LastFileName = fileName;
-			}
-		}
-	}
-	*/
+{
+	
+	QString qtManulFile = "HelpDoc/HelpDoc.pdf";
+
+	QDesktopServices::openUrl(QUrl::fromLocalFile(qtManulFile));
 }
 
