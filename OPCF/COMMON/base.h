@@ -54,6 +54,7 @@ public:
 	Point(const Point& p) : x(p.x), y(p.y) {}
 	Point(Point&& p) noexcept;
 	bool operator!=(Point& p);
+	bool operator<(const Point& p);
 	Point& operator=(const Point& p);
 	Point& operator=(Point&& p);
 	void setx(const double& xx) throw();

@@ -14,24 +14,32 @@
 #include <QPushButton>
 #include <QtDebug>
 #include <QGridLayout>
+#include <algorithm>
 #include "mainwindow.h"
 #include "math.h"
-
 
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent),
 	m_updateSink(std::make_shared<updateSink>(this)),
 	m_runSink(std::make_shared<runSink>(this)),
-	chartView(new QChartView()),
-	m_layout(new QGridLayout),
+	chartView(new QChartView(this)),
+	m_layout(new QGridLayout(this)),
 	fitType(LINEAR_FUNCTION)
 {
 	centralWidget = new QWidget;
 	setCentralWidget(centralWidget);
+	
 	setMinimumSize(LENGTH, WIDTH);
+	showMaximized();
 
 	setWindowTitle("OPCF");
 	setWindowIcon(QIcon(":/OPCF/img/logo.png"));
+	
+	/* set background color */
+	QPalette m_palette(centralWidget->palette());
+	m_palette.setColor(QPalette::Background, QColor(Qt::gray));
+	centralWidget->setAutoFillBackground(true);
+	centralWidget->setPalette(m_palette);
 
 	myPix.load(":/OPCF/img/run_error.png");
 	error_label_pic = new QLabel(this);
@@ -51,7 +59,6 @@ MainWindow::MainWindow(QWidget* parent) :
 
 MainWindow::~MainWindow()
 {
-	//delete ui;
 }
 
 void MainWindow::createMenu()
@@ -72,12 +79,12 @@ void MainWindow::createMenu()
 	fileMenu->addAction(saveDataAction);
 	connect(saveDataAction, SIGNAL(triggered()), this, SLOT(saveData()));
 
-	QAction* saveGraphAction = new QAction("Save graph");
+	QAction* saveGraphAction = new QAction("Save graph", this);
 	saveGraphAction->setShortcut((Qt::CTRL | Qt::ALT | Qt::Key_S));
 	fileMenu->addAction(saveGraphAction);
 	connect(saveGraphAction, SIGNAL(triggered()), this, SLOT(saveGraph()));
 
-	QAction * saveAsAction = new QAction("Save as");
+	QAction * saveAsAction = new QAction("Save as", this);
 	saveAsAction->setShortcut((Qt::CTRL | Qt::SHIFT | Qt::Key_S));
 	fileMenu->addAction(saveAsAction);
 	connect(saveAsAction, SIGNAL(triggered()), this, SLOT(saveAs()));
@@ -85,12 +92,12 @@ void MainWindow::createMenu()
 	/* Edit */
 	QMenu* editMenu = pmenuBar->addMenu("Edit");
 
-	QAction * redoAction = new QAction("Redo");
+	QAction * redoAction = new QAction("Redo", this);
 	redoAction->setShortcut((Qt::CTRL | Qt::Key_R));
 	editMenu->addAction(redoAction);
 	connect(redoAction, SIGNAL(triggered()), this, SLOT(redoTrigger()));
 
-	QAction * undoAction = new QAction("Undo");
+	QAction * undoAction = new QAction("Undo", this);
 	undoAction->setShortcut((Qt::CTRL | Qt::Key_Z));
 	editMenu->addAction(undoAction);
 	connect(undoAction, SIGNAL(triggered()), this, SLOT(undoTrigger()));
@@ -108,12 +115,14 @@ void MainWindow::createToolBar()
 	QToolBar* toolBar = addToolBar("Tool");             /*add tool bar object*/
 
 	/* Runing */
-	QToolButton* runAction = new QToolButton();
+	QToolButton* runAction = new QToolButton(this);
+	runAction->setShortcut(Qt::CTRL | Qt::Key_R);
 	runAction->setIcon(QIcon(":/OPCF/img/running.png"));
-	runAction->setToolTip(tr("Draw fitted curve"));
+	runAction->setToolTip(tr("Show fit curve"));
 	toolBar->addWidget(runAction);
 	connect(runAction, SIGNAL(clicked()), this, SLOT(runActionTrigger()));
 
+	/*
 	/*
 	QAction* drawLineAction = new QAction("Line", toolBar);
 	drawLineAction->setIcon(QIcon(":/src/Line.png"));
@@ -149,17 +158,17 @@ void MainWindow::createToolBar()
 	*/
 
 	/* fit type */
-	styleLabel = new QLabel(tr("Fit Type: "));
-	styleComboBox = new QComboBox;
-	styleComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
-	styleComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
-	styleComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
-	styleComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
-	styleComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
+	fitTypeLabel = new QLabel(tr("Fit Type: "), this);
+	fitTypeComboBox = new QComboBox(this);
+	fitTypeComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
+	fitTypeComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
+	fitTypeComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
+	fitTypeComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
+	fitTypeComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
 
-	connect(styleComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
-	toolBar->addWidget(styleLabel);
-	toolBar->addWidget(styleComboBox);
+	connect(fitTypeComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
+	toolBar->addWidget(fitTypeLabel);
+	toolBar->addWidget(fitTypeComboBox);
 	
 	
 
@@ -173,7 +182,7 @@ void MainWindow::createToolBar()
 
 
 	/* Color */
-	colorBtn = new QToolButton;
+	colorBtn = new QToolButton(this);
 	QPixmap pixmap(20, 20);
 	pixmap.fill(Qt::black);
 	colorBtn->setIcon(QIcon(pixmap));
@@ -215,13 +224,15 @@ void MainWindow::createFuncText()
 	qDebug() << "In create Function Text\n";
 #endif // !DEBUG
 
-
 	functionText = new QPlainTextEdit(this);
-	//functionText->setGeometry(410, 600, 670, 100);
+	functionText->setReadOnly(true);
+
 	QFont font = functionText->font(); 
 	font.setPointSize(10);
 	functionText->setFont(font);
+
 	functionText->setPlainText("Hello world\nWellcome to our program...\n");
+	functionText->show();
 }
 
 void MainWindow::createFuncView()
@@ -231,8 +242,8 @@ void MainWindow::createFuncView()
 #endif // !NDEBUG
 	//function_view->setTitle("Function Curve");
 	function_view = new QChart();
-	QScatterSeries* all_points = new QScatterSeries();
-	QLineSeries* series = new QLineSeries();
+	QScatterSeries* all_points = new QScatterSeries(this);
+	QLineSeries* series = new QLineSeries(this);
 	qreal x, y;
 	for(auto i = 0; i < real_xy_points->size(); i++) {
 		x = ((*real_xy_points)[i]).getx();
@@ -241,8 +252,8 @@ void MainWindow::createFuncView()
 		all_points->append(x, y);
 	}
 	function_view->addSeries(series);
-	QScatterSeries* samplepoints = new QScatterSeries();
-	QScatterSeries* samplepoints_o = new QScatterSeries();
+	QScatterSeries* samplepoints = new QScatterSeries(this);
+	QScatterSeries* samplepoints_o = new QScatterSeries(this);
 	for (auto i = 0; i < sample_points->size(); i++) {
 		x = ((*sample_points)[i]).getx();
 		y = ((*sample_points)[i]).gety();
@@ -296,14 +307,14 @@ void MainWindow::createFuncView()
 		end_y = ceil((end_y + length_y / 10) * 100) / 100;
 	}
 
-	QValueAxis* axisX = new QValueAxis;
+	QValueAxis* axisX = new QValueAxis(this);
 	axisX->setRange(start_x,end_x);
 	axisX->setTitleText("x");
 	axisX->setLabelFormat("%.2f");
 	axisX->setTickCount(21);
 	axisX->setMinorTickCount(4);
 
-	QValueAxis* axisY = new QValueAxis;
+	QValueAxis* axisY = new QValueAxis(this);
 	axisY->setRange(start_y,end_y);
 	axisY->setTitleText("y");
 	axisY->setLabelFormat("%.2f"); 
@@ -333,9 +344,7 @@ void MainWindow::createFuncView()
 
 void MainWindow::error_info()
 {
-
 	functionText->setPlainText("Sorry,we can't get a function from you sample points, check whether it's correct");
-	functionText->show();
 }
 
 void MainWindow::run_error(const std::string& str)
@@ -343,21 +352,21 @@ void MainWindow::run_error(const std::string& str)
 	chartView->close();
 	//show diffrent error infomation according to str
 	if (str == "NoSamplePoints") {
-		functionText->setPlainText("Run orror C0001:  There is no sample points in the table...");
-		functionText->show();
+		functionText->setPlainText("Run error C0001:  There is no sample points in the table...");
 	}
 	else if (str == "NotEnoughForCubic") {
-		functionText->setPlainText("Run orror C0002:  Not enough sample points for Cubic Spline Method...");
-		functionText->show();
+		functionText->setPlainText("Run error C0002:  Not enough sample points for Cubic Spline Method...");
 	}
-	error_label_pic->setGeometry(410, 100, 670, 500);
+	else if (str == "conflictPoints") {
+		functionText->setPlainText("Run error C0003: Multiple points with the same x but different y");
+	}
 	error_label_pic->setPixmap(myPix);
 	error_label_pic->show();
 }
 
 void MainWindow::showType()
 {
-	fitType = static_cast<Type>(styleComboBox->itemData(styleComboBox->currentIndex(), Qt::UserRole).toInt());
+	fitType = static_cast<Type>(fitTypeComboBox->itemData(fitTypeComboBox->currentIndex(), Qt::UserRole).toInt());
 }
 
 void MainWindow::showColor()
@@ -373,7 +382,7 @@ void MainWindow::showColor()
 }
 
 
-void MainWindow::getPoints()
+bool MainWindow::getPoints()
 {
 #ifndef NDEBUG
 	qDebug() << "In getPoints" << endl;
@@ -402,12 +411,32 @@ void MainWindow::getPoints()
 			}
 		}
 	}
-
+	
 #ifndef NDEBUG
 	qDebug() << "Points info " << endl;
 	qDebug() << pointsData.size() << endl;
 #endif // !NDEBUG
 
+	return checkPoints();
+}
+
+bool MainWindow::checkPoints()
+{
+	if (pointsData.size() == 0)
+		return true;
+	bool flag = true;
+	std::sort(pointsData.begin(), pointsData.end());
+	for (int i = 0; i < pointsData.size()-1; i++) {
+		if (pointsData[i].getx() == pointsData[i + 1].getx()) {
+			if (pointsData[i].gety() != pointsData[i+1].gety()) {
+				return false;
+			}
+			else {
+				pointsData.erase(pointsData.begin()+i);
+			}
+		}
+	}
+	return true;
 }
 
 void MainWindow::set_function(std::shared_ptr<Function> spFunction)
@@ -441,7 +470,12 @@ void MainWindow::runActionTrigger()
 	qDebug() << "In runAction Trigger" << endl;
 #endif // !NDEBUG
 
-	getPoints();
+	bool rep = getPoints();
+	if (rep == false)
+	{
+		run_error("conflictPoints");
+		return;
+	}
 
 #ifndef NDEBUG
 	qDebug() << "Out of getPoints" << endl;
@@ -469,7 +503,6 @@ void MainWindow::update()
 #endif // !NDEBUG
 
 	functionText->setPlainText("Run successfully, and the function is: \n y = " + QString::fromStdString(spFunction->get_function()));
-	functionText->show();
 	createFuncView();
 }
 
@@ -505,9 +538,12 @@ void MainWindow::setLayout()
 	m_layout->setColumnStretch(1, 5);
 	m_layout->setRowStretch(0, 2);
 	m_layout->setRowStretch(1, 1);
+
 	centralWidget->setLayout(m_layout);
 
+#ifndef NDEBUG
 	qDebug() << m_layout->rowCount() << " " << m_layout->columnCount() << "/n";
+#endif
 }
 
 

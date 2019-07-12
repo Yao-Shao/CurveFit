@@ -14,7 +14,6 @@
 #include <QtCharts>
 #include <stack>
 #include "../COMMON/base.h"
-#include "drawgraph.h"
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
 #include "sinks/updateSink.h"
@@ -78,8 +77,8 @@ public slots:
 
 private:
 	/* draw */
-	QLabel* styleLabel;
-	QComboBox* styleComboBox;
+	QLabel* fitTypeLabel;
+	QComboBox* fitTypeComboBox;
 	QLabel* widthLable;
 	QSpinBox* widthSpinBox;
 	QToolButton* colorBtn;
@@ -135,7 +134,8 @@ private:
 	bool undo_flag;
 	bool redo_flag;
 
-	void getPoints();
+	bool getPoints();
+	bool checkPoints();
 	void createToolBar();
 	void createMenu();
 	void createTable();
