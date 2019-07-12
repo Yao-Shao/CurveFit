@@ -5,6 +5,10 @@
 #include <QTableWidget>
 #include <QColorDialog>
 #include <QFileDialog>
+#include <QFileDevice>
+#include <QFile>
+#include <QMessageBox>
+#include <QTextStream>
 #include <QMessageBox>
 #include <QAbstractButton>
 #include <QPushButton>
@@ -32,6 +36,8 @@ MainWindow::MainWindow(QWidget* parent) :
 	myPix.load(":/OPCF/img/run_error.png");
 	error_label_pic = new QLabel(this);
 	m_valueLabel = new QLabel(this);
+	m_valueLabel->setGeometry(100, 100,120, 15);
+	FileIsNew = true;
 
 	createMenu();
 	createToolBar();
@@ -51,14 +57,14 @@ void MainWindow::createMenu()
 	QMenuBar* pmenuBar = menuBar();
 	QMenu* fileMenu = pmenuBar->addMenu("File");
 
-	/*
-	QAction* openAction = new QAction("Open");
+	
+	QAction* openAction = new QAction("Open Project");
 	openAction->setShortcut((Qt::CTRL | Qt::Key_O));
 	fileMenu->addAction(openAction);
 	connect(openAction, SIGNAL(triggered()), this, SLOT(openFile()));
-	*/
+	
 
-	QAction * saveDataAction = new QAction("Save data");
+	QAction * saveDataAction = new QAction("Save Project");
 	saveDataAction->setShortcut((Qt::CTRL | Qt::Key_S));
 	fileMenu->addAction(saveDataAction);
 	connect(saveDataAction, SIGNAL(triggered()), this, SLOT(saveData()));
@@ -87,6 +93,10 @@ void MainWindow::createMenu()
 	connect(undoAction, SIGNAL(triggered()), this, SLOT(undoTrigger()));
 
 	QMenu* helpMenu = pmenuBar->addMenu("Help");
+	QAction* seekHelp= new QAction("View Help");
+	seekHelp->setShortcut((Qt::CTRL | Qt::Key_H));
+	helpMenu ->addAction(seekHelp);
+	connect(seekHelp, SIGNAL(triggered()), this, SLOT(openHelpFile()));
 
 }
 
@@ -194,7 +204,6 @@ void MainWindow::createTable()
 
 	table->setSelectionBehavior(QAbstractItemView::SelectItems);
 	table->setEditTriggers(QAbstractItemView::DoubleClicked);
-
 }
 
 void MainWindow::createFuncText()
@@ -440,7 +449,7 @@ void MainWindow::runActionTrigger()
 	m_param.set_point(pointsData);
 	m_cmdRun->SetParameter(m_param);
 	m_cmdRun->Exec();
-
+	FileChanged = true;
 #ifndef NDEBUG
 	qDebug() << "End of pass para" << endl;
 #endif // !NDEBUG
@@ -546,32 +555,141 @@ void MainWindow::drawTriangleActionTrigger()
 }
 
 
-void MainWindow::openFile()
+void MainWindow::openFile() {
+
+}
+/*
 {
+
+#ifndef NDEBUG
+	qDebug() << "Out of getPoints" << endl;
+	qDebug() << pointsData.size() << endl;
+#endif // !NDEBUG
+
+	m_param.set_type(fitType);
+	m_param.set_point(pointsData);
+	m_cmdRun->SetParameter(m_param);
+	m_cmdRun->Exec();
 	openFileAddr = QFileDialog::getOpenFileName(this, "Open File", "/", "png files(*.png *.jpg)");
 	//drawWidget->openFile(openFileAddr);
 }
-
+*/
 bool MainWindow::saveAs()
 {
-	saveFileAddr = QFileDialog::getSaveFileName(this, "Save File", "/", "png files(*.png *.jpg)");
-	if (saveFileAddr.isEmpty())
-		return false;
-	//drawWidget->saveFile(saveFileAddr);
+	if (sample_points->size() == 0)
+	{
+		QMessageBox::warning(this, "error", "content can not be none!", QMessageBox::Ok);
+	}
+	else
+	{
+		QFileDialog fileDialog;
+		QString str = fileDialog.getSaveFileName(this, "Open File", "", "Text File(*.txt)");
+		if (str == "")
+		{
+			return false;
+		}
+		QFile filename(str);
+		if (!filename.open(QIODevice::WriteOnly | QIODevice::Text))
+		{
+			QMessageBox::warning(this, "error", "Open File Error!");
+			return false;
+		}
+		else
+		{
+			QTextStream textStream(&filename);
+			Type t = spFunction->get_type();
+			textStream << t << "\n";
+			for (auto i = 0; i < sample_points->size(); i++) {
+				double x, y;
+				x = (*sample_points)[i].getx();
+				y = (*sample_points)[i].gety();
+				textStream << x << "   " << y << "\n";
+			}
+
+		}
+		FileChanged = true;
+		QMessageBox::information(this, "Save File", "Save File Success", QMessageBox::Ok);
+		filename.close();
+		FileIsNew = false;
+		LastFileName = str;
+	}
 	return true;
 }
 
 bool MainWindow::saveData()
 {
-	/*
-	bool status = drawWidget->getSaveStatus();
-	if (status == true) {
-		return drawWidget->saveFile(saveFileAddr);
+	if (FileIsNew)
+	{
+		if (sample_points->size() == 0)
+		{
+			QMessageBox::warning(this, "error", "content can not be none!", QMessageBox::Ok);
+		}
+		else
+		{
+			QFileDialog fileDialog;
+			QString str = fileDialog.getSaveFileName(this, "Open File", "", "Text File(*.txt)");
+			if (str == "")
+			{
+				return false;
+			}
+			QFile filename(str);
+			if (!filename.open(QIODevice::WriteOnly | QIODevice::Text))
+			{
+				QMessageBox::warning(this, "error", "Open File Error!");
+				return false;
+			}
+			else
+			{
+				QTextStream textStream(&filename);
+				Type t = spFunction->get_type();
+				textStream << t << "\n";
+				for (auto i = 0; i < sample_points->size(); i++) {
+					double x, y;
+					x = (*sample_points)[i].getx();
+					y = (*sample_points)[i].gety();
+					textStream << x << "   " << y << "\n";
+				}
+
+			}
+			FileChanged = false;
+			QMessageBox::information(this, "Save File", "Save File Success", QMessageBox::Ok);
+			filename.close();
+			FileIsNew = false;
+			LastFileName = str;
+		}
 	}
-	else {
-		return saveAs();
+	else
+	{
+		if (flag_isOpen)
+		{
+			QFile file(LastFileName);
+			if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
+			{
+				QMessageBox::warning(this, "error", "Open File Faile");
+				return false;
+			}
+			else
+			{
+				QTextStream textStream(&file);
+				Type t = spFunction->get_type();
+				textStream << t << "\n";
+				for (auto i = 0; i < sample_points->size(); i++) {
+					double x, y;
+					x = (*sample_points)[i].getx();
+					y = (*sample_points)[i].gety();
+					textStream << x << "   " << y << "\n";
+				}
+				file.close();
+				QMessageBox::information(this, "Save File", "Save File Success", QMessageBox::Ok);
+				FileChanged = false;
+			}
+		}
+		else
+		{
+			QMessageBox::warning(this, "Warning", "Please new or open a file");
+			return true;
+		}
 	}
-	*/
 	return true;
 }
 
@@ -582,8 +700,8 @@ bool MainWindow::saveGraph()
 
 void MainWindow::closeEvent(QCloseEvent* e)
 {
-	bool status = true;
-	if (status == false)
+
+	if (FileChanged == true)
 	{
 		QMessageBox box;
 		box.setWindowTitle(tr("Warning"));
@@ -595,8 +713,13 @@ void MainWindow::closeEvent(QCloseEvent* e)
 		box.exec();
 		if (box.clickedButton() == yesBtn)
 		{
-			if (saveAs() == false)
-				e->ignore();
+			if (FileIsNew) {
+				this->saveAs();
+			}
+			else
+			{
+				this->saveData();
+			}
 			return;
 		}
 		else if (box.clickedButton() == cancelBut)
@@ -627,5 +750,44 @@ void MainWindow::slotPointHoverd(const QPointF& point, bool state)
 	else
 		m_valueLabel->hide();
 
+}
+
+void MainWindow::openHelpFile()
+{/*
+	QString fileName;
+	fileName = QFileDialog::getOpenFileName(this, "Open File", "", "Text File(*.txt)");
+	if (fileName == "")
+	{
+		return;
+	}
+	else
+	{
+		QFile file(fileName);
+		if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+			QMessageBox::warning(this, "error", "open file error!");
+			return;
+		}
+		else
+		{
+			if (!file.isReadable())
+				QMessageBox::warning(this, "error", "this file is not readable!");
+			else
+			{
+				QTextStream textStream(&file);
+				
+				textStream >> t;
+				while (!textStream.atEnd())
+				{
+					
+				}
+				ui->textEdit->show();
+				file.close();
+				flag_isOpen = 1;
+				LastFileName = fileName;
+			}
+		}
+	}
+	*/
 }
 

@@ -42,6 +42,7 @@ public:
 	std::string get_function() const;
 	void set_function(std::string& func);
 	void setnum(const int& n) { normal_function.pointnum = n; }
+	Type get_type() { return type; };
 };
 class Point
 {
