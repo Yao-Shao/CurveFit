@@ -64,8 +64,6 @@ public slots:
 	void loadExcelFile();
 	void isAddingActionTrigger();
 	void runActionTrigger();
-
-
 	void showDerivedActionTrigger();
 	/* undo redo*/
 	void undoTrigger();

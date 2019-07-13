@@ -55,7 +55,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	FileIsNew = true;
 	undo_flag = false;
 	redo_flag = false;
-
+	
 	showMaximized();
 	createMenu();
 	createToolBar();
@@ -63,6 +63,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	createFuncText();
 	createFuncView();
 	setLayout();
+	
 }
 
 MainWindow::~MainWindow()
@@ -137,6 +138,18 @@ void MainWindow::createToolBar()
 	toolBar->addWidget(runAction);
 	connect(runAction, SIGNAL(clicked()), this, SLOT(runActionTrigger()));
 
+	/* fit type */
+	fitTypeComboBox = new QComboBox(this);
+	fitTypeComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
+	fitTypeComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
+	fitTypeComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
+	fitTypeComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
+	fitTypeComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
+	connect(fitTypeComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
+	toolBar->addWidget(fitTypeComboBox);
+
+	toolBar->addSeparator();
+	
 	/* adding points */
 	QAction* isAddingAction = new QAction("Add Point", toolBar);
 	isAddingAction->setIcon(QIcon(":/OPCF/img/addPoint.png"));
@@ -145,27 +158,45 @@ void MainWindow::createToolBar()
 	toolBar->addAction(isAddingAction);
 	connect(isAddingAction, SIGNAL(changed()), this, SLOT(isAddingActionTrigger()));
 
-	/* fit type */
-	fitTypeLabel = new QLabel(tr("Fit Type: "), this);
-	fitTypeComboBox = new QComboBox(this);
-	fitTypeComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
-	fitTypeComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
-	fitTypeComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
-	fitTypeComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
-	fitTypeComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
+	/*derived function*/
+	QToolButton* showDerivedAction = new QToolButton(this);
+	showDerivedAction->setIcon(QIcon(":/OPCF/img/showD.png"));
+	showDerivedAction->setToolTip(tr("Show Derived function"));
+	toolBar->addWidget(showDerivedAction);
+	connect(showDerivedAction, SIGNAL(clicked()), this, SLOT(showDerivedActionTrigger()));
 
-	connect(fitTypeComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
-	toolBar->addWidget(fitTypeLabel);
-	toolBar->addWidget(fitTypeComboBox);
+	toolBar->addSeparator();
+
+	/* save */
+	QToolButton* saveAction = new QToolButton(this);
+	saveAction->setIcon(QIcon(":/OPCF/img/save.png"));
+	saveAction->setToolTip(tr("Save project file"));
+	toolBar->addWidget(saveAction);
+	connect(saveAction, SIGNAL(clicked()), this, SLOT(saveData()));
+
+	/* undo */
+	QToolButton* undoAction = new QToolButton(this);
+	undoAction->setIcon(QIcon(":/OPCF/img/undo.png"));
+	undoAction->setToolTip(tr("Undo"));
+	toolBar->addWidget(undoAction);
+	connect(undoAction, SIGNAL(clicked()), this, SLOT(undoTrigger()));
+
+	/* redo */
+	QToolButton* redoAction = new QToolButton(this);
+	redoAction->setIcon(QIcon(":/OPCF/img/redo.png"));
+	redoAction->setToolTip(tr("Redo"));
+	toolBar->addWidget(redoAction);
+	connect(redoAction, SIGNAL(clicked()), this, SLOT(redoTrigger()));
 
 
-	/* Color */
+	/* Color 
 	colorBtn = new QToolButton(this);
 	QPixmap pixmap(20, 20);
 	pixmap.fill(Qt::black);
 	colorBtn->setIcon(QIcon(pixmap));
 	connect(colorBtn, SIGNAL(clicked()), this, SLOT(showColor()));
 	toolBar->addWidget(colorBtn);
+	*/
 
 	/*
 	/*
@@ -203,10 +234,6 @@ void MainWindow::createToolBar()
 	connect(drawTriangleAction, SIGNAL(triggered()), this, SLOT(drawTriangleActionTrigger()));
 	*/
 
-
-	
-	
-
 	/* Spin box
 	widthLable = new QLabel(tr("Line width: "));
 	widthSpinBox = new QSpinBox;
@@ -214,15 +241,6 @@ void MainWindow::createToolBar()
 	toolBar->addWidget(widthSpinBox);
 	toolBar->addWidget(widthLable);
 	*/
-
-
-
-
-	QToolButton* showDerivedAction = new QToolButton(this);
-	showDerivedAction->setIcon(QIcon(":/OPCF/img/showD.png"));
-	showDerivedAction->setToolTip(tr("Show Derived"));
-	toolBar->addWidget(showDerivedAction);
-	connect(showDerivedAction, SIGNAL(clicked()), this, SLOT(showDerivedActionTrigger()));
 
 	/* Run 
 	clearBtn = new QToolButton;
@@ -284,7 +302,7 @@ void MainWindow::createFuncView()
 
 
 	function_view = new QChart();
-	function_view->setTheme(QChart::ChartThemeQt);
+	function_view->setTheme(QChart::ChartThemeDark);
 
 	if (initFuncView == true) {
 		initFuncView = false;
