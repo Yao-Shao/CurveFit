@@ -12,6 +12,7 @@
 #include <QPlainTextEdit>
 #include <QLineEdit>
 #include <QtCharts>
+#include <QEvent>
 #include <stack>
 #include "../COMMON/base.h"
 #include "../COMMON/etlbase.h"
@@ -60,12 +61,14 @@ public slots:
 	bool saveGraph();
 	bool saveAs();
 	void openFile();
-	void drawLineActionTrigger();
+	void loadExcelFile();
 	void runActionTrigger();
 	void isAddingActionTrigger();
+
 	void drawEclipseActionTrigger();
 	void drawRectangleActionTrigger();
 	void drawTriangleActionTrigger();
+
 
 	void showDerivedActionTrigger();
 	/* undo redo*/
@@ -109,7 +112,9 @@ private:
 	QValueAxis* axisY;
 	QScatterSeries* basePoints;
 
+
 	bool whether_move_point;
+
 
 	QPixmap myPix;
 	QLabel* error_label_pic;

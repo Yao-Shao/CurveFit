@@ -15,11 +15,13 @@
 #include <QtDebug>
 #include <QGridLayout>
 #include <algorithm>
+#include <ActiveQt\QAxObject>
 #include "mainwindow.h"
 #include "math.h"
 
 #define NDEBUG
 #define DIFFBOUND 1e-6
+
 
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent),
@@ -53,9 +55,11 @@ MainWindow::MainWindow(QWidget* parent) :
 	FileIsNew = true;
 	undo_flag = false;
 	redo_flag = false;
+
 	initFuncView = true;
 	pressAddingBtn = false;
 	whether_move_point = false;
+    
 	basePoints = new QScatterSeries();
 	axisX = new QValueAxis(this);
 	axisY = new QValueAxis(this);
@@ -111,7 +115,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	basePoints->setMarkerSize(1);
 
 
-	showMaximized();
+
 	createMenu();
 	createToolBar();
 	createTable();
@@ -136,6 +140,10 @@ void MainWindow::createMenu()
 	fileMenu->addAction(openAction);
 	connect(openAction, SIGNAL(triggered()), this, SLOT(openFile()));
 	
+	QAction* loadExcelAction = new QAction("Load Excel");
+	loadExcelAction->setShortcut((Qt::CTRL | Qt::Key_E));
+	fileMenu->addAction(loadExcelAction);
+	connect(loadExcelAction, SIGNAL(triggered()), this, SLOT(loadExcelFile()));
 
 	QAction * saveDataAction = new QAction("Save Project");
 	saveDataAction->setShortcut((Qt::CTRL | Qt::Key_S));
@@ -227,50 +235,56 @@ void MainWindow::createToolBar()
 	connect(drawTriangleAction, SIGNAL(triggered()), this, SLOT(drawTriangleActionTrigger()));
 	*/
 
+
 	/* fit type */
-	fitTypeLabel = new QLabel(tr("Fit Type: "), this);
 	fitTypeComboBox = new QComboBox(this);
 	fitTypeComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
 	fitTypeComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
 	fitTypeComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
 	fitTypeComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
 	fitTypeComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
-
 	connect(fitTypeComboBox, SIGNAL(activated(int)), this, SLOT(showType()));
-	toolBar->addWidget(fitTypeLabel);
 	toolBar->addWidget(fitTypeComboBox);
+
+	toolBar->addSeparator();
 	
-	
+	/* adding points */
+	QAction* isAddingAction = new QAction("Add Point", toolBar);
+	isAddingAction->setIcon(QIcon(":/OPCF/img/addPoint.png"));
+	isAddingAction->setToolTip(tr("Add Point"));
+	isAddingAction->setCheckable(true);
+	toolBar->addAction(isAddingAction);
+	connect(isAddingAction, SIGNAL(changed()), this, SLOT(isAddingActionTrigger()));
 
-	/* Spin box
-	widthLable = new QLabel(tr("Line width: "));
-	widthSpinBox = new QSpinBox;
-	connect(widthSpinBox, SIGNAL(valueChanged(int)), drawWidget, SLOT(setWidth(int)));
-	toolBar->addWidget(widthSpinBox);
-	toolBar->addWidget(widthLable);
-	*/
-
-
-	/* Color */
-	colorBtn = new QToolButton(this);
-	QPixmap pixmap(20, 20);
-	pixmap.fill(Qt::black);
-	colorBtn->setIcon(QIcon(pixmap));
-	connect(colorBtn, SIGNAL(clicked()), this, SLOT(showColor()));
-	toolBar->addWidget(colorBtn);
-
+	/*derived function*/
 	QToolButton* showDerivedAction = new QToolButton(this);
 	showDerivedAction->setIcon(QIcon(":/OPCF/img/showD.png"));
-	showDerivedAction->setToolTip(tr("Show Derived"));
+	showDerivedAction->setToolTip(tr("Show Derived function"));
 	toolBar->addWidget(showDerivedAction);
 	connect(showDerivedAction, SIGNAL(clicked()), this, SLOT(showDerivedActionTrigger()));
 
-	/* Run 
-	clearBtn = new QToolButton;
-	clearBtn->setText(tr("Clear"));
-	connect(clearBtn, SIGNAL(clicked()), drawWidget, SLOT(clear()));
-	toolBar->addWidget(clearBtn);
-	*/
+	toolBar->addSeparator();
+
+	/* save */
+	QToolButton* saveAction = new QToolButton(this);
+	saveAction->setIcon(QIcon(":/OPCF/img/save.png"));
+	saveAction->setToolTip(tr("Save project file"));
+	toolBar->addWidget(saveAction);
+	connect(saveAction, SIGNAL(clicked()), this, SLOT(saveData()));
+
+	/* undo */
+	QToolButton* undoAction = new QToolButton(this);
+	undoAction->setIcon(QIcon(":/OPCF/img/undo.png"));
+	undoAction->setToolTip(tr("Undo"));
+	toolBar->addWidget(undoAction);
+	connect(undoAction, SIGNAL(clicked()), this, SLOT(undoTrigger()));
+
+	/* redo */
+	QToolButton* redoAction = new QToolButton(this);
+	redoAction->setIcon(QIcon(":/OPCF/img/redo.png"));
+	redoAction->setToolTip(tr("Redo"));
+	toolBar->addWidget(redoAction);
+	connect(redoAction, SIGNAL(clicked()), this, SLOT(redoTrigger()));
 }
 
 void MainWindow::createTable()
@@ -382,6 +396,7 @@ void MainWindow::createFuncView()
 	connect(samplepoints_o, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
 	connect(all_points, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
 	connect(samplepoints_o, &QScatterSeries::doubleClicked, this, &MainWindow::movePoint);
+
 	/*
 	basePoints->append(start_x, end_y);
 	basePoints->append(end_x,start_y);
@@ -417,8 +432,6 @@ void MainWindow::InitFuncView()
 
 	
 
-
-
 	chartView->setChart(function_view);
 	chartView->show();
 }
@@ -444,7 +457,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e)
 		m_valueLabel->move(curPos.x() - m_valueLabel->width() / 2, curPos.y() - m_valueLabel->height() * 1.5);
 
 		m_valueLabel->show();
-		
 	}
 	//mouseMoveEvent(e);
 
@@ -452,6 +464,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e)
 
 void MainWindow::mousePressEvent(QMouseEvent* e)
 {
+
 	qDebug() << "pres" << endl;
 	if (!initFuncView) {
 		auto inScene = function_view->plotArea();
@@ -478,6 +491,7 @@ void MainWindow::mousePressEvent(QMouseEvent* e)
 		qDebug() << "chartItemPos:" << chartItemPos;
 		qDebug() << "valSeries:" << picval;
 #endif // !NDEBUG
+
 		if (pressAddingBtn) {
 			addPoint(pickVal);
 		}
@@ -521,6 +535,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent* e)
 	qDebug() << "hello" << endl;
 	m_valueLabel->hide();
 	//setMouseTracking(true);
+
 }
 
 bool MainWindow::addPoint(QPointF p)
@@ -745,6 +760,7 @@ void MainWindow::setLayout()
 	//functionText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 	table->setMaximumWidth(400);
+	error_label_pic->setAlignment(Qt::AlignCenter);
 	m_layout->addWidget(table, 0, 0, 2, 1);
 	m_layout->addWidget(chartView, 0, 1);
 	m_layout->addWidget(error_label_pic, 0, 1);
@@ -760,27 +776,6 @@ void MainWindow::setLayout()
 #ifndef NDEBUG
 	qDebug() << m_layout->rowCount() << " " << m_layout->columnCount() << "/n";
 #endif
-}
-
-
-void MainWindow::drawLineActionTrigger()
-{
-}
-
-
-void MainWindow::drawEclipseActionTrigger()
-{
-
-}
-
-void MainWindow::drawRectangleActionTrigger()
-{
-
-}
-
-void MainWindow::drawTriangleActionTrigger()
-{
-
 }
 
 void MainWindow::showDerivedActionTrigger()
@@ -904,16 +899,16 @@ void MainWindow::openFile() {
 						}
 					}
 				}
-				//½«ÎÄ¼þÊý¾Ýµ¼Èë±í¸ñ
-				int r_count = 0;        //Í³¼ÆÎÄ¼þµÄÐÐÊý
-				QStringList textList;   //¼ÇÂ¼ÎÄ¼þÖÐÃ¿Ò»ÐÐµÄÊý¾Ý
+				//å°†æ–‡ä»¶æ•°æ®å¯¼å…¥è¡¨æ ¼
+				int r_count = 0;        //ç»Ÿè®¡æ–‡ä»¶çš„è¡Œæ•°
+				QStringList textList;   //è®°å½•æ–‡ä»¶ä¸­æ¯ä¸€è¡Œçš„æ•°æ®
 				QTextStream in(&file);
 				QString t = in.readLine();
 				while (!in.atEnd())
 				{
 					QString line = in.readLine();
-					textList.append(line);          //±£´æÎÄ¼þµÄÊý¾Ý
-					r_count++;                      //¼ÇÂ¼ÎÄ¼þµÄÐÐÊý Ç°Á½ÐÐÎª±íÍ·
+					textList.append(line);          //ä¿å­˜æ–‡ä»¶çš„æ•°æ®
+					r_count++;                      //è®°å½•æ–‡ä»¶çš„è¡Œæ•° å‰ä¸¤è¡Œä¸ºè¡¨å¤´
 				}
 				file.close();
 				table->clear();
@@ -1189,3 +1184,85 @@ void MainWindow::openHelpFile()
 	QDesktopServices::openUrl(QUrl::fromLocalFile(qtManulFile));
 }
 
+void MainWindow::loadExcelFile()
+{
+	functionText->setPlainText("Loading excel file, please wait for a second :)");
+	QString fileName;
+	fileName = QFileDialog::getOpenFileName(this, "Open File", "", "Text File(*.xlsx *.xls)");
+	if (NULL == fileName || fileName == "")
+	{
+		functionText->setPlainText("Loading failed, no file seleted!");
+		return;
+	}
+	else
+	{
+		QFile file(fileName);
+		if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+		{
+			QMessageBox::warning(this, "error", "open file error!");
+			return;
+		}
+		else
+		{
+			if (!file.isReadable())
+				QMessageBox::warning(this, "error", "this file is not readable!");
+			else
+			{
+				if (FileChanged == true)
+				{
+					QMessageBox box;
+					box.setWindowTitle(tr("Warning"));
+					box.setIcon(QMessageBox::Warning);
+					box.setText(tr(" Unsaved, do you want to save?"));
+					QPushButton* yesBtn = box.addButton(tr("Yes(&Y)"), QMessageBox::YesRole);
+					box.addButton(tr("No(&N)"), QMessageBox::NoRole);
+					box.exec();
+					if (box.clickedButton() == yesBtn)
+					{
+						if (FileIsNew) {
+							this->saveAs();
+						}
+						else
+						{
+							this->saveData();
+						}
+					}
+				}
+				table->clear();
+				QAxObject excel("Excel.Application");
+				excel.setProperty("Visible", false); 
+				QAxObject* workbooks = excel.querySubObject("WorkBooks");
+				QAxObject* workbook = workbooks->querySubObject("Open(QString, QVariant)",fileName); 
+				QAxObject* worksheet = workbook->querySubObject("WorkSheets(int)", 1); 
+				QAxObject* usedrange = worksheet->querySubObject("UsedRange");
+				QAxObject* rows = usedrange->querySubObject("Rows");
+				int intRows = rows->property("Count").toInt(); 
+
+				QString Range = "A1:B" + QString::number(intRows);
+				QAxObject* allEnvData = worksheet->querySubObject("Range(QString)", Range); 
+				QVariant allEnvDataQVariant = allEnvData->property("Value");
+				QVariantList allEnvDataList = allEnvDataQVariant.toList();
+				if (intRows > ROW) {
+					intRows = ROW;
+				}
+				for (int i = 0; i < intRows; i++)
+				{
+					QVariantList allEnvDataList_i = allEnvDataList[i].toList();
+					QString data1 = allEnvDataList_i[0].toString(); 
+					QString data2 = allEnvDataList_i[1].toString();
+					QTableWidgetItem *item1 = new QTableWidgetItem;
+					QTableWidgetItem *item2 = new QTableWidgetItem;
+					item1->setText(data1);
+					item2->setText(data2);
+					table->setItem(i, 0, item1);
+					table->setItem(i, 1, item2);
+				}
+				table->show();
+				workbooks->dynamicCall("Close()");
+				excel.dynamicCall("Quit()");
+				FileChanged = false;
+				functionText->setPlainText("Loading excel file successfully!");
+			}
+		}
+	}
+}
