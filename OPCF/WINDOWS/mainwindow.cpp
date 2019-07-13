@@ -195,7 +195,7 @@ void MainWindow::createToolBar()
 
 	/* adding points */
 	QAction* isAddingAction = new QAction("Add Point", toolBar);
-	isAddingAction->setIcon(QIcon(":/OPCF/img/dot.png"));
+	isAddingAction->setIcon(QIcon(":/OPCF/img/addPoint.png"));
 	isAddingAction->setToolTip(tr("Add Point"));
 	isAddingAction->setCheckable(true);
 	toolBar->addAction(isAddingAction);
