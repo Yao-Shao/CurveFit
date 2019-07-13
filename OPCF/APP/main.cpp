@@ -3,7 +3,7 @@
 #include <QFont>
 #include "app.h"
 
-//void setUI(QApplication& app);
+void setUI(QApplication& app);
 
 int main(int argc, char *argv[])
 {
@@ -13,12 +13,12 @@ int main(int argc, char *argv[])
 
 	app_opcf opcf_a;
 	opcf_a.run();
-	//setUI(a);
+	setUI(a);
 
 	return a.exec();
 }
 
-/*
+
 void setUI(QApplication& app)
 {
 	QFile f(":/qdarkstyle/img/src/qdarkstyle/style.qss");
@@ -34,5 +34,5 @@ void setUI(QApplication& app)
 	}
 }
 
-*/
+
 

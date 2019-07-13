@@ -1,66 +1,8 @@
-/* ---------------------------------------------------------------------------
-
-    Created by the qtsass compiler
-
-    WARNING! All changes made in this file will be lost!
-
---------------------------------------------------------------------------- */
-/* QDarkStyleSheet -----------------------------------------------------------
-
-This is the main style sheet, the palette has eight colors.
-
-It is based on three selecting colors, three greyish (background) colors
-plus three whitish (foreground) colors. Each set of widgets of the same
-type have a header like this:
-
-    ------------------
-    GroupName --------
-    ------------------
-
-And each widget is separated with a header like this:
-
-    QWidgetName ------
-
-This makes more easy to find and change some css field. The basic
-configuration is described bellow.
-
-    BACKGROUND -----------
-
-        Light  #4D545B #505F69 (unpressed)
-        Normal #31363B #32414B (border, disabled, pressed, checked, toolbars, menus)
-        Dark   #232629 #19232D (background)
-
-    FOREGROUND -----------
-
-        Light  #EFF0F1 #F0F0F0 (texts/labels)
-        Normal         #AAAAAA (not used yet)
-        Dark   #505F69 #787878 (disabled texts)
-
-    SELECTION ------------
-
-        Light  #179AE0 #148CD2 (selection/hover/active)
-        Normal #3375A3 #1464A0 (selected)
-        Dark   #18465D #14506E (selected disabled)
-
-If a stranger configuration is required because of a bugfix or anything
-else, keep the comment on the line above so nobody changes it, including the
-issue number.
-
-*/
-/*
-
-See Qt documentation:
-
-  - https://doc.qt.io/qt-5/stylesheet.html
-  - https://doc.qt.io/qt-5/stylesheet-reference.html
-  - https://doc.qt.io/qt-5/stylesheet-examples.html
-
---------------------------------------------------------------------------- */
 /* QWidget ----------------------------------------------------------------
 
 --------------------------------------------------------------------------- */
+
 QWidget {
-  background-color: #19232D;
   border: 0px solid #32414B;
   padding: 0px;
   color: #F0F0F0;
@@ -83,6 +25,7 @@ QWidget::item:hover {
   background-color: #148CD2;
   color: #32414B;
 }
+
 
 /* QMainWindow ------------------------------------------------------------
 
@@ -644,13 +587,13 @@ https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-specific-widgets
 --------------------------------------------------------------------------- */
 QTextEdit {
   background-color: #19232D;
-  color: #F0F0F0;
+  color: #000000;
   border: 1px solid #32414B;
 }
 
 QTextEdit:hover {
   border: 1px solid #148CD2;
-  color: #F0F0F0;
+  color: #000000;
 }
 
 QTextEdit:selected {
@@ -663,14 +606,14 @@ QTextEdit:selected {
 --------------------------------------------------------------------------- */
 QPlainTextEdit {
   background-color: #19232D;
-  color: #F0F0F0;
+  color: #ffffff;
   border-radius: 4px;
   border: 1px solid #32414B;
 }
 
 QPlainTextEdit:hover {
   border: 1px solid #148CD2;
-  color: #F0F0F0;
+  color: #ffffff;
 }
 
 QPlainTextEdit:selected {
@@ -827,12 +770,12 @@ QAbstractSpinBox:selected {
 https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qframe
 
 --------------------------------------------------------------------------- */
+
 QLabel {
-  background-color: #19232D;
   border: 0px solid #32414B;
   padding: 2px;
   margin: 0px;
-  color: #F0F0F0;
+  color: #000000;
 }
 
 QLabel::disabled {
@@ -1144,6 +1087,7 @@ https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qcombobox
 
 --------------------------------------------------------------------------- */
 QComboBox {
+  background-color: #5d666f;
   border: 1px solid #32414B;
   border-radius: 4px;
   selection-background-color: #1464A0;

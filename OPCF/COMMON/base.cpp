@@ -298,17 +298,17 @@ std::string Function::get_function() const
 {
 	return function;
 }
-Point::Point(Point&& p) noexcept
+Point::Point(Point && p) noexcept
 {
 	x = static_cast<double&&>(p.x);
 	y = static_cast<double&&>(p.y);
 }
-bool Point::operator!=(Point& p)
+bool Point::operator!=(Point & p)
 {
 	if (x == p.getx() && this->y == p.gety())return 0;
 	else return 1;
 }
-Point& Point::operator=(const Point& p)
+Point& Point::operator=(const Point & p)
 {
 	if (this != &p) {
 		x = p.x;
@@ -316,7 +316,7 @@ Point& Point::operator=(const Point& p)
 	}
 	return *this;
 }
-Point& Point::operator=(Point&& p)
+Point& Point::operator=(Point && p)
 {
 	if (this != &p) {
 		x = static_cast<double&&>(p.x);
@@ -341,7 +341,7 @@ double& Point::gety() throw()
 	return y;
 }
 
-bool Point::operator<(const Point& p)
+bool Point::operator<(const Point & p)
 {
 	if (x != p.x)
 	{
