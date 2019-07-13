@@ -59,8 +59,8 @@ See Qt documentation:
 /* QWidget ----------------------------------------------------------------
 
 --------------------------------------------------------------------------- */
+
 QWidget {
-  background-color: #19232D;
   border: 0px solid #32414B;
   padding: 0px;
   color: #F0F0F0;
@@ -83,6 +83,7 @@ QWidget::item:hover {
   background-color: #148CD2;
   color: #32414B;
 }
+
 
 /* QMainWindow ------------------------------------------------------------
 
@@ -644,13 +645,13 @@ https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-specific-widgets
 --------------------------------------------------------------------------- */
 QTextEdit {
   background-color: #19232D;
-  color: #F0F0F0;
+  color: #000000;
   border: 1px solid #32414B;
 }
 
 QTextEdit:hover {
   border: 1px solid #148CD2;
-  color: #F0F0F0;
+  color: #000000;
 }
 
 QTextEdit:selected {
@@ -663,14 +664,14 @@ QTextEdit:selected {
 --------------------------------------------------------------------------- */
 QPlainTextEdit {
   background-color: #19232D;
-  color: #F0F0F0;
+  color: #ffffff;
   border-radius: 4px;
   border: 1px solid #32414B;
 }
 
 QPlainTextEdit:hover {
   border: 1px solid #148CD2;
-  color: #F0F0F0;
+  color: #ffffff;
 }
 
 QPlainTextEdit:selected {
@@ -827,12 +828,12 @@ QAbstractSpinBox:selected {
 https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qframe
 
 --------------------------------------------------------------------------- */
+
 QLabel {
-  background-color: #19232D;
   border: 0px solid #32414B;
   padding: 2px;
   margin: 0px;
-  color: #F0F0F0;
+  color: #000000;
 }
 
 QLabel::disabled {
@@ -1144,6 +1145,7 @@ https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qcombobox
 
 --------------------------------------------------------------------------- */
 QComboBox {
+  background-color: #5d666f;
   border: 1px solid #32414B;
   border-radius: 4px;
   selection-background-color: #1464A0;

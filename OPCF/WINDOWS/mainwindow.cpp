@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget* parent) :
 
 	/* set background color */
 	QPalette m_palette(centralWidget->palette());
-	m_palette.setColor(QPalette::Background, QColor(Qt::gray));
+	m_palette.setColor(QPalette::Background, QColor(49,54,59));
 	centralWidget->setAutoFillBackground(true);
 	centralWidget->setPalette(m_palette);
 
@@ -91,30 +91,28 @@ MainWindow::MainWindow(QWidget* parent) :
 	function_view->setAxisY(axisY, samplepoints_o);
 
 
-	series->setBrush(QColor(21, 100, 255));
-	series->setColor(QColor(21, 100, 255));
+	series->setBrush(QColor(102, 151, 210));
+	series->setColor(QColor(102, 151, 210));
 
 	all_points->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	all_points->setBorderColor(QColor(21, 100, 255));
-	all_points->setBrush(QColor(21, 100, 255));
+	all_points->setBorderColor(QColor(102, 151, 210));
+	all_points->setBrush(QColor(102, 151, 210));
 	all_points->setMarkerSize(1);
 
 	samplepoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	samplepoints->setBorderColor(QColor(21, 100, 255));
-	samplepoints->setBrush(QColor(21, 100, 255));
-	samplepoints->setMarkerSize(10);
+	samplepoints->setBorderColor(QColor(102, 151, 210));
+	samplepoints->setBrush(QColor(102, 151, 210));
+	samplepoints->setMarkerSize(20);
 
 	samplepoints_o->setMarkerShape(QScatterSeries::MarkerShapeCircle);
 	samplepoints_o->setBorderColor(Qt::white);
 	samplepoints_o->setBrush(Qt::white);
-	samplepoints_o->setMarkerSize(5);
+	samplepoints_o->setMarkerSize(10);
 
 	basePoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
 	basePoints->setBorderColor(Qt::white);
 	basePoints->setBrush(Qt::white);
-	basePoints->setMarkerSize(1);
-
-
+	basePoints->setMarkerSize(5);
 
 	createMenu();
 	createToolBar();
@@ -122,6 +120,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	createFuncText();
 	InitFuncView();
 	setLayout();
+
 }
 
 MainWindow::~MainWindow()
@@ -183,7 +182,7 @@ void MainWindow::createMenu()
 
 void MainWindow::createToolBar()
 {
-	QToolBar* toolBar = addToolBar("Tool");             /*add tool bar object*/
+	QToolBar* toolBar = addToolBar("Tool");             /* add tool bar object */
 
 	/* Runing */
 	QToolButton* runAction = new QToolButton(this);
@@ -419,7 +418,7 @@ void MainWindow::InitFuncView()
 	basePoints->append(100, -100);
 
 
-
+	function_view->setTheme(QChart::ChartThemeBrownSand);
 	chartView->setChart(function_view);
 	chartView->show();
 }
@@ -1252,5 +1251,20 @@ void MainWindow::loadExcelFile()
 				functionText->setPlainText("Loading excel file successfully!");
 			}
 		}
+	}
+}
+
+void MainWindow::setUI()
+{
+	QFile f(":/qdarkstyle/img/src/qdarkstyle/style.qss");
+	if (!f.exists())
+	{
+		qDebug() << ("Unable to set stylesheet, file not found\n") << endl;
+	}
+	else
+	{
+		f.open(QFile::ReadOnly | QFile::Text);
+		QTextStream ts(&f);
+		centralWidget->setStyleSheet(ts.readAll());
 	}
 }
