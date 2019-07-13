@@ -1,3 +1,14 @@
 <RCC>
-    <qresource prefix="/OPCF"/>
+    <qresource prefix="/OPCF">
+        <file>img/addPoint.png</file>
+        <file>img/error.png</file>
+        <file>img/logo.png</file>
+        <file>img/redo.png</file>
+        <file>img/run_error.jpg</file>
+        <file>img/run_error.png</file>
+        <file>img/running.png</file>
+        <file>img/save.png</file>
+        <file>img/showD.png</file>
+        <file>img/undo.png</file>
+    </qresource>
 </RCC>
