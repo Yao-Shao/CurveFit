@@ -35,9 +35,9 @@ public:
 
 	void update();
 	void error_info();
-	void run_error(const std::string &str);
+	void run_error(const std::string& str);
 	void set_function(std::shared_ptr<Function> spFunction);
-	void set_real_points(std::shared_ptr<Points>spRealPoints); 
+	void set_real_points(std::shared_ptr<Points>spRealPoints);
 	void set_sample_points(std::shared_ptr<Points>spsamplePoints);
 	void set_dy_points(std::shared_ptr<Points>dyPoints);
 	void set_range_x(std::shared_ptr<Point>range_xx);
@@ -65,16 +65,12 @@ public slots:
 	void runActionTrigger();
 	void isAddingActionTrigger();
 
-	void drawEclipseActionTrigger();
-	void drawRectangleActionTrigger();
-	void drawTriangleActionTrigger();
-
 
 	void showDerivedActionTrigger();
 	/* undo redo*/
 	void undoTrigger();
 	void redoTrigger();
-	
+
 	/*show points*/
 	void slotPointHoverd(const QPointF& point, bool state);
 	void movePoint(const QPointF& p);
@@ -90,7 +86,7 @@ private:
 	QSpinBox* widthSpinBox;
 	QToolButton* colorBtn;
 	QToolButton* clearBtn;
-	
+
 	/*layout */
 	QGridLayout* m_layout;
 	void setLayout();
@@ -134,7 +130,7 @@ private:
 	std::shared_ptr<Point> range_x;
 	std::shared_ptr<Point> range_y;
 	std::shared_ptr<QPixmap> pix;
-	
+
 	std::shared_ptr<updateSink> m_updateSink;
 	std::shared_ptr<ICommandBase> m_cmdRun;
 	std::shared_ptr<runSink> m_runSink;
@@ -147,7 +143,7 @@ private:
 	bool FileChanged;
 	bool flag_isOpen;
 	int movepoint_row;
-	
+
 	/*ReDo and UnDo stack*/
 	std::stack<Param_opcf> redo_stack;
 	std::stack<Param_opcf> undo_stack;
@@ -176,4 +172,3 @@ private:
 };
 
 #endif // MAINWINDOW_H
-
