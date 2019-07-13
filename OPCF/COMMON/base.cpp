@@ -1,5 +1,5 @@
 #include"base.h"
-#include <QDebug>
+
 
 Function& Function::operator=(const std::string& s)
 {
@@ -222,7 +222,6 @@ bool Function::convert()
 	return 1;
 }
 
-
 void Function::add_power(bool pos, double num, int power) {
 	if (pos == 0)num *= -1;
 	power_function[power] = num;
@@ -255,7 +254,7 @@ double Function::get_y(const double& x)
 	else if (type == EXPONENTIAL_FUNCTION) {
 		return other_function[0] * exp(other_function[1] * x);
 	}
-	else if (type == LINEAR_FUNCTION || type == QUADRATIC_FUNCTION) {
+	else if (type == LINEAR_FUNCTION || type == QUADRATIC_FUNCTION || type == CUBIC_FUNCTION) {
 		return power_function[0] + power_function[1] * x + power_function[2] * x * x + power_function[3] * x * x * x;
 	}
 	else if (type == NORMAL_FUNCTION) {
@@ -279,7 +278,7 @@ double Function::get_dy(const double& x)
 	else if (type == EXPONENTIAL_FUNCTION) {
 		return other_function[0] * other_function[1] * exp(other_function[1] * x);
 	}
-	else if (type == LINEAR_FUNCTION || type == QUADRATIC_FUNCTION) {
+	else if (type == LINEAR_FUNCTION || type == QUADRATIC_FUNCTION || type == CUBIC_FUNCTION) {
 		return power_function[1] + 2 * power_function[2] * x + 3 * power_function[3] * x * x;
 	}
 	else {
@@ -294,7 +293,6 @@ double Function::get_dy(const double& x)
 		}
 	}
 }
-
 
 std::string Function::get_function() const
 {
@@ -342,7 +340,6 @@ double& Point::gety() throw()
 {
 	return y;
 }
-
 
 bool Point::operator<(const Point & p)
 {
