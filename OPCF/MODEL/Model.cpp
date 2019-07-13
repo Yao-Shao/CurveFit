@@ -106,7 +106,11 @@ bool Model::opcf_fit(Param_opcf& p)
 			a = ave_y - b * ave_x;
 			if (b != 0) {
 				init = false;
-				func += std::to_string(b);
+				if (b < 0) {
+					func += '-';
+					b *= -1;
+				}
+				if (b != 1.0)func += std::to_string(b);
 				func += "x";
 			}
 			if (a < 0) {
@@ -143,18 +147,24 @@ bool Model::opcf_fit(Param_opcf& p)
 			} while ((z1 > precision) || (z2 > precision) || (z3 > precision));
 			std::string func;
 			if (a != 0) {
-				func += std::to_string(a);
+				if (a < 0) {
+					func += '-';
+					a *= -1;
+				}
+				if (a != 1.0)func += std::to_string(a);
 				func += "x^2";
 				init = false;
 			}
 			if (b != 0) {
 				if (b < 0) {
-					func += std::to_string(b);
+					func += '-';
+					b *= -1;
+					if (b != 1.0)func += std::to_string(b);
 					func += 'x';
 				}
 				else {
 					if (init == 0)func += '+';
-					func += std::to_string(b);
+					if (b != 1.0)func += std::to_string(b);
 					func += 'x';
 				}
 				init = false;
@@ -197,7 +207,11 @@ bool Model::opcf_fit(Param_opcf& p)
 				if (a == 0)func += '\0';
 				else {
 					func += '^';
-					func += std::to_string(a);
+					if (a < 0) {
+						a *= -1;
+						func += '-';
+					}
+					if (a != 1.0)func += std::to_string(a);
 					func += "x\0";
 				}
 			}
@@ -226,7 +240,11 @@ bool Model::opcf_fit(Param_opcf& p)
 			a = exp(Ina);
 			func += std::to_string(b);
 			func += "Ln";
-			func += std::to_string(a);
+			if (a < 0) {
+				func += '-';
+				a *= -1;
+			}
+			if (a != 1)func += std::to_string(a);
 			func += "x\0";
 			sp_Function->set_function(func);
 		}
@@ -296,41 +314,53 @@ bool Model::opcf_fit(Param_opcf& p)
 				return true;
 			}
 			x[3] = m[3][4] / m[3][3];
+			//qDebug() << "m" << m[3][4] << " " << m[3][3];
 			for (int i = 2; i >= 0; i--) {
 				judge = 0.0;
 				for (int j = i + 1; j < 4; j++)judge += m[i][j] * x[j];
 				x[i] = (m[i][4] - judge) / m[i][i];
 			}
+			//qDebug() << " x0 " << x[0] << " " << x[1] << " " << x[2] << " " << x[3] << endl;
 			std::string func;
 			bool init = true;
 			if (x[0] != 0) {
-				func += std::to_string(x[0]);
+			//	qDebug() << 1.00 << endl;
+				if (x[0] < 0) {
+					func += '-';
+					x[0] *= -1;
+				}
+				if (x[0] != 1)func += std::to_string(x[0]);
 				func += "x^3";
 				init = false;
 			}
 			if (x[1] != 0) {
+			//	qDebug() << x[1] << endl;
 				if (x[1] < 0) {
-					func += std::to_string(x[1]);
+					func += '-';
+					x[1] *= -1;
 				}
 				else if (x[1] > 0) {
 					if (init == 0)func += '+';
-					func += std::to_string(x[1]);
 				}
+				if (x[1] != 1.0)func += std::to_string(x[1]);
 				func += "x^2";
 				init = false;
 			}
 			if (x[2] != 0) {
+		//		qDebug() << x[2] << endl;
 				if (x[2] < 0) {
-					func += std::to_string(x[2]);
+					func += '-';
+					x[2] *= -1;
 				}
 				else if (x[2] > 0) {
 					if (init == 0)func += '+';
-					func += std::to_string(x[2]);
 				}
+				if (x[2] != 1.0)func += std::to_string(x[2]);
 				func += 'x';
 				init = false;
 			}
 			if (x[3] != 0) {
+		//		qDebug() << QString::fromStdString(std::to_string(x[3]))<< endl;
 				if (x[3] < 0) {
 					func += std::to_string(x[3]);
 				}
@@ -340,6 +370,7 @@ bool Model::opcf_fit(Param_opcf& p)
 				}
 			}
 			func += '\0';
+		//	qDebug() << QString::fromStdString(func) << endl;
 			sp_Function->set_function(func);
 		}
 		else if (t == NORMAL_FUNCTION) {
@@ -376,32 +407,36 @@ bool Model::opcf_fit(Param_opcf& p)
 			for (int i = 0; i < n - 1; i++) {
 				bool init = true;
 				if (d[i] != 0.0) {
+					if (d[i] < 0) {
+						d[i] *= -1;
+						func += '-';
+					}
 					func += std::to_string(d[i]);
 					func += "x^3";
 					init = false;
 				}
 				if (c[i] != 0.0) {
 					if (c[i] < 0.0) {
-						func += std::to_string(c[i]);
-						func += "x^2";
+						c[i] *= -1;
+						func += '-';
 					}
 					else if (c[i] > 0.0) {
 						if (init == 0)func += '+';
-						func += std::to_string(c[i]);
-						func += "x^2";
 					}
+					func += std::to_string(c[i]);
+					func += "x^2";
 					init = false;
 				}
 				if (b[i] != 0.0) {
 					if (b[i] < 0.0) {
-						func += std::to_string(b[i]);
-						func += 'x';
+						b[i] *= -1;
+						func += '-';
 					}
 					else if (b[i] > 0.0) {
 						if (init == 0)func += '+';
-						func += std::to_string(b[i]);
-						func += 'x';
 					}
+					func += std::to_string(b[i]);
+					func += 'x';
 					init = false;
 				}
 				if (a[i] != 0.0) {
@@ -485,7 +520,7 @@ bool Model::get_realXYPoints(Type t)
 		end_x = ceil(end_x);
 		step = (end_x - start_x) / POINTSNUMBER;
 	}
-							 break;
+						 break;
 	case EXPONENTIAL_FUNCTION: {
 		start_x = start_x - length / 3;
 		end_x = end_x + length / 3;
@@ -651,7 +686,7 @@ double Model::get_max_sample_x()
 	return max;
 }
 
-void Model::sort(Mux_Points & m, const int& n)
+void Model::sort(Mux_Points& m, const int& n)
 {
 	int i, j;
 	double tempx, tempy;
@@ -667,4 +702,5 @@ void Model::sort(Mux_Points & m, const int& n)
 		m.x[j] = tempx;
 		m.y[j] = tempy;
 	}
+
 }
