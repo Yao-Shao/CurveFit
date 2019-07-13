@@ -75,6 +75,7 @@
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -98,9 +99,23 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\COMMON\base.cpp" />
+    <ClCompile Include="..\COMMON\param.cpp" />
+    <ClCompile Include="..\MODEL\Model.cpp" />
+    <ClCompile Include="..\VIEWMODEL\command\RunFitCommand.cpp" />
+    <ClCompile Include="..\VIEWMODEL\sinks\ViewModelSink.cpp" />
+    <ClCompile Include="..\VIEWMODEL\viewmodel.cpp" />
+    <ClCompile Include="main.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\COMMON\base.h" />
+    <ClInclude Include="..\COMMON\etlbase.h" />
+    <ClInclude Include="..\COMMON\param.h" />
+    <ClInclude Include="..\MODEL\Model.h" />
+    <ClInclude Include="..\VIEWMODEL\command\RunFitCommand.h" />
+    <ClInclude Include="..\VIEWMODEL\sinks\ViewModelSink.h" />
+    <ClInclude Include="..\VIEWMODEL\viewmodel.h" />
     <ClInclude Include="test.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,6 +1,6 @@
 #include"base.h"
 
-
+#define NDEBUG
 Function& Function::operator=(const std::string& s)
 {
 	if (this->function != s) {

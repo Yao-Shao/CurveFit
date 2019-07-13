@@ -7,7 +7,6 @@
 #include <map>
 #include <stack>
 #include <array>
-#include <QtDebug>
 #define NDEBUG
 //types
 typedef unsigned char     uchar;
@@ -105,9 +104,6 @@ public:
 	}
 	void Fire_OnPropertyChanged(const std::string& str)
 	{
-#ifndef NDEBUG
-		qDebug() << "In the function Fire_OnPropertyChanged\n";
-#endif // !NDEBUG
 		auto iter(m_array.begin());
 		for( ; iter != m_array.end(); ++ iter ) {
 			(*iter)->OnPropertyChanged(str);

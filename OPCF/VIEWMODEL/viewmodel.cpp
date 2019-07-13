@@ -1,5 +1,5 @@
 #include "viewmodel.h"
-#include <QtDebug>
+#define NDEBUG
 
 ViewModel::ViewModel():m_cmdFit(std::make_shared<RunFitCommand>(this)),
 						m_sink(std::make_shared<ViewModelSink>(this))

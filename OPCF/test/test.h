@@ -1,4 +1,4 @@
 #pragma once
 
 
-bool BusViewModel_Test() throw();
+bool ViewModel_Test() throw();

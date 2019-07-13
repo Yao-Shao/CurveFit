@@ -1,8 +1,8 @@
-#include <QtDebug>
 #include "Model.h"
 #include "math.h"
 #define precision 1e-13
 #define STARTLNFUNCT 1e-4
+#define NDEBUG
 
 Model::Model()
 {
@@ -60,13 +60,6 @@ bool Model::opcf_fit(Param_opcf& p)
 	}
 
 
-#ifndef NDEBUG
-	qDebug() << "Int Create Function\n";
-	qDebug() << "Type: " << t;
-	qDebug() << "\n point number" << sp_points.size();
-	qDebug() << "\n";
-	qDebug() << "Test if pass to model" << samplePoints->size();
-#endif // !NDEBUG
 
 	/*fuction fit*/
 	std::string propertychanged = "Function";
@@ -469,12 +462,13 @@ bool Model::opcf_fit(Param_opcf& p)
 	range_y->sety((this->get_max_real_y()));
 
 	/*map to x y in img*/
-
+/*
 #ifndef NDEBUG
 	qDebug() << "End of opcf_fit and the function is" << QString::fromStdString((*sp_Function).get_function()) << "\n";
 	qDebug() << "And we have " << real_xy_points->size() << " points to be painted\n";
 	qDebug() << "Fire_OnPropertyChanged(Function) \n";
 #endif // !NDEBUG
+*/
 	Fire_OnPropertyChanged(propertychanged);
 	return true;
 }
@@ -491,10 +485,12 @@ bool Model::get_realXYPoints(Type t)
 	start_x = get_min_sample_x();
 	end_x = get_max_sample_x();
 	length = end_x - start_x;
+	/*
 #ifndef NDEBUG
 	qDebug() << "In get_realXYPoints(Type):\n" << "X Range of sample Points  " << start_x << "-" << end_x << "\n";
 	qDebug() << "Function: " << QString::fromStdString(sp_Function->get_function());
 #endif // !NDEBUG
+*/
 	switch (t)
 	{
 	case LINEAR_FUNCTION: {
