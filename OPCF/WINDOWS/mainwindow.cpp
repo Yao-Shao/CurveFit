@@ -232,6 +232,7 @@ void MainWindow::createToolBar()
 	fitTypeComboBox = new QComboBox(this);
 	fitTypeComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
 	fitTypeComboBox->addItem(tr("Quad"), static_cast<int>(QUADRATIC_FUNCTION));
+	fitTypeComboBox->addItem(tr("Cubic(x^3)"), static_cast<int>(CUBIC_FUNCTION));
 	fitTypeComboBox->addItem(tr("Log"), static_cast<int>(LN_FUNCTION));
 	fitTypeComboBox->addItem(tr("Exponential"), static_cast<int>(EXPONENTIAL_FUNCTION));
 	fitTypeComboBox->addItem(tr("CubicSpline"), static_cast<int>(NORMAL_FUNCTION));
@@ -567,6 +568,9 @@ void MainWindow::run_error(const std::string& str)
 	else if (str == "Expwithwrongy") {
 		functionText->setPlainText("Run error C0005: The y points int the Exp fit should be positive");
 	}
+	else if (str == "Can'thavesolution") {
+		functionText->setPlainText("Run error C0006: There is some thing wrong with your sample points, can't fit cubic function from it");
+	}
 	error_label_pic->setPixmap(myPix);
 	error_label_pic->show();
 }
@@ -785,80 +789,86 @@ void MainWindow::drawTriangleActionTrigger()
 
 void MainWindow::showDerivedActionTrigger()
 {
-	QChartView* DyChartView = new QChartView();
-	QChart* dy_function_view;
-#ifndef NDEBUG
-	qDebug() << "showDerivedActionTrigger()\n";
-#endif // !NDEBUG
-	//function_view->setTitle("Function Curve");
-	dy_function_view = new QChart();
-	QLineSeries* series = new QLineSeries(this);
-	qreal x, y;
-	for (auto i = 0; i < dyPoints->size(); i++) {
-		x = ((*dyPoints)[i]).getx();
-		y = ((*dyPoints)[i]).gety();
-		series->append(x, y);
-	}
-	dy_function_view->addSeries(series);
-#ifndef NDEBUG
-	qDebug() << " dy_points->size():\n" << dyPoints->size() << "\n";
-	qDebug() << "x range" << range_x->getx() << " to  " << range_x->gety() << "\n";
-	qDebug() << "y range " << range_y->getx() << " to  " << range_y->gety() << "\n";
-#endif // !NDEBUG
-	double start_x = range_x->getx();
-	double end_x = range_x->gety();
-	double start_y = ((*dyPoints)[0]).gety();
-	for (auto i = 1; i < dyPoints->size(); i++) {
-		if (start_y > ((*dyPoints)[i]).gety())
-		{
-			start_y = ((*dyPoints)[i]).gety();
-		}
-	}
-	double end_y = ((*dyPoints)[0]).gety();
-	for (auto i = 1; i < dyPoints->size(); i++) {
-		if (end_y < ((*dyPoints)[i]).gety())
-		{
-			end_y = ((*dyPoints)[i]).gety();
-		}
-	}
-	if (start_y == end_y) {
-		double length_x = end_x - start_x;
-
-		start_x = floor((start_x - length_x / 10) * 100) / 100;
-		end_x = ceil((end_x + length_x / 10) * 100) / 100;
-		start_y = start_y - 1;
-		end_y = end_y + 1;
+	if (dyPoints->size() <= 0) {
+		QMessageBox::warning(this, "error", "No sample points");
 	}
 	else {
-		double length_x = end_x - start_x;
-		double length_y = end_y - start_y;
+		QChartView* DyChartView = new QChartView();
+		QChart* dy_function_view;
+#ifndef NDEBUG
+		qDebug() << "showDerivedActionTrigger()\n";
+#endif // !NDEBUG
+		//function_view->setTitle("Function Curve");
+		dy_function_view = new QChart();
+		QLineSeries* series = new QLineSeries(this);
+		qreal x, y;
+		for (auto i = 0; i < dyPoints->size(); i++) {
+			x = ((*dyPoints)[i]).getx();
+			y = ((*dyPoints)[i]).gety();
+			series->append(x, y);
+		}
+		dy_function_view->addSeries(series);
+#ifndef NDEBUG
+		qDebug() << " dy_points->size():\n" << dyPoints->size() << "\n";
+		qDebug() << "x range" << range_x->getx() << " to  " << range_x->gety() << "\n";
+		qDebug() << "y range " << range_y->getx() << " to  " << range_y->gety() << "\n";
+#endif // !NDEBUG
+		double start_x = range_x->getx();
+		double end_x = range_x->gety();
+		double start_y = ((*dyPoints)[0]).gety();
+		for (auto i = 1; i < dyPoints->size(); i++) {
+			if (start_y > ((*dyPoints)[i]).gety())
+			{
+				start_y = ((*dyPoints)[i]).gety();
+			}
+		}
+		double end_y = ((*dyPoints)[0]).gety();
+		for (auto i = 1; i < dyPoints->size(); i++) {
+			if (end_y < ((*dyPoints)[i]).gety())
+			{
+				end_y = ((*dyPoints)[i]).gety();
+			}
+		}
+		if (start_y == end_y) {
+			double length_x = end_x - start_x;
 
-		start_x = floor((start_x - length_x / 10) * 100) / 100;
-		end_x = ceil((end_x + length_x / 10) * 100) / 100;
-		start_y = floor((start_y - length_y / 10) * 100) / 100;
-		end_y = ceil((end_y + length_y / 10) * 100) / 100;
+			start_x = floor((start_x - length_x / 10) * 100) / 100;
+			end_x = ceil((end_x + length_x / 10) * 100) / 100;
+			start_y = start_y - 1;
+			end_y = end_y + 1;
+		}
+		else {
+			double length_x = end_x - start_x;
+			double length_y = end_y - start_y;
+
+			start_x = floor((start_x - length_x / 10) * 100) / 100;
+			end_x = ceil((end_x + length_x / 10) * 100) / 100;
+			start_y = floor((start_y - length_y / 10) * 100) / 100;
+			end_y = ceil((end_y + length_y / 10) * 100) / 100;
+		}
+
+		QValueAxis* axisX = new QValueAxis(this);
+		axisX->setRange(start_x, end_x);
+		axisX->setTitleText("x");
+		axisX->setLabelFormat("%.2f");
+		axisX->setTickCount(21);
+		axisX->setMinorTickCount(4);
+
+		QValueAxis* axisY = new QValueAxis(this);
+		axisY->setRange(start_y, end_y);
+		axisY->setTitleText("y");
+		axisY->setLabelFormat("%.2f");
+		axisY->setTickCount(11);
+		axisY->setMinorTickCount(4);
+
+		dy_function_view->setAxisX(axisX, series);
+		dy_function_view->setAxisY(axisY, series);
+
+		DyChartView->setChart(dy_function_view);
+		DyChartView->setGeometry(400, 400, 600, 500);
+		DyChartView->show();
 	}
 
-	QValueAxis* axisX = new QValueAxis(this);
-	axisX->setRange(start_x, end_x);
-	axisX->setTitleText("x");
-	axisX->setLabelFormat("%.2f");
-	axisX->setTickCount(21);
-	axisX->setMinorTickCount(4);
-
-	QValueAxis* axisY = new QValueAxis(this);
-	axisY->setRange(start_y, end_y);
-	axisY->setTitleText("y");
-	axisY->setLabelFormat("%.2f");
-	axisY->setTickCount(11);
-	axisY->setMinorTickCount(4);
-
-	dy_function_view->setAxisX(axisX, series);
-	dy_function_view->setAxisY(axisY, series);
-
-	DyChartView->setChart(dy_function_view);
-	DyChartView->setGeometry(400, 400, 600, 500);
-	DyChartView->show();
 }
 
 

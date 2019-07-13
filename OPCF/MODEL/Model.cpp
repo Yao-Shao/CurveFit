@@ -3,7 +3,6 @@
 #include "math.h"
 #define precision 1e-13
 #define STARTLNFUNCT 1e-4
-#define NDEBUG
 
 Model::Model()
 {
@@ -231,6 +230,118 @@ bool Model::opcf_fit(Param_opcf& p)
 			func += "x\0";
 			sp_Function->set_function(func);
 		}
+		else if (t == CUBIC_FUNCTION) {
+			int n = sp_points.size();
+			double sumx = 0.0, sumx2 = 0.0, sumx3 = 0.0, sumx4 = 0.0, sumx5 = 0.0, sumx6 = 0.0, sumy = 0.0, sumxy = 0.0, sumx2y = 0.0, sumx3y = 0.0;
+			for (int i = 0; i < n; i++) {
+				sumx += sp_points[i].getx();
+				sumx2 += sp_points[i].getx() * sp_points[i].getx();
+				sumx3 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
+				sumx4 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
+				sumx5 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
+				sumx6 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
+				sumy += sp_points[i].gety();
+				sumxy += sp_points[i].getx() * sp_points[i].gety();
+				sumx2y += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].gety();
+				sumx3y += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].gety();
+			}
+			double m[4][5] = { sumx3,sumx2,sumx,n,sumy,
+							   sumx4,sumx3,sumx2,sumx,sumxy,
+							   sumx5,sumx4,sumx3,sumx2,sumx2y,
+							   sumx6,sumx5,sumx4,sumx3,sumx3y };
+			double temp[5];
+			int p, place = -1;
+			double judge;
+			double x[4];
+			for (int i = 0; i < 3; i++) {
+				if (m[i][i] != 0) {
+					place = i;
+					judge = m[i][i];
+				}
+				for (p = i; p < 4; p++) {
+					if (m[p][i] != 0) {
+						if (m[p][i] < judge) {
+							place = p;
+							judge = m[p][i];
+						}
+					}
+				}
+				if (place == -1) {
+					propertychanged = "Can'thavesolution";
+					Fire_OnPropertyChanged(propertychanged);
+					return true;
+				}
+				if (p != i) {
+					for (int k = 0; k < 5; k++) {
+						temp[k] = m[p][k];
+					}
+					for (int k = 0; k < 5; k++) {
+						m[p][k] = m[i][k];
+					}
+					for (int k = 0; k < 5; k++) {
+						m[i][k] = temp[k];
+					}
+				}
+				for (int j = i + 1; j < 4; j++) {
+					judge = m[j][i] / m[i][i];
+					for (int k = 0; k < 5; k++) {
+						m[j][k] = m[j][k] - judge * m[i][k];
+					}
+				}
+				place = -1;
+			}
+			if (m[3][3] == 0) {
+				propertychanged = "Can'thavesolution";
+				Fire_OnPropertyChanged(propertychanged);
+				return true;
+			}
+			x[3] = m[3][4] / m[3][3];
+			for (int i = 2; i >= 0; i--) {
+				judge = 0.0;
+				for (int j = i + 1; j < 4; j++)judge += m[i][j] * x[j];
+				x[i] = (m[i][4] - judge) / m[i][i];
+			}
+			std::string func;
+			bool init = true;
+			if (x[0] != 0) {
+				func += std::to_string(x[0]);
+				func += "x^3";
+				init = false;
+			}
+			if (x[1] != 0) {
+				if (x[1] < 0) {
+					func += std::to_string(x[1]);
+				}
+				else if (x[1] > 0) {
+					if (init == 0)func += '+';
+					func += std::to_string(x[1]);
+				}
+				func += "x^2";
+				init = false;
+			}
+			if (x[2] != 0) {
+				if (x[2] < 0) {
+					func += std::to_string(x[2]);
+				}
+				else if (x[2] > 0) {
+					if (init == 0)func += '+';
+					func += std::to_string(x[2]);
+				}
+				func += 'x';
+				init = false;
+			}
+			if (x[3] != 0) {
+				if (x[3] < 0) {
+					func += std::to_string(x[3]);
+				}
+				else if (x[3] > 0) {
+					if (init == 0)func += '+';
+					func += std::to_string(x[3]);
+				}
+			}
+			func += '\0';
+			sp_Function->set_function(func);
+		}
 		else if (t == NORMAL_FUNCTION) {
 			int n = sp_points.size();
 			Mux_Points mux_point;
@@ -243,7 +354,7 @@ bool Model::opcf_fit(Param_opcf& p)
 			for (int i = 0; i < n; i++)a[i] = mux_point.y[i];
 			for (int i = 0; i < n - 1; i++)h[i] = mux_point.x[i + 1] - mux_point.x[i];
 			for (int i = 1; i < n - 1; i++)afa[i] = 3 / h[i] * (a[i + 1] - a[i]) - 3 / h[i - 1] * (a[i] - a[i - 1]);
-			L[0] = 1; mu[0] = 0; z[0] = 0;
+			L[0] = 1.0; mu[0] = 0.0; z[0] = 0.0;
 			for (int i = 1; i < n - 1; i++) {
 				L[i] = 2 * (mux_point.x[i + 1] - mux_point.x[i - 1]) - h[i - 1] * mu[i - 1];
 				mu[i] = h[i] / L[i];
@@ -360,6 +471,14 @@ bool Model::get_realXYPoints(Type t)
 	}
 						  break;
 	case QUADRATIC_FUNCTION: {
+		start_x = start_x - length / 3;
+		end_x = end_x + length / 3;
+		start_x = floor(start_x);
+		end_x = ceil(end_x);
+		step = (end_x - start_x) / POINTSNUMBER;
+	}
+							 break;
+	case CUBIC_FUNCTION: {
 		start_x = start_x - length / 3;
 		end_x = end_x + length / 3;
 		start_x = floor(start_x);

@@ -36,6 +36,8 @@ void app_opcf::run()
 	viewmodel->AddPropertyNotification(_mainwindow.get_updateSink());
 	viewmodel->AddCommandNotification(_mainwindow.get_runSink());
 
+	//_mainwindow.setMouseTracking(true);
+
 	_mainwindow.show();
 }
 
