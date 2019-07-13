@@ -302,6 +302,7 @@ QMenuBar {
   padding: 2px;
   border: 1px solid #19232D;
   color: #F0F0F0;
+  font-size: 22px;
 }
 
 QMenuBar:focus {
@@ -337,6 +338,7 @@ QMenu {
   border: 0px solid #32414B;
   color: #F0F0F0;
   margin: 0px;
+  font-size: 22px;
 }
 
 QMenu::separator {
