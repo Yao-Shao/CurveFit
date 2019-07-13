@@ -34,6 +34,10 @@ This adjusts the splitter in the dock widget, not qsplitter
 https://doc.qt.io/qt-5/stylesheet-examples.html#customizing-qmainwindow
 
 --------------------------------------------------------------------------- */
+QMainWindow {
+  background-color: #19232D;
+}
+
 QMainWindow::separator {
   background-color: #32414B;
   border: 0px solid #19232D;
@@ -592,7 +596,7 @@ QTextEdit {
 }
 
 QTextEdit:hover {
-  border: 1px solid #148CD2;
+  border: 2px solid #148CD2;
   color: #000000;
 }
 
@@ -612,7 +616,7 @@ QPlainTextEdit {
 }
 
 QPlainTextEdit:hover {
-  border: 1px solid #148CD2;
+  border: 2px solid #148CD2;
   color: #ffffff;
 }
 
@@ -660,7 +664,7 @@ QToolBar QToolButton {
 }
 
 QToolBar QToolButton:hover {
-  border: 1px solid #148CD2;
+  border: 2px solid #148CD2;
 }
 
 QToolBar QToolButton:checked {
@@ -669,7 +673,7 @@ QToolBar QToolButton:checked {
 }
 
 QToolBar QToolButton:checked:hover {
-  border: 1px solid #148CD2;
+  border: 2px solid #148CD2;
 }
 
 QToolBar::handle:horizontal {
@@ -1273,7 +1277,7 @@ QLineEdit:disabled {
 }
 
 QLineEdit:hover {
-  border: 1px solid #148CD2;
+  border: 2px solid #148CD2;
   color: #F0F0F0;
 }
 
@@ -1454,7 +1458,7 @@ QTabBar::tab:top:selected {
 }
 
 QTabBar::tab:top:!selected:hover {
-  border: 1px solid #148CD2;
+  border: 2px solid #148CD2;
   border-bottom: 3px solid #148CD2;
   padding: 0px;
 }
@@ -1482,7 +1486,7 @@ QTabBar::tab:bottom:selected {
 }
 
 QTabBar::tab:bottom:!selected:hover {
-  border: 1px solid #148CD2;
+  border: 2px solid #148CD2;
   border-top: 3px solid #148CD2;
   padding: 0px;
 }
@@ -1716,7 +1720,7 @@ QListView::hover,
 QTableView::hover,
 QColumnView::hover {
   background-color: #19232D;
-  border: 1px solid #148CD2;
+  border: 2px solid #148CD2;
 }
 
 QTreeView::item:pressed,
@@ -1991,7 +1995,7 @@ QDateEdit QAbstractItemView {
 }
 
 QAbstractView:hover {
-  border: 1px solid #148CD2;
+  border: 2px solid #148CD2;
   color: #F0F0F0;
 }
 
@@ -2003,4 +2007,8 @@ QAbstractView:selected {
 PlotWidget {
   /* Fix cut labels in plots #134 */
   padding: 0px;
+}
+
+QChart:hover {
+  border: 2px solid #148CD2;
 }

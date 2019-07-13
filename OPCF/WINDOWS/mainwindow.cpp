@@ -373,14 +373,14 @@ void MainWindow::InitFuncView()
 
 	axisX->setRange(-100, 100);
 	axisX->setTitleText("x");
-	axisX->setLabelFormat("%.2f");
+	axisX->setLabelFormat("%.1f");
 	axisX->setTickCount(21);
 	axisX->setMinorTickCount(4);
 
 
 	axisY->setRange(-100, 100);
 	axisY->setTitleText("y");
-	axisY->setLabelFormat("%.2f");
+	axisY->setLabelFormat("%.1f");
 	axisY->setTickCount(11);
 	axisY->setMinorTickCount(4);
 
@@ -746,6 +746,7 @@ void MainWindow::showDerivedActionTrigger()
 	else {
 		QChartView* DyChartView = new QChartView();
 		QChart* dy_function_view;
+		dy_function_view->setTheme(QChart::ChartThemeBrownSand);
 #ifndef NDEBUG
 		qDebug() << "showDerivedActionTrigger()\n";
 #endif // !NDEBUG
@@ -1129,7 +1130,7 @@ void MainWindow::redoTrigger()
 void MainWindow::slotPointHoverd(const QPointF & point, bool state)
 {
 	if (state) {
-		m_valueLabel->setText(QString::asprintf("%.3f,%.3f", point.x(), point.y()));
+		m_valueLabel->setText(QString::asprintf("%.2f,%.2f", point.x(), point.y()));
 
 		QPoint curPos = mapFromGlobal(QCursor::pos());
 		m_valueLabel->move(curPos.x() - m_valueLabel->width() / 2, curPos.y() - m_valueLabel->height() * 1.5);
@@ -1230,20 +1231,5 @@ void MainWindow::loadExcelFile()
 				functionText->setPlainText("Loading excel file successfully!");
 			}
 		}
-	}
-}
-
-void MainWindow::setUI()
-{
-	QFile f(":/qdarkstyle/img/src/qdarkstyle/style.qss");
-	if (!f.exists())
-	{
-		qDebug() << ("Unable to set stylesheet, file not found\n") << endl;
-	}
-	else
-	{
-		f.open(QFile::ReadOnly | QFile::Text);
-		QTextStream ts(&f);
-		centralWidget->setStyleSheet(ts.readAll());
 	}
 }

@@ -42,7 +42,6 @@ public:
 	void set_dy_points(std::shared_ptr<Points>dyPoints);
 	void set_range_x(std::shared_ptr<Point>range_xx);
 	void set_range_y(std::shared_ptr<Point>range_yy);
-	void setUI();
 
 	std::shared_ptr<IPropertyNotification> get_updateSink();
 	void set_runCommand(const std::shared_ptr<ICommandBase>& cmd);
