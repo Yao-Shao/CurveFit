@@ -403,38 +403,24 @@ void MainWindow::InitFuncView()
 
 void MainWindow::mouseMoveEvent(QMouseEvent* e)
 {
-
 	if (!initFuncView && pressAddingBtn) {
-
 		// Setting the mouse position label on the axis from value to position
-		qreal x = (e->pos()).x();
-		qreal y = (e->pos()).y();
-		QPointF basep0 = basePoints->at(0);
-		QPointF basep1 = basePoints->at(1);
+		auto const widgetPos = e->pos();
+		auto const scenePos = chartView->mapFromGlobal(widgetPos);
+		auto const chartItemPos = chartView->mapToScene(scenePos);
+		auto const picval = chartView->chart()->mapFromScene(chartItemPos);
+		QPointF pos;
+		pos.setX(picval.x());
+		pos.setY(picval.y() + 30);
+		auto const pickVal = chartView->chart()->mapToValue(pos, function_view->series().at(0));
 
 
-
-		QPointF pixbase0 = function_view->mapToPosition(basep0, basePoints);
-
-		qDebug() << pixbase0;
-
-		m_valueLabel->setText(QString::asprintf("%.3f,%.3f",pixbase0.x(), pixbase0.y()));
+		m_valueLabel->setText(QString::asprintf("%.3f,%.3f",pickVal.x(), pickVal.y()));
 
 		QPoint curPos = mapFromGlobal(QCursor::pos());
 		m_valueLabel->move(curPos.x() - m_valueLabel->width() / 2, curPos.y() - m_valueLabel->height() * 1.5);
 
 		m_valueLabel->show();
-
-		qreal xVal = function_view->mapToValue(e->pos()).x();
-		qreal yVal = function_view->mapToValue(e->pos()).y();
-		qreal maxX = axisX->max();
-		qreal minX = axisX->min();
-		qreal maxY = axisY->max();
-		qreal minY = axisY->min();
-		if (xVal <= maxX && xVal >= minX && yVal <= maxY && yVal >= minY)
-		{
-
-		}
 	}
 	//mouseMoveEvent(e);
 }
@@ -442,37 +428,31 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e)
 void MainWindow::mousePressEvent(QMouseEvent* e)
 {
 
-#ifndef NDEBUG
-	qDebug() << "This mousePress pos" << (e->pos()).x() << " " << (e->pos()).y() << endl;
-	qDebug() << "This chartview pos" << (chartView->pos()).x() << " " << (chartView->pos()).y() << endl;
-	qDebug() << "This is the functionview position" << (function_view->pos().x()) << " " << (function_view->pos()).y() << endl;
-#endif // !NDEBUG
-	qreal* left;
-	qreal* top;
-	qreal* right;
-	qreal* bot;
-	//qDebug() << "origin " << *left << " " << *top << " " << *right << " " << *bot << endl;
-	//function_view->getContentsMargins(left, top, right, bot);
-	//qDebug() << "origin " << *left << " " << *top << " " << *right << " " << *bot << endl;
-	//function_view->getWindowFrameMargins(left, top, right, bot);
-	//qDebug() << "origin " << *left << " " << *top << " " << *right << " " << *bot << endl;
-
 	if (!initFuncView && pressAddingBtn) {
 		auto inScene = function_view->plotArea();
 		auto inChart = function_view->mapFromScene(inScene);
+		auto inChartRect = inChart.boundingRect();
+		auto inItem1 = chartView->chart()->mapToValue(inChartRect.topLeft(), function_view->series().at(0));
+		auto inItem2 = chartView->chart()->mapToValue(inChartRect.bottomRight(), function_view->series().at(0));
 		auto const widgetPos = e->pos();
 		auto const scenePos =  chartView->mapFromGlobal(widgetPos);
 		auto const chartItemPos = chartView->mapToScene(scenePos);
 		auto const picval = chartView->chart()->mapFromScene(chartItemPos);
-		auto const pickVal = chartView->chart()->mapToValue(scenePos, function_view->series().at(0));
+		QPointF pos;
+		pos.setX(picval.x());
+		pos.setY(picval.y() + 30);
+		auto const pickVal = chartView->chart()->mapToValue(pos, function_view->series().at(0));
 		qDebug() << " in sence " << inScene;
 		qDebug() << " in Chart " << inChart;
+		qDebug() << " in Chart Rect " << inChartRect;
+		qDebug() << "inItems " << inChartRect.topLeft();
+		qDebug() << " inItem2" << pos;
 		qDebug() << "widgetPos:" << widgetPos;
 		qDebug() << "scenePos:" << scenePos;
 		qDebug() << "chartItemPos:" << chartItemPos;
 		qDebug() << "valSeries:" << picval;
 
-		QPointF pos = pickVal;
+		pos = pickVal;
 		addPoint(pos);
 	}
 }
@@ -711,7 +691,7 @@ void MainWindow::setLayout()
 
 	m_layout->setColumnStretch(0, 3);
 	m_layout->setColumnStretch(1, 5);
-	m_layout->setRowStretch(0, 2);
+	m_layout->setRowStretch(0,3);
 	m_layout->setRowStretch(1, 1);
 
 	centralWidget->setLayout(m_layout);
