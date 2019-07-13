@@ -48,12 +48,20 @@ MainWindow::MainWindow(QWidget* parent) :
 	FileIsNew = true;
 	undo_flag = false;
 	redo_flag = false;
+	initFuncView = true;
+	pressAddingBtn = false;
+	basePoints = new QScatterSeries();
+	axisX = new QValueAxis(this);
+	axisY = new QValueAxis(this);
+
+
 
 	showMaximized();
 	createMenu();
 	createToolBar();
 	createTable();
 	createFuncText();
+	InitFuncView();
 	setLayout();
 }
 
@@ -122,7 +130,13 @@ void MainWindow::createToolBar()
 	toolBar->addWidget(runAction);
 	connect(runAction, SIGNAL(clicked()), this, SLOT(runActionTrigger()));
 
-
+	/* adding points */
+	QAction* isAddingAction = new QAction("Add Point", toolBar);
+	isAddingAction->setIcon(QIcon(":/OPCF/img/dot.png"));
+	isAddingAction->setToolTip(tr("Add Point"));
+	isAddingAction->setCheckable(true);
+	toolBar->addAction(isAddingAction);
+	connect(isAddingAction, SIGNAL(changed()), this, SLOT(isAddingActionTrigger()));
 	/*
 	/*
 	QAction* drawLineAction = new QAction("Line", toolBar);
@@ -252,7 +266,7 @@ void MainWindow::createFuncView()
 	QScatterSeries* all_points = new QScatterSeries(this);
 	QLineSeries* series = new QLineSeries(this);
 	qreal x, y;
-	for(auto i = 0; i < real_xy_points->size(); i++) {
+	for (auto i = 0; i < real_xy_points->size(); i++) {
 		x = ((*real_xy_points)[i]).getx();
 		y = ((*real_xy_points)[i]).gety();
 		series->append(x, y);
@@ -288,9 +302,9 @@ void MainWindow::createFuncView()
 	function_view->addSeries(samplepoints_o);
 
 #ifndef NDEBUG
-	qDebug() << " real_xy_points->size():\n"<<real_xy_points->size();
+	qDebug() << " real_xy_points->size():\n" << real_xy_points->size();
 	qDebug() << "x range" << range_x->getx() << " to  " << range_x->gety() << "\n";
-	qDebug()<<"y range "<< range_y->getx() << " to  " << range_y->gety() << "\n";
+	qDebug() << "y range " << range_y->getx() << " to  " << range_y->gety() << "\n";
 #endif // !NDEBUG
 	double start_x = range_x->getx();
 	double end_x = range_x->gety();
@@ -314,17 +328,17 @@ void MainWindow::createFuncView()
 		end_y = ceil((end_y + length_y / 10) * 100) / 100;
 	}
 
-	QValueAxis* axisX = new QValueAxis(this);
-	axisX->setRange(start_x,end_x);
+	axisX = new QValueAxis(this);
+	axisX->setRange(start_x, end_x);
 	axisX->setTitleText("x");
 	axisX->setLabelFormat("%.2f");
 	axisX->setTickCount(21);
 	axisX->setMinorTickCount(4);
 
-	QValueAxis* axisY = new QValueAxis(this);
-	axisY->setRange(start_y,end_y);
+	axisY = new QValueAxis(this);
+	axisY->setRange(start_y, end_y);
 	axisY->setTitleText("y");
-	axisY->setLabelFormat("%.2f"); 
+	axisY->setLabelFormat("%.2f");
 	axisY->setTickCount(11);
 	axisY->setMinorTickCount(4);
 
@@ -344,10 +358,148 @@ void MainWindow::createFuncView()
 	connect(samplepoints_o, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
 	connect(all_points, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
 
+	basePoints->append(start_x, end_y);
+	basePoints->append(end_x,start_y);
+	function_view->addSeries(basePoints);
+
+	function_view->setAxisX(axisX, basePoints);
+	function_view->setAxisY(axisY, basePoints);
+
+	chartView->setChart(function_view);
+	function_view->setAutoFillBackground(true);
+	chartView->show();
+}
+
+void MainWindow::InitFuncView()
+{
+	initFuncView = false;
+	function_view = new QChart();
+
+	axisX = new QValueAxis(this);
+	axisX->setRange(-100, 100);
+	axisX->setTitleText("x");
+	axisX->setLabelFormat("%.2f");
+	axisX->setTickCount(21);
+	axisX->setMinorTickCount(4);
+
+	axisY = new QValueAxis(this);
+	axisY->setRange(-100, 100);
+	axisY->setTitleText("y");
+	axisY->setLabelFormat("%.2f");
+	axisY->setTickCount(11);
+	axisY->setMinorTickCount(4);
+
+	basePoints->append(-100, 100);
+	basePoints->append(100, -100);
+
+	function_view->addSeries(basePoints);
+
+	function_view->setAxisX(axisX, basePoints);
+	function_view->setAxisY(axisY, basePoints);
+
 	chartView->setChart(function_view);
 	chartView->show();
 }
 
+void MainWindow::mouseMoveEvent(QMouseEvent* e)
+{
+
+	if (!initFuncView && pressAddingBtn) {
+
+		// Setting the mouse position label on the axis from value to position
+		qreal x = (e->pos()).x();
+		qreal y = (e->pos()).y();
+		QPointF basep0 = basePoints->at(0);
+		QPointF basep1 = basePoints->at(1);
+
+
+
+		QPointF pixbase0 = function_view->mapToPosition(basep0, basePoints);
+
+		qDebug() << pixbase0;
+
+		m_valueLabel->setText(QString::asprintf("%.3f,%.3f",pixbase0.x(), pixbase0.y()));
+
+		QPoint curPos = mapFromGlobal(QCursor::pos());
+		m_valueLabel->move(curPos.x() - m_valueLabel->width() / 2, curPos.y() - m_valueLabel->height() * 1.5);
+
+		m_valueLabel->show();
+
+		qreal xVal = function_view->mapToValue(e->pos()).x();
+		qreal yVal = function_view->mapToValue(e->pos()).y();
+		qreal maxX = axisX->max();
+		qreal minX = axisX->min();
+		qreal maxY = axisY->max();
+		qreal minY = axisY->min();
+		if (xVal <= maxX && xVal >= minX && yVal <= maxY && yVal >= minY)
+		{
+
+		}
+	}
+	//mouseMoveEvent(e);
+}
+
+void MainWindow::mousePressEvent(QMouseEvent* e)
+{
+
+#ifndef NDEBUG
+	qDebug() << "This mousePress pos" << (e->pos()).x() << " " << (e->pos()).y() << endl;
+	qDebug() << "This chartview pos" << (chartView->pos()).x() << " " << (chartView->pos()).y() << endl;
+	qDebug() << "This is the functionview position" << (function_view->pos().x()) << " " << (function_view->pos()).y() << endl;
+#endif // !NDEBUG
+	qreal* left;
+	qreal* top;
+	qreal* right;
+	qreal* bot;
+	//qDebug() << "origin " << *left << " " << *top << " " << *right << " " << *bot << endl;
+	//function_view->getContentsMargins(left, top, right, bot);
+	//qDebug() << "origin " << *left << " " << *top << " " << *right << " " << *bot << endl;
+	//function_view->getWindowFrameMargins(left, top, right, bot);
+	//qDebug() << "origin " << *left << " " << *top << " " << *right << " " << *bot << endl;
+
+	if (!initFuncView && pressAddingBtn) {
+		auto inScene = function_view->plotArea();
+		auto inChart = function_view->mapFromScene(inScene);
+		auto const widgetPos = e->pos();
+		auto const scenePos =  chartView->mapFromGlobal(widgetPos);
+		auto const chartItemPos = chartView->mapToScene(scenePos);
+		auto const picval = chartView->chart()->mapFromScene(chartItemPos);
+		auto const pickVal = chartView->chart()->mapToValue(scenePos, function_view->series().at(0));
+		qDebug() << " in sence " << inScene;
+		qDebug() << " in Chart " << inChart;
+		qDebug() << "widgetPos:" << widgetPos;
+		qDebug() << "scenePos:" << scenePos;
+		qDebug() << "chartItemPos:" << chartItemPos;
+		qDebug() << "valSeries:" << picval;
+
+		QPointF pos = pickVal;
+		addPoint(pos);
+	}
+}
+
+void MainWindow::mouseReleaseEvent(QMouseEvent* e)
+{
+}
+
+bool MainWindow::addPoint(QPointF p)
+{
+	//pointsData.push_back(Point(p.rx(), p.ry()));
+	for (int i = 0; i < ROW; i++)
+	{
+		QTableWidgetItem* item1 = table->item(i, 0);
+		QTableWidgetItem* item2 = table->item(i, 1);
+		if (item1 == NULL || (item1->text() == "") || item2 == NULL || (item2->text() == "")) {
+			item1 = new QTableWidgetItem;
+			item2 = new QTableWidgetItem;
+			item1->setText(QString::number(p.rx()));
+			item2->setText(QString::number(p.ry()));
+			table->setItem(i, 0, item1);
+			table->setItem(i, 1, item2);
+			break;
+		}
+	}
+	return true;
+}
 
 void MainWindow::error_info()
 {
@@ -513,6 +665,11 @@ void MainWindow::runActionTrigger()
 #endif // !NDEBUG
 }
 
+void MainWindow::isAddingActionTrigger()
+{
+	pressAddingBtn = !pressAddingBtn;
+}
+
 void MainWindow::update()
 {
 	error_label_pic->close();
@@ -548,7 +705,6 @@ void MainWindow::setLayout()
 
 	table->setMaximumWidth(400);
 	m_layout->addWidget(table, 0, 0, 2, 1);
-	m_layout->addWidget(chartView, 0, 1);
 	m_layout->addWidget(chartView, 0, 1);
 	m_layout->addWidget(error_label_pic, 0, 1);
 	m_layout->addWidget(functionText, 1, 1);

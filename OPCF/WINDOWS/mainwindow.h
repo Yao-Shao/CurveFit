@@ -62,6 +62,7 @@ public slots:
 	void openFile();
 	void drawLineActionTrigger();
 	void runActionTrigger();
+	void isAddingActionTrigger();
 	void drawEclipseActionTrigger();
 	void drawRectangleActionTrigger();
 	void drawTriangleActionTrigger();
@@ -99,6 +100,13 @@ private:
 	QChart* function_view;
 	QPlainTextEdit* functionText;
 	QTableWidget* table;
+
+
+	bool initFuncView;
+	bool pressAddingBtn;
+	QValueAxis* axisX;
+	QValueAxis* axisY;
+	QScatterSeries* basePoints;
 
 
 	QPixmap myPix;
@@ -145,6 +153,12 @@ private:
 	void createTable();
 	void createFuncText();
 	void createFuncView();
+	void InitFuncView();
+
+	void mouseMoveEvent(QMouseEvent* e);
+	void mousePressEvent(QMouseEvent* e);
+	void mouseReleaseEvent(QMouseEvent* e);
+	bool addPoint(QPointF p);
 };
 
 #endif // MAINWINDOW_H
