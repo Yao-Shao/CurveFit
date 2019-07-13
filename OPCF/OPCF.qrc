@@ -3,13 +3,12 @@
         <file>img/running.png</file>
         <file>img/logo.png</file>
         <file>img/run_error.png</file>
-        <file>img/addPoint.png</file>
         <file>HelpDoc/HelpDoc.pdf</file>
-        <file>img/showD.png</file>
-        <file>img/dot.png</file>
+        <file>img/addPoint.png</file>
         <file>img/redo.png</file>
-        <file>img/undo.png</file>
         <file>img/save.png</file>
+        <file>img/undo.png</file>
+        <file>img/showD.png</file>
     </qresource>
     <qresource prefix="/qss_icons">
         <file>img/src/rc/arrow_down.png</file>

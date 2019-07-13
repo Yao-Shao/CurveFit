@@ -8,7 +8,7 @@
 #include <stack>
 #include <array>
 #include <QtDebug>
-
+#define NDEBUG
 //types
 typedef unsigned char     uchar;
 typedef unsigned short    ushort;

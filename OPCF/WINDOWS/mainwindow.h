@@ -19,7 +19,7 @@
 #include "../COMMON/param.h"
 #include "sinks/updateSink.h"
 #include "sinks/runSink.h"
-
+#define NDEBUG
 #define LENGTH 1080
 #define WIDTH 720
 #define ROW 50
@@ -62,8 +62,9 @@ public slots:
 	bool saveAs();
 	void openFile();
 	void loadExcelFile();
-	void isAddingActionTrigger();
 	void runActionTrigger();
+	void isAddingActionTrigger();
+
 	void showDerivedActionTrigger();
 	/* undo redo*/
 	void undoTrigger();
@@ -93,15 +94,17 @@ private:
 
 	/* table chart functionText*/
 	QChartView* chartView;
+	QGraphicsScene* chartscene;
 	QChart* function_view;
-	bool initFuncView;
-	QValueAxis* axisX;
-	QValueAxis* axisY;
-	QGraphicsSimpleTextItem* m_coordX;
-	QGraphicsSimpleTextItem* m_coordY;
-	bool error;
 	QPlainTextEdit* functionText;
 	QTableWidget* table;
+
+
+	bool initFuncView;
+	bool pressAddingBtn;
+	QValueAxis* axisX;
+	QValueAxis* axisY;
+	QScatterSeries* basePoints;
 
 
 	QPixmap myPix;
@@ -127,9 +130,6 @@ private:
 	std::shared_ptr<ICommandBase> m_cmdRun;
 	std::shared_ptr<runSink> m_runSink;
 
-	/*tool bar*/
-	bool pressAddingBtn;
-
 	/* file */
 	QString openFileAddr;
 	QString saveFileAddr;
@@ -144,6 +144,12 @@ private:
 	bool undo_flag;
 	bool redo_flag;
 
+	/**/
+	QScatterSeries* all_points;
+	QLineSeries* series;
+	QScatterSeries* samplepoints;
+	QScatterSeries* samplepoints_o;
+
 	bool getPoints();
 	bool checkPoints();
 	void createToolBar();
@@ -151,17 +157,12 @@ private:
 	void createTable();
 	void createFuncText();
 	void createFuncView();
+	void InitFuncView();
+
 	void mouseMoveEvent(QMouseEvent* e);
 	void mousePressEvent(QMouseEvent* e);
 	void mouseReleaseEvent(QMouseEvent* e);
 	bool addPoint(QPointF p);
-
-
-
-	void drawEclipseActionTrigger();
-	void drawRectangleActionTrigger();
-	void drawTriangleActionTrigger();
-	
 };
 
 #endif // MAINWINDOW_H

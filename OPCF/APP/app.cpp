@@ -29,13 +29,14 @@ void app_opcf::run()
 	_mainwindow.set_range_y(viewmodel->getRangeY());
 	_mainwindow.set_sample_points(viewmodel->getSamplePoints());
 	_mainwindow.set_dy_points(viewmodel->getDyPoints());
-
 	//command
 	_mainwindow.set_runCommand(viewmodel->get_fitCommand());
 
 	//notifications
 	viewmodel->AddPropertyNotification(_mainwindow.get_updateSink());
 	viewmodel->AddCommandNotification(_mainwindow.get_runSink());
+
+	//_mainwindow.setMouseTracking(true);
 
 	_mainwindow.show();
 }

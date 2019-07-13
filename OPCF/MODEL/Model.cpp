@@ -3,6 +3,7 @@
 #include "math.h"
 #define precision 1e-13
 #define STARTLNFUNCT 1e-4
+#define NDEBUG
 
 Model::Model()
 {
