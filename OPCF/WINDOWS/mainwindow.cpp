@@ -18,6 +18,9 @@
 #include "mainwindow.h"
 #include "math.h"
 
+#define NDEBUG
+#define DIFFBOUND 1e-6
+
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent),
 	m_updateSink(std::make_shared<updateSink>(this)),
@@ -28,6 +31,8 @@ MainWindow::MainWindow(QWidget* parent) :
 {
 	centralWidget = new QWidget;
 	setCentralWidget(centralWidget);
+
+	//centralWidget->setMouseTracking(true);
 	
 	setMinimumSize(LENGTH, WIDTH);
 	showMaximized();
@@ -50,6 +55,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	redo_flag = false;
 	initFuncView = true;
 	pressAddingBtn = false;
+	whether_move_point = false;
 	basePoints = new QScatterSeries();
 	axisX = new QValueAxis(this);
 	axisY = new QValueAxis(this);
@@ -290,9 +296,9 @@ void MainWindow::createTable()
 
 void MainWindow::createFuncText()
 {
-#ifndef DEBUG
+#ifndef NDEBUG
 	qDebug() << "In create Function Text\n";
-#endif // !DEBUG
+#endif // !NDEBUG
 
 	functionText = new QPlainTextEdit(this);
 	functionText->setReadOnly(true);
@@ -375,6 +381,7 @@ void MainWindow::createFuncView()
 	/*show points' value*/
 	connect(samplepoints_o, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
 	connect(all_points, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
+	connect(samplepoints_o, &QScatterSeries::doubleClicked, this, &MainWindow::movePoint);
 	/*
 	basePoints->append(start_x, end_y);
 	basePoints->append(end_x,start_y);
@@ -383,8 +390,8 @@ void MainWindow::createFuncView()
 	function_view->setAxisX(axisX, basePoints);
 	function_view->setAxisY(axisY, basePoints);
 	*/
+	//chartView->setMouseTracking(true);
 	chartView->setChart(function_view);
-	function_view->setAutoFillBackground(true);
 	chartView->show();
 }
 
@@ -418,8 +425,8 @@ void MainWindow::InitFuncView()
 
 void MainWindow::mouseMoveEvent(QMouseEvent* e)
 {
-	/*
-	if (!initFuncView && pressAddingBtn) {
+
+	if (!initFuncView) {
 		// Setting the mouse position label on the axis from value to position
 		auto const widgetPos = e->pos();
 		auto const scenePos = chartView->mapFromGlobal(widgetPos);
@@ -431,21 +438,22 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e)
 		auto const pickVal = chartView->chart()->mapToValue(pos, function_view->series().at(0));
 
 
-		m_valueLabel->setText(QString::asprintf("%.3f,%.3f",pickVal.x(), pickVal.y()));
+		m_valueLabel->setText(QString::asprintf("%.3f,%.3f", pickVal.x(), pickVal.y()));
 
-		QPoint curPos = mapFromGlobal(QCursor::pos());
+		QPoint curPos = e->pos();
 		m_valueLabel->move(curPos.x() - m_valueLabel->width() / 2, curPos.y() - m_valueLabel->height() * 1.5);
 
 		m_valueLabel->show();
+		
 	}
 	//mouseMoveEvent(e);
-	*/
+
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* e)
 {
-
-	if (!initFuncView && pressAddingBtn) {
+	qDebug() << "pres" << endl;
+	if (!initFuncView) {
 		auto inScene = function_view->plotArea();
 		auto inChart = function_view->mapFromScene(inScene);
 		auto inChartRect = inChart.boundingRect();
@@ -459,6 +467,7 @@ void MainWindow::mousePressEvent(QMouseEvent* e)
 		pos.setX(picval.x());
 		pos.setY(picval.y() + 30);
 		auto const pickVal = chartView->chart()->mapToValue(pos, function_view->series().at(0));
+#ifndef NDEBUG
 		qDebug() << " in sence " << inScene;
 		qDebug() << " in Chart " << inChart;
 		qDebug() << " in Chart Rect " << inChartRect;
@@ -468,14 +477,50 @@ void MainWindow::mousePressEvent(QMouseEvent* e)
 		qDebug() << "scenePos:" << scenePos;
 		qDebug() << "chartItemPos:" << chartItemPos;
 		qDebug() << "valSeries:" << picval;
-
-		pos = pickVal;
-		addPoint(pos);
+#endif // !NDEBUG
+		if (pressAddingBtn) {
+			addPoint(pickVal);
+		}
+		if (whether_move_point) {
+			QTableWidgetItem* item1 = new QTableWidgetItem;
+			QTableWidgetItem* item2 = new QTableWidgetItem;
+			item1->setText(QString::number(pickVal.x()));
+			item2->setText(QString::number(pickVal.x()));
+			table->setItem(movepoint_row, 0, item1);
+			table->setItem(movepoint_row, 1, item2);
+			qDebug() << (item1->text()).toDouble() << item2->text().toDouble() << "\n";
+			table->update();
+			runActionTrigger();
+			whether_move_point = false;
+		}
 	}
+}
+
+void MainWindow::movePoint(const QPointF& p)
+{
+	qDebug() << "Qpoints" << endl;
+	whether_move_point = true;
+	//pointsData.push_back(Point(p.rx(), p.ry()));
+	for (int i = 0; i < ROW; i++)
+	{
+	
+		double data1 = table->item(i, 0)->text().toDouble();
+		double data2 = table->item(i, 1)->text().toDouble();
+		if ((abs((data1 - p.x())) < DIFFBOUND) && (abs((data2 - p.y())< DIFFBOUND))) {
+			movepoint_row = i;
+			break;
+		}
+	}
+	qDebug() << "Row " << movepoint_row << endl;
+	return ;
+
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* e)
 {
+	qDebug() << "hello" << endl;
+	m_valueLabel->hide();
+	//setMouseTracking(true);
 }
 
 bool MainWindow::addPoint(QPointF p)
@@ -566,7 +611,6 @@ bool MainWindow::getPoints()
 			double data2 = (item2->text()).toDouble(&valid2);
 			if (valid1 && valid2) {
 				pointsData.push_back(Point(data1, data2));
-				qDebug() << (item1->text()).toDouble() << item2->text().toDouble() << "\n";
 			}
 			else {
 				continue;
@@ -1135,6 +1179,7 @@ void MainWindow::slotPointHoverd(const QPointF& point, bool state)
 		m_valueLabel->hide();
 
 }
+
 
 void MainWindow::openHelpFile()
 {

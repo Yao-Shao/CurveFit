@@ -18,7 +18,7 @@
 #include "../COMMON/param.h"
 #include "sinks/updateSink.h"
 #include "sinks/runSink.h"
-
+#define NDEBUG
 #define LENGTH 1080
 #define WIDTH 720
 #define ROW 50
@@ -74,6 +74,7 @@ public slots:
 	
 	/*show points*/
 	void slotPointHoverd(const QPointF& point, bool state);
+	void movePoint(const QPointF& p);
 
 	/*seek help file*/
 	void openHelpFile();
@@ -108,6 +109,7 @@ private:
 	QValueAxis* axisY;
 	QScatterSeries* basePoints;
 
+	bool whether_move_point;
 
 	QPixmap myPix;
 	QLabel* error_label_pic;
@@ -139,6 +141,7 @@ private:
 	bool FileIsNew;
 	bool FileChanged;
 	bool flag_isOpen;
+	int movepoint_row;
 	
 	/*ReDo and UnDo stack*/
 	std::stack<Param_opcf> redo_stack;
