@@ -7,6 +7,7 @@
 #include<qdebug.h>
 #define Infinity 100000000
 #define BLOCK_SIZE 400
+#define NDEBUG
 enum Type {
 	LINEAR_FUNCTION,
 	QUADRATIC_FUNCTION,
