@@ -19,8 +19,9 @@
 #include "mainwindow.h"
 #include "math.h"
 
-
 #define NDEBUG
+#define DIFFBOUND 1e-6
+
 
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent),
@@ -32,6 +33,8 @@ MainWindow::MainWindow(QWidget* parent) :
 {
 	centralWidget = new QWidget;
 	setCentralWidget(centralWidget);
+
+	//centralWidget->setMouseTracking(true);
 	
 	setMinimumSize(LENGTH, WIDTH);
 	showMaximized();
@@ -52,10 +55,11 @@ MainWindow::MainWindow(QWidget* parent) :
 	FileIsNew = true;
 	undo_flag = false;
 	redo_flag = false;
-	
 
 	initFuncView = true;
 	pressAddingBtn = false;
+	whether_move_point = false;
+    
 	basePoints = new QScatterSeries();
 	axisX = new QValueAxis(this);
 	axisY = new QValueAxis(this);
@@ -64,6 +68,53 @@ MainWindow::MainWindow(QWidget* parent) :
 	series = new QLineSeries(this);
 	samplepoints = new QScatterSeries(this);
 	samplepoints_o = new QScatterSeries(this);
+
+	function_view->addSeries(all_points);
+	function_view->addSeries(samplepoints);
+	function_view->addSeries(samplepoints_o);
+	function_view->addSeries(basePoints);
+	function_view->addSeries(series);
+
+	function_view->setAxisX(axisX, basePoints);
+	function_view->setAxisY(axisY, basePoints);
+
+	function_view->setAxisX(axisX, series);
+	function_view->setAxisY(axisY, series);
+
+	function_view->setAxisX(axisX, all_points);
+	function_view->setAxisY(axisY, all_points);
+
+	function_view->setAxisX(axisX, samplepoints);
+	function_view->setAxisY(axisY, samplepoints);
+
+	function_view->setAxisX(axisX, samplepoints_o);
+	function_view->setAxisY(axisY, samplepoints_o);
+
+
+	series->setBrush(QColor(21, 100, 255));
+	series->setColor(QColor(21, 100, 255));
+
+	all_points->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+	all_points->setBorderColor(QColor(21, 100, 255));
+	all_points->setBrush(QColor(21, 100, 255));
+	all_points->setMarkerSize(1);
+
+	samplepoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+	samplepoints->setBorderColor(QColor(21, 100, 255));
+	samplepoints->setBrush(QColor(21, 100, 255));
+	samplepoints->setMarkerSize(10);
+
+	samplepoints_o->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+	samplepoints_o->setBorderColor(Qt::white);
+	samplepoints_o->setBrush(Qt::white);
+	samplepoints_o->setMarkerSize(5);
+
+	basePoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+	basePoints->setBorderColor(Qt::white);
+	basePoints->setBrush(Qt::white);
+	basePoints->setMarkerSize(1);
+
+
 
 	createMenu();
 	createToolBar();
@@ -141,6 +192,49 @@ void MainWindow::createToolBar()
 	runAction->setToolTip(tr("Show fit curve"));
 	toolBar->addWidget(runAction);
 	connect(runAction, SIGNAL(clicked()), this, SLOT(runActionTrigger()));
+
+	/* adding points */
+	QAction* isAddingAction = new QAction("Add Point", toolBar);
+	isAddingAction->setIcon(QIcon(":/OPCF/img/dot.png"));
+	isAddingAction->setToolTip(tr("Add Point"));
+	isAddingAction->setCheckable(true);
+	toolBar->addAction(isAddingAction);
+	connect(isAddingAction, SIGNAL(changed()), this, SLOT(isAddingActionTrigger()));
+	/*
+	/*
+	QAction* drawLineAction = new QAction("Line", toolBar);
+	drawLineAction->setIcon(QIcon(":/src/Line.png"));
+	drawLineAction->setToolTip(tr("Line"));
+	drawLineAction->setCheckable(true);
+	graghGroup->addAction(drawLineAction);
+	toolBar->addAction(drawLineAction);
+	connect(drawLineAction, SIGNAL(triggered()), this, SLOT(drawLineActionTrigger()));
+
+	QAction* drawEclipseAction = new QAction("Eclipse", toolBar);
+	drawEclipseAction->setIcon(QIcon(":/src/Eclipse.png"));
+	drawEclipseAction->setToolTip(tr("Eclipse(ctrl for circle)"));
+	drawEclipseAction->setCheckable(true);
+	graghGroup->addAction(drawEclipseAction);
+	toolBar->addAction(drawEclipseAction);
+	connect(drawEclipseAction, SIGNAL(triggered()), this, SLOT(drawEclipseActionTrigger()));
+
+	QAction* drawRectangleAction = new QAction("Rectangle", toolBar);
+	drawRectangleAction->setIcon(QIcon(":/src/Rectangle.png"));
+	drawRectangleAction->setToolTip(tr("Rectangle(ctrl for square)"));
+	drawRectangleAction->setCheckable(true);
+	graghGroup->addAction(drawRectangleAction);
+	toolBar->addAction(drawRectangleAction);
+	connect(drawRectangleAction, SIGNAL(triggered()), this, SLOT(drawRectangleActionTrigger()));
+
+	QAction* drawTriangleAction = new QAction("Triangle", toolBar);
+	drawTriangleAction->setIcon(QIcon(":/src/Triangle.png"));
+	drawTriangleAction->setToolTip(tr("Triangle"));
+	drawTriangleAction->setCheckable(true);
+	graghGroup->addAction(drawTriangleAction);
+	toolBar->addAction(drawTriangleAction);
+	connect(drawTriangleAction, SIGNAL(triggered()), this, SLOT(drawTriangleActionTrigger()));
+	*/
+
 
 	/* fit type */
 	fitTypeComboBox = new QComboBox(this);
@@ -301,6 +395,8 @@ void MainWindow::createFuncView()
 	/*show points' value*/
 	connect(samplepoints_o, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
 	connect(all_points, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
+	connect(samplepoints_o, &QScatterSeries::doubleClicked, this, &MainWindow::movePoint);
+
 	/*
 	basePoints->append(start_x, end_y);
 	basePoints->append(end_x,start_y);
@@ -318,52 +414,6 @@ void MainWindow::InitFuncView()
 {
 	initFuncView = false;
 
-
-	function_view->addSeries(all_points);
-	function_view->addSeries(samplepoints);
-	function_view->addSeries(samplepoints_o);
-	function_view->addSeries(basePoints);
-	function_view->addSeries(series);
-
-	function_view->setAxisX(axisX, basePoints);
-	function_view->setAxisY(axisY, basePoints);
-
-	function_view->setAxisX(axisX, series);
-	function_view->setAxisY(axisY, series);
-
-	function_view->setAxisX(axisX, all_points);
-	function_view->setAxisY(axisY, all_points);
-
-	function_view->setAxisX(axisX, samplepoints);
-	function_view->setAxisY(axisY, samplepoints);
-
-	function_view->setAxisX(axisX, samplepoints_o);
-	function_view->setAxisY(axisY, samplepoints_o);
-
-
-	series->setBrush(QColor(21, 100, 255));
-	series->setColor(QColor(21, 100, 255));
-
-	all_points->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	all_points->setBorderColor(QColor(21, 100, 255));
-	all_points->setBrush(QColor(21, 100, 255));
-	all_points->setMarkerSize(1);
-
-	samplepoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	samplepoints->setBorderColor(QColor(21, 100, 255));
-	samplepoints->setBrush(QColor(21, 100, 255));
-	samplepoints->setMarkerSize(10);
-
-	samplepoints_o->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	samplepoints_o->setBorderColor(Qt::white);
-	samplepoints_o->setBrush(Qt::white);
-	samplepoints_o->setMarkerSize(5);
-
-	basePoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	basePoints->setBorderColor(Qt::white);
-	basePoints->setBrush(Qt::white);
-	basePoints->setMarkerSize(1);
-
 	axisX->setRange(-100, 100);
 	axisX->setTitleText("x");
 	axisX->setLabelFormat("%.2f");
@@ -380,13 +430,15 @@ void MainWindow::InitFuncView()
 	basePoints->append(-100, 100);
 	basePoints->append(100, -100);
 
+	
+
 	chartView->setChart(function_view);
 	chartView->show();
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* e)
 {
-	//setMouseTracking(true);
+
 	if (!initFuncView) {
 		// Setting the mouse position label on the axis from value to position
 		auto const widgetPos = e->pos();
@@ -399,7 +451,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e)
 		auto const pickVal = chartView->chart()->mapToValue(pos, function_view->series().at(0));
 
 
-		m_valueLabel->setText(QString::asprintf("%.3f,%.3f",pickVal.x(), pickVal.y()));
+		m_valueLabel->setText(QString::asprintf("%.3f,%.3f", pickVal.x(), pickVal.y()));
 
 		QPoint curPos = e->pos();
 		m_valueLabel->move(curPos.x() - m_valueLabel->width() / 2, curPos.y() - m_valueLabel->height() * 1.5);
@@ -413,7 +465,8 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e)
 void MainWindow::mousePressEvent(QMouseEvent* e)
 {
 
-	if (!initFuncView && pressAddingBtn) {
+	qDebug() << "pres" << endl;
+	if (!initFuncView) {
 		auto inScene = function_view->plotArea();
 		auto inChart = function_view->mapFromScene(inScene);
 		auto inChartRect = inChart.boundingRect();
@@ -438,13 +491,51 @@ void MainWindow::mousePressEvent(QMouseEvent* e)
 		qDebug() << "chartItemPos:" << chartItemPos;
 		qDebug() << "valSeries:" << picval;
 #endif // !NDEBUG
-		addPoint(pickVal);
+
+		if (pressAddingBtn) {
+			addPoint(pickVal);
+		}
+		if (whether_move_point) {
+			QTableWidgetItem* item1 = new QTableWidgetItem;
+			QTableWidgetItem* item2 = new QTableWidgetItem;
+			item1->setText(QString::number(pickVal.x()));
+			item2->setText(QString::number(pickVal.x()));
+			table->setItem(movepoint_row, 0, item1);
+			table->setItem(movepoint_row, 1, item2);
+			qDebug() << (item1->text()).toDouble() << item2->text().toDouble() << "\n";
+			table->update();
+			runActionTrigger();
+			whether_move_point = false;
+		}
 	}
+}
+
+void MainWindow::movePoint(const QPointF& p)
+{
+	qDebug() << "Qpoints" << endl;
+	whether_move_point = true;
+	//pointsData.push_back(Point(p.rx(), p.ry()));
+	for (int i = 0; i < ROW; i++)
+	{
+	
+		double data1 = table->item(i, 0)->text().toDouble();
+		double data2 = table->item(i, 1)->text().toDouble();
+		if ((abs((data1 - p.x())) < DIFFBOUND) && (abs((data2 - p.y())< DIFFBOUND))) {
+			movepoint_row = i;
+			break;
+		}
+	}
+	qDebug() << "Row " << movepoint_row << endl;
+	return ;
+
 }
 
 void MainWindow::mouseReleaseEvent(QMouseEvent* e)
 {
+	qDebug() << "hello" << endl;
 	m_valueLabel->hide();
+	//setMouseTracking(true);
+
 }
 
 bool MainWindow::addPoint(QPointF p)
@@ -535,7 +626,6 @@ bool MainWindow::getPoints()
 			double data2 = (item2->text()).toDouble(&valid2);
 			if (valid1 && valid2) {
 				pointsData.push_back(Point(data1, data2));
-				qDebug() << (item1->text()).toDouble() << item2->text().toDouble() << "\n";
 			}
 			else {
 				continue;
@@ -809,16 +899,16 @@ void MainWindow::openFile() {
 						}
 					}
 				}
-				//½«ÎÄ¼þÊý¾Ýµ¼Èë±í¸ñ
-				int r_count = 0;        //Í³¼ÆÎÄ¼þµÄÐÐÊý
-				QStringList textList;   //¼ÇÂ¼ÎÄ¼þÖÐÃ¿Ò»ÐÐµÄÊý¾Ý
+				//å°†æ–‡ä»¶æ•°æ®å¯¼å…¥è¡¨æ ¼
+				int r_count = 0;        //ç»Ÿè®¡æ–‡ä»¶çš„è¡Œæ•°
+				QStringList textList;   //è®°å½•æ–‡ä»¶ä¸­æ¯ä¸€è¡Œçš„æ•°æ®
 				QTextStream in(&file);
 				QString t = in.readLine();
 				while (!in.atEnd())
 				{
 					QString line = in.readLine();
-					textList.append(line);          //±£´æÎÄ¼þµÄÊý¾Ý
-					r_count++;                      //¼ÇÂ¼ÎÄ¼þµÄÐÐÊý Ç°Á½ÐÐÎª±íÍ·
+					textList.append(line);          //ä¿å­˜æ–‡ä»¶çš„æ•°æ®
+					r_count++;                      //è®°å½•æ–‡ä»¶çš„è¡Œæ•° å‰ä¸¤è¡Œä¸ºè¡¨å¤´
 				}
 				file.close();
 				table->clear();
@@ -1084,6 +1174,7 @@ void MainWindow::slotPointHoverd(const QPointF& point, bool state)
 		m_valueLabel->hide();
 
 }
+
 
 void MainWindow::openHelpFile()
 {

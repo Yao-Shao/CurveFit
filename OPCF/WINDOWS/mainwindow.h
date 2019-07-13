@@ -65,6 +65,11 @@ public slots:
 	void runActionTrigger();
 	void isAddingActionTrigger();
 
+	void drawEclipseActionTrigger();
+	void drawRectangleActionTrigger();
+	void drawTriangleActionTrigger();
+
+
 	void showDerivedActionTrigger();
 	/* undo redo*/
 	void undoTrigger();
@@ -72,6 +77,7 @@ public slots:
 	
 	/*show points*/
 	void slotPointHoverd(const QPointF& point, bool state);
+	void movePoint(const QPointF& p);
 
 	/*seek help file*/
 	void openHelpFile();
@@ -107,6 +113,9 @@ private:
 	QScatterSeries* basePoints;
 
 
+	bool whether_move_point;
+
+
 	QPixmap myPix;
 	QLabel* error_label_pic;
 
@@ -137,6 +146,7 @@ private:
 	bool FileIsNew;
 	bool FileChanged;
 	bool flag_isOpen;
+	int movepoint_row;
 	
 	/*ReDo and UnDo stack*/
 	std::stack<Param_opcf> redo_stack;
