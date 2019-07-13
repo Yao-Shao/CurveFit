@@ -192,46 +192,6 @@ void MainWindow::createToolBar()
 	toolBar->addWidget(runAction);
 	connect(runAction, SIGNAL(clicked()), this, SLOT(runActionTrigger()));
 
-	/* adding points */
-	QAction * isAddingAction = new QAction("Add Point", toolBar);
-	isAddingAction->setIcon(QIcon(":/OPCF/img/dot.png"));
-	isAddingAction->setToolTip(tr("Add Point"));
-	isAddingAction->setCheckable(true);
-	toolBar->addAction(isAddingAction);
-	connect(isAddingAction, SIGNAL(changed()), this, SLOT(isAddingActionTrigger()));
-	/*
-	/*
-	QAction* drawLineAction = new QAction("Line", toolBar);
-	drawLineAction->setIcon(QIcon(":/src/Line.png"));
-	drawLineAction->setToolTip(tr("Line"));
-	drawLineAction->setCheckable(true);
-	graghGroup->addAction(drawLineAction);
-	toolBar->addAction(drawLineAction);
-	connect(drawLineAction, SIGNAL(triggered()), this, SLOT(drawLineActionTrigger()));
-	QAction* drawEclipseAction = new QAction("Eclipse", toolBar);
-	drawEclipseAction->setIcon(QIcon(":/src/Eclipse.png"));
-	drawEclipseAction->setToolTip(tr("Eclipse(ctrl for circle)"));
-	drawEclipseAction->setCheckable(true);
-	graghGroup->addAction(drawEclipseAction);
-	toolBar->addAction(drawEclipseAction);
-	connect(drawEclipseAction, SIGNAL(triggered()), this, SLOT(drawEclipseActionTrigger()));
-	QAction* drawRectangleAction = new QAction("Rectangle", toolBar);
-	drawRectangleAction->setIcon(QIcon(":/src/Rectangle.png"));
-	drawRectangleAction->setToolTip(tr("Rectangle(ctrl for square)"));
-	drawRectangleAction->setCheckable(true);
-	graghGroup->addAction(drawRectangleAction);
-	toolBar->addAction(drawRectangleAction);
-	connect(drawRectangleAction, SIGNAL(triggered()), this, SLOT(drawRectangleActionTrigger()));
-	QAction* drawTriangleAction = new QAction("Triangle", toolBar);
-	drawTriangleAction->setIcon(QIcon(":/src/Triangle.png"));
-	drawTriangleAction->setToolTip(tr("Triangle"));
-	drawTriangleAction->setCheckable(true);
-	graghGroup->addAction(drawTriangleAction);
-	toolBar->addAction(drawTriangleAction);
-	connect(drawTriangleAction, SIGNAL(triggered()), this, SLOT(drawTriangleActionTrigger()));
-	*/
-
-
 	/* fit type */
 	fitTypeComboBox = new QComboBox(this);
 	fitTypeComboBox->addItem(tr("Line"), static_cast<int>(LINEAR_FUNCTION));
@@ -243,6 +203,14 @@ void MainWindow::createToolBar()
 	toolBar->addWidget(fitTypeComboBox);
 
 	toolBar->addSeparator();
+
+	/* adding points */
+	QAction* isAddingAction = new QAction("Add Point", toolBar);
+	isAddingAction->setIcon(QIcon(":/OPCF/img/dot.png"));
+	isAddingAction->setToolTip(tr("Add Point"));
+	isAddingAction->setCheckable(true);
+	toolBar->addAction(isAddingAction);
+	connect(isAddingAction, SIGNAL(changed()), this, SLOT(isAddingActionTrigger()));
 
 	/*derived function*/
 	QToolButton * showDerivedAction = new QToolButton(this);

@@ -532,7 +532,7 @@ double Model::get_max_sample_x()
 	return max;
 }
 
-void Model::sort(Mux_Points& m, const int& n)
+void Model::sort(Mux_Points & m, const int& n)
 {
 	int i, j;
 	double tempx, tempy;

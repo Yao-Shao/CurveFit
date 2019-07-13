@@ -4,19 +4,20 @@
 #include<vector>
 #include<math.h>
 #include<strstream>
+#include<qdebug.h>
 #define Infinity 100000000
 #define BLOCK_SIZE 400
-#define NDEBUG
 enum Type {
 	LINEAR_FUNCTION,
 	QUADRATIC_FUNCTION,
+	CUBIC_FUNCTION,
 	EXPONENTIAL_FUNCTION,
 	LN_FUNCTION,
 	NORMAL_FUNCTION
 };
 struct point_with_range {
 	double functions[51][4];
-	int points[50];
+	double points[50];
 	int pointnum;
 };
 class Function
