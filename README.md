@@ -4,9 +4,7 @@
 
 ### 1.问题和背景
 
-[见需求分析文档]([https://github.com/Yao-Shao/Experiment/blob/dev/demand_analysis/%E7%9B%B4%E8%A7%82%E8%AE%BE%E7%82%B9%E6%9B%B2%E7%BA%BF%E6%8B%9F%E5%90%88%E5%BC%80%E9%A2%98%E6%8A%A5%E5%91%8A.md](https://github.com/Yao-Shao/Experiment/blob/dev/demand_analysis/直观设点曲线拟合开题报告.md))
-
-### 2.开发环境和工具
+[见需求分析](https://github.com/zhou317/Experiment/blob/master/demand_analysis/%E7%9B%B4%E8%A7%82%E8%AE%BE%E7%82%B9%E6%9B%B2%E7%BA%BF%E6%8B%9F%E5%90%88%E5%BC%80%E9%A2%98%E6%8A%A5%E5%91%8A.md)
 
 本项目基于Qt5.13.0实现GUI界面。
 
@@ -37,9 +35,9 @@ v1.1 版本完善了MVVM模型。运行效果与v1.0版本相同。
 
 第二轮迭代包括：
 
-v1.2实现画出拟合函数图像的功能：
+v2.0实现画出拟合函数图像的功能：
 
-
+![函数作图](https://github.com/zhou317/Experiment/blob/master/img_of_readme/2nd.png)
 
 实现了错误的检测与错误输出，错误输出包括两个部分
 
@@ -47,3 +45,13 @@ v1.2实现画出拟合函数图像的功能：
 * 画图模块的图像显示
 
 ![错误输出](https://github.com/zhou317/Experiment/blob/dev/img_of_readme/error.png)
+
+v2.1添加鼠标移动到点上显示坐标的功能
+
+![错误输出](https://github.com/zhou317/Experiment/blob/dev/img_of_readme/2_1v.png)
+
+
+
+### 第三轮迭代
+
+第三轮迭代包括：
