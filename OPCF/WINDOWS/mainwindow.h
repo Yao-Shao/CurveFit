@@ -146,6 +146,12 @@ private:
 	bool undo_flag;
 	bool redo_flag;
 
+	/**/
+	QScatterSeries* all_points;
+	QLineSeries* series;
+	QScatterSeries* samplepoints;
+	QScatterSeries* samplepoints_o;
+
 	bool getPoints();
 	bool checkPoints();
 	void createToolBar();

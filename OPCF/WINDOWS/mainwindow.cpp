@@ -53,7 +53,56 @@ MainWindow::MainWindow(QWidget* parent) :
 	basePoints = new QScatterSeries();
 	axisX = new QValueAxis(this);
 	axisY = new QValueAxis(this);
+	function_view = new QChart();
+	all_points = new QScatterSeries(this);
+	series = new QLineSeries(this);
+	samplepoints = new QScatterSeries(this);
+	samplepoints_o = new QScatterSeries(this);
 
+	function_view->addSeries(all_points);
+	function_view->addSeries(samplepoints);
+	function_view->addSeries(samplepoints_o);
+	function_view->addSeries(basePoints);
+	function_view->addSeries(series);
+
+	function_view->setAxisX(axisX, basePoints);
+	function_view->setAxisY(axisY, basePoints);
+
+	function_view->setAxisX(axisX, series);
+	function_view->setAxisY(axisY, series);
+
+	function_view->setAxisX(axisX, all_points);
+	function_view->setAxisY(axisY, all_points);
+
+	function_view->setAxisX(axisX, samplepoints);
+	function_view->setAxisY(axisY, samplepoints);
+
+	function_view->setAxisX(axisX, samplepoints_o);
+	function_view->setAxisY(axisY, samplepoints_o);
+
+
+	series->setBrush(QColor(21, 100, 255));
+	series->setColor(QColor(21, 100, 255));
+
+	all_points->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+	all_points->setBorderColor(QColor(21, 100, 255));
+	all_points->setBrush(QColor(21, 100, 255));
+	all_points->setMarkerSize(1);
+
+	samplepoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+	samplepoints->setBorderColor(QColor(21, 100, 255));
+	samplepoints->setBrush(QColor(21, 100, 255));
+	samplepoints->setMarkerSize(10);
+
+	samplepoints_o->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+	samplepoints_o->setBorderColor(Qt::white);
+	samplepoints_o->setBrush(Qt::white);
+	samplepoints_o->setMarkerSize(5);
+
+	basePoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
+	basePoints->setBorderColor(Qt::white);
+	basePoints->setBrush(Qt::white);
+	basePoints->setMarkerSize(1);
 
 
 	showMaximized();
@@ -262,9 +311,8 @@ void MainWindow::createFuncView()
 	qDebug() << "In create Function View\n";
 #endif // !NDEBUG
 	//function_view->setTitle("Function Curve");
-	function_view = new QChart();
-	QScatterSeries* all_points = new QScatterSeries(this);
-	QLineSeries* series = new QLineSeries(this);
+	all_points->clear();
+	series->clear();
 	qreal x, y;
 	for (auto i = 0; i < real_xy_points->size(); i++) {
 		x = ((*real_xy_points)[i]).getx();
@@ -272,9 +320,8 @@ void MainWindow::createFuncView()
 		series->append(x, y);
 		all_points->append(x, y);
 	}
-	function_view->addSeries(series);
-	QScatterSeries* samplepoints = new QScatterSeries(this);
-	QScatterSeries* samplepoints_o = new QScatterSeries(this);
+	samplepoints->clear();
+	samplepoints_o->clear();
 	for (auto i = 0; i < sample_points->size(); i++) {
 		x = ((*sample_points)[i]).getx();
 		y = ((*sample_points)[i]).gety();
@@ -282,24 +329,8 @@ void MainWindow::createFuncView()
 		samplepoints_o->append(x, y);
 	}
 
-	all_points->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	all_points->setBorderColor(QColor(21, 100, 255));
-	all_points->setBrush(QColor(21, 100, 255));
-	all_points->setMarkerSize(1);
+	
 
-	samplepoints->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	samplepoints->setBorderColor(QColor(21, 100, 255));
-	samplepoints->setBrush(QColor(21, 100, 255));
-	samplepoints->setMarkerSize(10);
-
-	samplepoints_o->setMarkerShape(QScatterSeries::MarkerShapeCircle);
-	samplepoints_o->setBorderColor(Qt::white);
-	samplepoints_o->setBrush(Qt::white);
-	samplepoints_o->setMarkerSize(5);
-
-	function_view->addSeries(all_points);
-	function_view->addSeries(samplepoints);
-	function_view->addSeries(samplepoints_o);
 
 #ifndef NDEBUG
 	qDebug() << " real_xy_points->size():\n" << real_xy_points->size();
@@ -328,43 +359,30 @@ void MainWindow::createFuncView()
 		end_y = ceil((end_y + length_y / 10) * 100) / 100;
 	}
 
-	axisX = new QValueAxis(this);
+
 	axisX->setRange(start_x, end_x);
 	axisX->setTitleText("x");
 	axisX->setLabelFormat("%.2f");
 	axisX->setTickCount(21);
 	axisX->setMinorTickCount(4);
 
-	axisY = new QValueAxis(this);
 	axisY->setRange(start_y, end_y);
 	axisY->setTitleText("y");
 	axisY->setLabelFormat("%.2f");
 	axisY->setTickCount(11);
 	axisY->setMinorTickCount(4);
 
-	function_view->setAxisX(axisX, series);
-	function_view->setAxisY(axisY, series);
-
-	function_view->setAxisX(axisX, all_points);
-	function_view->setAxisY(axisY, all_points);
-
-	function_view->setAxisX(axisX, samplepoints);
-	function_view->setAxisY(axisY, samplepoints);
-
-	function_view->setAxisX(axisX, samplepoints_o);
-	function_view->setAxisY(axisY, samplepoints_o);
-
 	/*show points' value*/
 	connect(samplepoints_o, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
 	connect(all_points, &QScatterSeries::hovered, this, &MainWindow::slotPointHoverd);
-
+	/*
 	basePoints->append(start_x, end_y);
 	basePoints->append(end_x,start_y);
 	function_view->addSeries(basePoints);
 
 	function_view->setAxisX(axisX, basePoints);
 	function_view->setAxisY(axisY, basePoints);
-
+	*/
 	chartView->setChart(function_view);
 	function_view->setAutoFillBackground(true);
 	chartView->show();
@@ -373,16 +391,14 @@ void MainWindow::createFuncView()
 void MainWindow::InitFuncView()
 {
 	initFuncView = false;
-	function_view = new QChart();
 
-	axisX = new QValueAxis(this);
 	axisX->setRange(-100, 100);
 	axisX->setTitleText("x");
 	axisX->setLabelFormat("%.2f");
 	axisX->setTickCount(21);
 	axisX->setMinorTickCount(4);
 
-	axisY = new QValueAxis(this);
+
 	axisY->setRange(-100, 100);
 	axisY->setTitleText("y");
 	axisY->setLabelFormat("%.2f");
@@ -392,10 +408,9 @@ void MainWindow::InitFuncView()
 	basePoints->append(-100, 100);
 	basePoints->append(100, -100);
 
-	function_view->addSeries(basePoints);
+	
 
-	function_view->setAxisX(axisX, basePoints);
-	function_view->setAxisY(axisY, basePoints);
+
 
 	chartView->setChart(function_view);
 	chartView->show();
@@ -403,6 +418,7 @@ void MainWindow::InitFuncView()
 
 void MainWindow::mouseMoveEvent(QMouseEvent* e)
 {
+	/*
 	if (!initFuncView && pressAddingBtn) {
 		// Setting the mouse position label on the axis from value to position
 		auto const widgetPos = e->pos();
@@ -423,6 +439,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent* e)
 		m_valueLabel->show();
 	}
 	//mouseMoveEvent(e);
+	*/
 }
 
 void MainWindow::mousePressEvent(QMouseEvent* e)
