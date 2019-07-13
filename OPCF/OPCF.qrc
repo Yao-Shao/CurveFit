@@ -9,6 +9,7 @@
         <file>img/save.png</file>
         <file>img/undo.png</file>
         <file>img/showD.png</file>
+        <file>img/dot.png</file>
     </qresource>
     <qresource prefix="/qss_icons">
         <file>img/src/rc/arrow_down.png</file>
