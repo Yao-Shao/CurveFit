@@ -20,8 +20,8 @@
 #include "sinks/updateSink.h"
 #include "sinks/runSink.h"
 #define NDEBUG
-#define LENGTH 1080
-#define WIDTH 720
+#define LENGTH 1920
+#define WIDTH 1080
 #define ROW 50
 #define COLUMN 2
 

@@ -1,6 +1,5 @@
 <RCC>
     <qresource prefix="/OPCF">
-        <file>img/error.png</file>
         <file>img/logo.png</file>
         <file>img/redo.png</file>
         <file>img/run_error.png</file>

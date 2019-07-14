@@ -349,7 +349,7 @@ void MainWindow::createFuncView()
 	axisX->setRange(start_x, end_x);
 	axisX->setTitleText("x");
 	axisX->setLabelFormat("%.2f");
-	axisX->setTickCount(21);
+	axisX->setTickCount(11);
 	axisX->setMinorTickCount(4);
 
 	axisY->setRange(start_y, end_y);
@@ -381,14 +381,14 @@ void MainWindow::InitFuncView()
 
 	axisX->setRange(-100, 100);
 	axisX->setTitleText("x");
-	axisX->setLabelFormat("%.1f");
-	axisX->setTickCount(21);
+	axisX->setLabelFormat("%.2f");
+	axisX->setTickCount(11);
 	axisX->setMinorTickCount(4);
 
 
 	axisY->setRange(-100, 100);
 	axisY->setTitleText("y");
-	axisY->setLabelFormat("%.1f");
+	axisY->setLabelFormat("%.2f");
 	axisY->setTickCount(11);
 	axisY->setMinorTickCount(4);
 
@@ -835,7 +835,7 @@ void MainWindow::showDerivedActionTrigger()
 		axisX->setRange(start_x, end_x);
 		axisX->setTitleText("x");
 		axisX->setLabelFormat("%.2f");
-		axisX->setTickCount(21);
+		axisX->setTickCount(11);
 		axisX->setMinorTickCount(4);
 
 		QValueAxis* axisY = new QValueAxis(this);
