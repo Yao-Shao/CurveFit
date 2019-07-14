@@ -451,6 +451,9 @@ void MainWindow::mousePressEvent(QMouseEvent * e)
 #endif // !NDEBUG
 
 		if (pressAddingBtn) {
+			samplepoints->append(pickVal);
+			samplepoints_o->append(pickVal);
+			chartView->update();
 			addPoint(pickVal);
 		}
 		if (whether_move_point) {
