@@ -221,7 +221,15 @@ void MainWindow::createToolBar()
 	toolBar->addWidget(showDerivedAction);
 	connect(showDerivedAction, SIGNAL(clicked()), this, SLOT(showDerivedActionTrigger()));
 
+	/* clear */
+	QToolButton* clearAction = new QToolButton(this);
+	clearAction->setIcon(QIcon(":/OPCF/img/clear.png"));
+	clearAction->setToolTip(tr("Show Derived function"));
+	toolBar->addWidget(clearAction);
+	connect(clearAction, SIGNAL(clicked()), this, SLOT(clear()));
+
 	toolBar->addSeparator();
+
 
 	/* save */
 	QToolButton * saveAction = new QToolButton(this);
@@ -1252,5 +1260,17 @@ void MainWindow::loadExcelFile()
 				functionText->setPlainText("Loading excel file successfully!");
 			}
 		}
+	}
+}
+
+void MainWindow::clear()
+{
+	pointsData.clear();
+	for (int i = 0; i < ROW; i++)
+	{
+		if (table->item(i, 0) != NULL)
+			table->setItem(i, 0, NULL);
+		if (table->item(i, 1) != NULL)
+			table->setItem(i, 1, NULL);
 	}
 }

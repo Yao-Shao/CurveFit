@@ -9,6 +9,7 @@
         <file>img/showD.png</file>
         <file>img/undo.png</file>
         <file>img/dot.png</file>
+        <file>img/clear.png</file>
     </qresource>
     <qresource prefix="/qss_icons">
         <file>img/src/qdarkstyle/rc/arrow_down.png</file>

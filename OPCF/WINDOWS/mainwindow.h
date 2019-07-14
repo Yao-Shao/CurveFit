@@ -64,6 +64,7 @@ public slots:
 	void loadExcelFile();
 	void runActionTrigger();
 	void isAddingActionTrigger();
+	void clear();
 
 
 	void showDerivedActionTrigger();
@@ -164,6 +165,7 @@ private:
 	void createFuncText();
 	void createFuncView();
 	void InitFuncView();
+	
 
 	void mouseMoveEvent(QMouseEvent* e);
 	void mousePressEvent(QMouseEvent* e);

@@ -82,6 +82,7 @@ bool ViewModel_Test() throw() {
 		std::cout << abs((vmdl->getFunction())->get_y(10)) << std::endl;
 		if (abs((vmdl->getFunction())->get_y(10)) - 5.60517019 > ERRORBOUND)
 			throw int(3);
+		system("pause");
 	}
 	catch (int& v) {
 		printf("case %d error\n", v);

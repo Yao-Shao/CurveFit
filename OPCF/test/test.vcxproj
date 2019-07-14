@@ -100,7 +100,8 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <LanguageStandard>stdcpp17</LanguageStandard>
+      <LanguageStandard>
+      </LanguageStandard>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
