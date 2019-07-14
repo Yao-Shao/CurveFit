@@ -924,6 +924,12 @@ void MainWindow::openFile() {
 				table->show();
 				flag_isOpen = 1;
 				LastFileName = fileName;
+				bool rep = getPoints();
+				if (rep == false)
+				{
+					run_error("conflictPoints");
+					return;
+				}
 				fitType = (Type)t.toInt();
 				m_param.set_type(fitType);
 				m_param.set_point(pointsData);
