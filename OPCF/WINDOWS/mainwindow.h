@@ -12,8 +12,8 @@
 #include <QPlainTextEdit>
 #include <QLineEdit>
 #include <QtCharts>
+#include <stack>
 #include "../COMMON/base.h"
-#include "drawgraph.h"
 #include "../COMMON/etlbase.h"
 #include "../COMMON/param.h"
 #include "sinks/updateSink.h"
@@ -72,10 +72,13 @@ public slots:
 	/*show points*/
 	void slotPointHoverd(const QPointF& point, bool state);
 
+	/*seek help file*/
+	void openHelpFile();
+
 private:
 	/* draw */
-	QLabel* styleLabel;
-	QComboBox* styleComboBox;
+	QLabel* fitTypeLabel;
+	QComboBox* fitTypeComboBox;
 	QLabel* widthLable;
 	QSpinBox* widthSpinBox;
 	QToolButton* colorBtn;
@@ -120,6 +123,16 @@ private:
 	/* file */
 	QString openFileAddr;
 	QString saveFileAddr;
+	QString LastFileName;
+	bool FileIsNew;
+	bool FileChanged;
+	bool flag_isOpen;
+	
+	/*ReDo and UnDo stack*/
+	std::stack<Param_opcf> redo_stack;
+	std::stack<Param_opcf> undo_stack;
+	bool undo_flag;
+	bool redo_flag;
 
 	bool getPoints();
 	bool checkPoints();

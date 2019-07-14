@@ -380,9 +380,6 @@ bool Model::get_realXYPoints(Type t)
 			Point t;
 			t.setx(x);
 			t.sety(y);
-#ifndef NDEBUG
-			qDebug() << "In get_realXYPoints(Type):\n" << "x  " << x << "y " << y << "\n";
-#endif // !NDEBUG
 			real_xy_points->push_back(t);
 			x += step;
 			y = sp_Function->get_y(x);
@@ -392,9 +389,6 @@ bool Model::get_realXYPoints(Type t)
 			Point t;
 			t.setx(x);
 			t.sety(y);
-#ifndef NDEBUG
-			qDebug() << "In get_realXYPoints(Type):\n" << "x  " << x << "y " << y << "\n";
-#endif // !NDEBUG
 			real_xy_points->push_back(t);
 			x += step;
 			y = sp_Function->get_y(x);
@@ -407,9 +401,6 @@ bool Model::get_realXYPoints(Type t)
 			Point t;
 			t.setx(x);
 			t.sety(y);
-#ifndef NDEBUG
-			qDebug() << "In get_realXYPoints(Type):\n" << "x  " << x << "y " << y << "\n";
-#endif // !NDEBUG
 			real_xy_points->push_back(t);
 			x += step;
 			y = sp_Function->get_y(x);
