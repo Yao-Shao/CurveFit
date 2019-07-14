@@ -288,7 +288,6 @@ void MainWindow::createFuncView()
 #ifndef NDEBUG
 	qDebug() << "In create Function View\n";
 #endif // !NDEBUG
-	//function_view->setTitle("Function Curve");
 	all_points->clear();
 	series->clear();
 	qreal x, y;
@@ -503,6 +502,10 @@ bool MainWindow::addPoint(QPointF p)
 		QTableWidgetItem* item1 = table->item(i, 0);
 		QTableWidgetItem* item2 = table->item(i, 1);
 		if (item1 == NULL || (item1->text() == "") || item2 == NULL || (item2->text() == "")) {
+			if (item1 != NULL)
+				delete item1;
+			if (item2 != NULL)
+				delete item2;
 			item1 = new QTableWidgetItem;
 			item2 = new QTableWidgetItem;
 			item1->setText(QString::number(p.rx()));
