@@ -1,5 +1,6 @@
 #include "Model.h"
 #include "math.h"
+#include <QDebug>
 #define precision 1e-13
 #define STARTLNFUNCT 1e-4
 #define NDEBUG
@@ -116,6 +117,7 @@ bool Model::opcf_fit(Param_opcf& p)
 				func += '\0';
 			}
 			else if (a == 0) func += '\0';
+			qDebug() << "Linear " << a << " " << b << endl;
 			sp_Function->set_function(func);
 		}
 		else if (t == QUADRATIC_FUNCTION) {
@@ -169,6 +171,7 @@ bool Model::opcf_fit(Param_opcf& p)
 					func += std::to_string(c);
 				}
 			}
+			qDebug() << "Linear " << a << " " << b << " " << c << endl;
 			func += '\0';
 			sp_Function->set_function(func);
 		}
@@ -313,7 +316,7 @@ bool Model::opcf_fit(Param_opcf& p)
 				for (int j = i + 1; j < 4; j++)judge += m[i][j] * x[j];
 				x[i] = (m[i][4] - judge) / m[i][i];
 			}
-			//qDebug() << " x0 " << x[0] << " " << x[1] << " " << x[2] << " " << x[3] << endl;
+			qDebug() << "Cubic Function " << x[0] << " " << x[1] << " " << x[2] << " " << x[3] << endl;
 			std::string func;
 			bool init = true;
 			if (x[0] != 0) {
