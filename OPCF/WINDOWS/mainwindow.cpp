@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	myPix.load(":/OPCF/img/run_error.png");
 	error_label_pic = new QLabel(this);
 	m_valueLabel = new QLabel(this);
-	m_valueLabel->setGeometry(100, 100, 120, 15);
+	m_valueLabel->setGeometry(100, 100, 130, 20);
 	FileIsNew = true;
 	undo_flag = false;
 	redo_flag = false;
@@ -744,7 +744,25 @@ void MainWindow::setLayout()
 void MainWindow::showDerivedActionTrigger()
 {
 	if (dyPoints->size() <= 0) {
-		QMessageBox::warning(this, "error", "No sample points");
+		bool intable = false;
+		for (int i = 0; i < ROW; i++)
+		{
+			QTableWidgetItem* item1 = table->item(i, 0);
+			QTableWidgetItem* item2 = table->item(i, 1);
+			if (item1 == NULL || item2 == NULL) {
+				continue;
+			}
+			else {
+				intable = true;
+				break;
+			}
+		}
+		if (intable) {
+			QMessageBox::warning(this, "error", "You shou fit the function before get it's derived function");
+		}
+		else {
+			QMessageBox::warning(this, "error", "No sample points");
+		}
 	}
 	else {
 		QChartView* DyChartView = new QChartView();
@@ -1133,7 +1151,7 @@ void MainWindow::redoTrigger()
 void MainWindow::slotPointHoverd(const QPointF & point, bool state)
 {
 	if (state) {
-		m_valueLabel->setText(QString::asprintf("%.2f,%.2f", point.x(), point.y()));
+		m_valueLabel->setText(QString::asprintf("%.3f,%.3f", point.x(), point.y()));
 
 		QPoint curPos = mapFromGlobal(QCursor::pos());
 		m_valueLabel->move(curPos.x() - m_valueLabel->width() / 2, curPos.y() - m_valueLabel->height() * 1.5);
