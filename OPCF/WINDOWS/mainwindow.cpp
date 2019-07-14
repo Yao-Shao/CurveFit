@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget* parent) :
 	pressAddingBtn = false;
 	whether_move_point = false;
 
+
 	basePoints = new QScatterSeries();
 	axisX = new QValueAxis(this);
 	axisY = new QValueAxis(this);
@@ -457,6 +458,9 @@ void MainWindow::mousePressEvent(QMouseEvent * e)
 #endif // !NDEBUG
 
 		if (pressAddingBtn) {
+			samplepoints->append(pickVal);
+			samplepoints_o->append(pickVal);
+			chartView->update();
 			addPoint(pickVal);
 		}
 		if (whether_move_point) {
@@ -774,13 +778,12 @@ void MainWindow::showDerivedActionTrigger()
 	}
 	else {
 		QChartView* DyChartView = new QChartView();
-		QChart* dy_function_view;
+		QChart* dy_function_view = new QChart();
 		dy_function_view->setTheme(QChart::ChartThemeBrownSand);
 #ifndef NDEBUG
 		qDebug() << "showDerivedActionTrigger()\n";
 #endif // !NDEBUG
 		//function_view->setTitle("Function Curve");
-		dy_function_view = new QChart();
 		QLineSeries* series = new QLineSeries(this);
 		qreal x, y;
 		for (auto i = 0; i < dyPoints->size(); i++) {
