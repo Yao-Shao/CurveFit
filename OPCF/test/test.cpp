@@ -44,7 +44,7 @@ bool ViewModel_Test() throw() {
 		std::cout << abs((vmdl->getFunction())->get_y(10)) << std::endl;
 		if (abs((vmdl->getFunction())->get_y(10)) - 145 > ERRORBOUND)
 			throw int(2);
-		/*
+		
 		//case 3 y = x^3 + x^2 + x + 5
 		Param_opcf param2;
 		t = CUBIC_FUNCTION;
@@ -65,7 +65,7 @@ bool ViewModel_Test() throw() {
 		std::cout << abs((vmdl->getFunction())->get_y(3)) << std::endl;
 		if (abs((vmdl->getFunction())->get_y(3)) - 44 > ERRORBOUND)
 			throw int(3);
-		*/
+		
 		//case 4 y = 2 * ln x + 1
 		Param_opcf param3;
 		t = LN_FUNCTION;

@@ -1,6 +1,5 @@
 #include "Model.h"
 #include "math.h"
-#include <QDebug>
 #define precision 1e-13
 #define STARTLNFUNCT 1e-4
 #define NDEBUG
@@ -117,7 +116,7 @@ bool Model::opcf_fit(Param_opcf& p)
 				func += '\0';
 			}
 			else if (a == 0) func += '\0';
-			qDebug() << "Linear " << a << " " << b << endl;
+			std::cout << "Linear " << a << " " << b << std::endl;
 			sp_Function->set_function(func);
 		}
 		else if (t == QUADRATIC_FUNCTION) {
@@ -171,7 +170,7 @@ bool Model::opcf_fit(Param_opcf& p)
 					func += std::to_string(c);
 				}
 			}
-			qDebug() << "Linear " << a << " " << b << " " << c << endl;
+			std::cout << "Linear " << a << " " << b << " " << c << std::endl;
 			func += '\0';
 			sp_Function->set_function(func);
 		}
@@ -245,129 +244,133 @@ bool Model::opcf_fit(Param_opcf& p)
 			sp_Function->set_function(func);
 		}
 		else if (t == CUBIC_FUNCTION) {
-			int n = sp_points.size();
-			double sumx = 0.0, sumx2 = 0.0, sumx3 = 0.0, sumx4 = 0.0, sumx5 = 0.0, sumx6 = 0.0, sumy = 0.0, sumxy = 0.0, sumx2y = 0.0, sumx3y = 0.0;
-			for (int i = 0; i < n; i++) {
-				sumx += sp_points[i].getx();
-				sumx2 += sp_points[i].getx() * sp_points[i].getx();
-				sumx3 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
-				sumx4 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
-				sumx5 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
-				sumx6 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
-				sumy += sp_points[i].gety();
-				sumxy += sp_points[i].getx() * sp_points[i].gety();
-				sumx2y += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].gety();
-				sumx3y += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].gety();
+		int n = sp_points.size();
+		double sumx = 0.0, sumx2 = 0.0, sumx3 = 0.0, sumx4 = 0.0, sumx5 = 0.0, sumx6 = 0.0, sumy = 0.0, sumxy = 0.0, sumx2y = 0.0, sumx3y = 0.0;
+		for (int i = 0; i < n; i++) {
+			sumx += sp_points[i].getx();
+			sumx2 += sp_points[i].getx() * sp_points[i].getx();
+			sumx3 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
+			sumx4 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
+			sumx5 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
+			sumx6 += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx();
+			sumy += sp_points[i].gety();
+			sumxy += sp_points[i].getx() * sp_points[i].gety();
+			sumx2y += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].gety();
+			sumx3y += sp_points[i].getx() * sp_points[i].getx() * sp_points[i].getx() * sp_points[i].gety();
+		}
+		double m[4][5] = { sumx3,sumx2,sumx,n,sumy,
+						   sumx4,sumx3,sumx2,sumx,sumxy,
+						   sumx5,sumx4,sumx3,sumx2,sumx2y,
+						   sumx6,sumx5,sumx4,sumx3,sumx3y };
+		double temp[5] = { 0.0, 0.0, 0.0, 0.0, 0.0 };
+		int p = 0, place = -1;
+		double judge = 0.0;
+		double x[4] = { 0.0, 0.0, 0.0, 0.0 };
+		for (int i = 0; i < 3; i++) {
+			if (m[i][i] != 0.0) {
+				place = i;
+				judge = m[i][i];
 			}
-			double m[4][5] = { sumx3,sumx2,sumx,n,sumy,
-							   sumx4,sumx3,sumx2,sumx,sumxy,
-							   sumx5,sumx4,sumx3,sumx2,sumx2y,
-							   sumx6,sumx5,sumx4,sumx3,sumx3y };
-			double temp[5];
-			int p, place = -1;
-			double judge;
-			double x[4];
-			for (int i = 0; i < 3; i++) {
-				if (m[i][i] != 0) {
-					place = i;
-					judge = m[i][i];
-				}
-				for (p = i; p < 4; p++) {
-					if (m[p][i] != 0) {
-						if (m[p][i] < judge) {
-							place = p;
-							judge = m[p][i];
-						}
+			for (p = i; p < 4; p++) {
+				if (m[p][i] != 0.0) {
+					if (place == -1) {
+						place = p;
+						judge = m[p][i];
+					}
+					else if (m[p][i] < judge) {
+						place = p;
+						judge = m[p][i];
 					}
 				}
-				if (place == -1) {
-					propertychanged = "Can'thavesolution";
-					Fire_OnPropertyChanged(propertychanged);
-					return true;
-				}
-				if (p != i) {
-					for (int k = 0; k < 5; k++) {
-						temp[k] = m[p][k];
-					}
-					for (int k = 0; k < 5; k++) {
-						m[p][k] = m[i][k];
-					}
-					for (int k = 0; k < 5; k++) {
-						m[i][k] = temp[k];
-					}
-				}
-				for (int j = i + 1; j < 4; j++) {
-					judge = m[j][i] / m[i][i];
-					for (int k = 0; k < 5; k++) {
-						m[j][k] = m[j][k] - judge * m[i][k];
-					}
-				}
-				place = -1;
 			}
-			if (m[3][3] == 0) {
+			if (place == -1) {
 				propertychanged = "Can'thavesolution";
 				Fire_OnPropertyChanged(propertychanged);
 				return true;
 			}
-			x[3] = m[3][4] / m[3][3];
-			//qDebug() << "m" << m[3][4] << " " << m[3][3];
-			for (int i = 2; i >= 0; i--) {
-				judge = 0.0;
-				for (int j = i + 1; j < 4; j++)judge += m[i][j] * x[j];
-				x[i] = (m[i][4] - judge) / m[i][i];
-			}
-			qDebug() << "Cubic Function " << x[0] << " " << x[1] << " " << x[2] << " " << x[3] << endl;
-			std::string func;
-			bool init = true;
-			if (x[0] != 0) {
-			//	qDebug() << 1.00 << endl;
-				if (x[0] < 0) {
-					func += '-';
-					x[0] *= -1;
+			if (place != i) {
+				for (int k = 0; k < 5; k++) {
+					temp[k] = m[place][k];
 				}
-				if (x[0] != 1)func += std::to_string(x[0]);
-				func += "x^3";
-				init = false;
-			}
-			if (x[1] != 0) {
-			//	qDebug() << x[1] << endl;
-				if (x[1] < 0) {
-					func += '-';
-					x[1] *= -1;
+				for (int k = 0; k < 5; k++) {
+					m[place][k] = m[i][k];
 				}
-				else if (x[1] > 0) {
-					if (init == 0)func += '+';
-				}
-				if (x[1] != 1.0)func += std::to_string(x[1]);
-				func += "x^2";
-				init = false;
-			}
-			if (x[2] != 0) {
-		//		qDebug() << x[2] << endl;
-				if (x[2] < 0) {
-					func += '-';
-					x[2] *= -1;
-				}
-				else if (x[2] > 0) {
-					if (init == 0)func += '+';
-				}
-				if (x[2] != 1.0)func += std::to_string(x[2]);
-				func += 'x';
-				init = false;
-			}
-			if (x[3] != 0) {
-		//		qDebug() << QString::fromStdString(std::to_string(x[3]))<< endl;
-				if (x[3] < 0) {
-					func += std::to_string(x[3]);
-				}
-				else if (x[3] > 0) {
-					if (init == 0)func += '+';
-					func += std::to_string(x[3]);
+				for (int k = 0; k < 5; k++) {
+					m[i][k] = temp[k];
 				}
 			}
-			func += '\0';
-		//	qDebug() << QString::fromStdString(func) << endl;
-			sp_Function->set_function(func);
+			for (int j = i + 1; j < 4; j++) {
+				judge = m[j][i] / m[i][i];
+				for (int k = 0; k < 5; k++) {
+					m[j][k] = m[j][k] - judge * m[i][k];
+				}
+			}
+			place = -1;
+		}
+		if (m[3][3] == 0) {
+			propertychanged = "Can'thavesolution";
+			Fire_OnPropertyChanged(propertychanged);
+			return true;
+		}
+		for (int i = 0; i < 4; i++) {
+			for (int j = 0; j < 5; j++) {
+				//qDebug << m[i][j] << " ";
+			}
+			//qDebug << "\n";
+		}
+		x[3] = m[3][4] / m[3][3];
+		for (int i = 2; i >= 0; i--) {
+			judge = 0.0;
+			for (int j = i + 1; j < 4; j++)judge += m[i][j] * x[j];
+			x[i] = (m[i][4] - judge) / m[i][i];
+		}
+		std::string func;
+		bool init = true;
+		if (x[0] != 0.0) {
+			if (x[0] < 0.0) {
+				func += '-';
+				x[0] *= -1;
+			}
+			if (x[0] != 1.0)func += std::to_string(x[0]);
+			func += "x^3";
+			init = false;
+		}
+		if (x[1] != 0.0) {
+			if (x[1] < 0.0) {
+				func += '-';
+				x[1] *= -1;
+			}
+			else if (x[1] > 0.0) {
+				if (init == 0)func += '+';
+			}
+			if (x[1] != 1.0)func += std::to_string(x[1]);
+			func += "x^2";
+			init = false;
+		}
+		if (x[2] != 0.0) {
+			if (x[2] < 0.0) {
+				func += '-';
+				x[2] *= -1;
+			}
+			else if (x[2] > 0.0) {
+				if (init == 0)func += '+';
+			}
+			if (x[2] != 1.0)func += std::to_string(x[2]);
+			func += 'x';
+			init = false;
+		}
+		if (x[3] != 0.0) {
+			if (x[3] < 0.0) {
+				func += std::to_string(x[3]);
+			}
+			else if (x[3] > 0.0) {
+				if (init == 0)func += '+';
+				func += std::to_string(x[3]);
+			}
+		}
+		func += '\0';
+		sp_Function->set_function(func);
+
 		}
 		else if (t == NORMAL_FUNCTION) {
 			int n = sp_points.size();
@@ -467,9 +470,9 @@ bool Model::opcf_fit(Param_opcf& p)
 	/*map to x y in img*/
 /*
 #ifndef NDEBUG
-	qDebug() << "End of opcf_fit and the function is" << QString::fromStdString((*sp_Function).get_function()) << "\n";
-	qDebug() << "And we have " << real_xy_points->size() << " points to be painted\n";
-	qDebug() << "Fire_OnPropertyChanged(Function) \n";
+	std::cout << "End of opcf_fit and the function is" << QString::fromStdString((*sp_Function).get_function()) << "\n";
+	std::cout << "And we have " << real_xy_points->size() << " points to be painted\n";
+	std::cout << "Fire_OnPropertyChanged(Function) \n";
 #endif // !NDEBUG
 */
 	Fire_OnPropertyChanged(propertychanged);
@@ -490,8 +493,8 @@ bool Model::get_realXYPoints(Type t)
 	length = end_x - start_x;
 	/*
 #ifndef NDEBUG
-	qDebug() << "In get_realXYPoints(Type):\n" << "X Range of sample Points  " << start_x << "-" << end_x << "\n";
-	qDebug() << "Function: " << QString::fromStdString(sp_Function->get_function());
+	std::cout << "In get_realXYPoints(Type):\n" << "X Range of sample Points  " << start_x << "-" << end_x << "\n";
+	std::cout << "Function: " << QString::fromStdString(sp_Function->get_function());
 #endif // !NDEBUG
 */
 	switch (t)
@@ -634,7 +637,7 @@ double Model::get_max_real_x()
 double Model::get_min_real_y()
 {
 #ifndef NDEBUG
-	qDebug() << "In get_min_real_y()\n";
+	std::cout << "In get_min_real_y()\n";
 #endif // !NDEBUG
 	double min = ((*real_xy_points)[0]).gety();
 	for (auto i = 1; i < real_xy_points->size(); i++) {
@@ -644,7 +647,7 @@ double Model::get_min_real_y()
 		}
 	}
 #ifndef NDEBUG
-	qDebug() << "min" << min << "\n";
+	std::cout << "min" << min << "\n";
 #endif // !NDEBUG
 	return min;
 }
