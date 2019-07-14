@@ -1269,6 +1269,15 @@ void MainWindow::loadExcelFile()
 void MainWindow::clear()
 {
 	pointsData.clear();
+	error_label_pic->close();
+
+	samplepoints->clear();
+	samplepoints_o->clear();
+	series->clear();
+	all_points->clear();
+	basePoints->clear();
+
+	InitFuncView();
 	for (int i = 0; i < ROW; i++)
 	{
 		if (table->item(i, 0) != NULL)
