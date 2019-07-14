@@ -2,8 +2,8 @@
 
 
 #include "../../COMMON/etlbase.h"
-#include "../COMMON/base.h"
-#include "../COMMON/param.h"
+#include "../../COMMON/base.h"
+#include "../../COMMON/param.h"
 class ViewModel;
 
 class RunFitCommand:public ICommandBase

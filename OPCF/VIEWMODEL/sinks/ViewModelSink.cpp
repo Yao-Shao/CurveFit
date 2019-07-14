@@ -1,5 +1,5 @@
 #include "../viewmodel.h"
-#include <QtDebug>
+#define NDEBUG
 
 ViewModelSink::ViewModelSink(ViewModel* p) throw():ptr_viewmodel(p)
 {

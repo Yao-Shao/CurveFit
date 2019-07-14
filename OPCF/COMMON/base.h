@@ -4,7 +4,6 @@
 #include<vector>
 #include<math.h>
 #include<strstream>
-#include<qdebug.h>
 #define Infinity 100000000
 #define BLOCK_SIZE 400
 enum Type {
