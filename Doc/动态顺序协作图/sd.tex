@@ -1,0 +1,39 @@
+﻿\documentclass{article}
+\usepackage{pgf-umlsd}
+\usepackage{changepage}
+\usepackage{pdflscape}
+
+\begin{document}
+\thispagestyle{empty}
+\begin{landscape}
+\begin{adjustwidth}{-2cm}{-2cm}
+\textbf{OnRunFitClicked}\
+\begin{sequencediagram}
+\newthread{MW}{MainWindow}
+\newinst{RS}{RunSink}
+\newinst{US}{UpdateSink}
+\newinst{FV}{FuctionView}
+\newinst{RF}{RunFitCommand}
+\newinst{VM}{ViewModel}
+\newinst{VMS}{ViewModelSink}
+\newinst{M}{DataModel}
+
+\begin{call}{MW}{Exec}{RF}{}
+ \begin{call}{RF}{RunFitViewModel}{VM}{}
+  \begin{call}{VM}{RunFitModel}{M}{}
+   \begin{call}{M}{OnPropertyChanged}{VMS}{}
+    \begin{call}{VMS}{OnPropertyChanged}{RS}{}
+     \begin{call}{RS}{Update}{FV}{}\end{call}
+    \end{call}
+   \end{call}
+  \end{call}
+ \end{call}
+ \begin{call}{RF}{Fire\_OnCommandComplete}{VM}{}
+  \begin{call}{VM}{OnCommandComplete}{RS}{}\end{call}
+ \end{call}
+\end{call}
+
+\end{sequencediagram}
+\end{adjustwidth}
+\end{landscape}
+\end{document}
