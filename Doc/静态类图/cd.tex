@@ -1,0 +1,171 @@
+﻿\documentclass{article}
+\usepackage{../public/pgf-umlcd-f}
+%xeCJK
+\usepackage[BoldFont,SlantFont,CJKchecksingle]{xeCJK}
+\setCJKmainfont[BoldFont=SimHei,SlantedFont=KaiTi]{SimSun}
+
+\begin{document}
+\section{Common Layer}
+\begin{tikzpicture}
+\begin{class}{Function}{0,0}
+\attribute{- function : string}
+\attribute{- type : Type}
+\attribute{- power\_function : double[4]}
+\attribute{- other\_function : double[2]}
+\attribute{- normal\_function : point\_with\_range}
+\operation{+ add\_power(pos:bool, num:double, power:int) : void}
+\operation{+ add\_normalpower(pos:bool, num:double, power:int, place:int) : void}
+\operation{+ add\_Exp(pos:bool, num:double, com:double, com\_pos:bool) : void}
+\operation{+ addLn(pos:bool, num:double, com:double, com\_pos:bool) : void}
+\operation{+ convert() : bool}
+\operation{+ Function()}
+\operation{+ set\_type(t:Type) : void}
+\operation{+ operate\=(s:const string\&) : Function\&}
+\operation{+ operate\=(s:string\&\&) : Function\&}
+\operation{+ get\_y(x:const double\&) : double}
+\operation{+ get\_dy(x:const double\&) : double}
+\operation{+ get\_function() : string}
+\operation{+ set\_function(func:string\&) : void}
+\operation{+ setnum(n:const int\&) : void}
+\operation{+ get\_type() : Type}
+\end{class}
+\begin{class}[text width=7cm]{Point}{7,0}
+\attribute{- x : double}
+\attribute{- y : double}
+\operation{+ Point(xx:double, yy:double)}
+\operation{+ Point(p:const Point\&)}
+\operation{+ Point(p:Point\&\&)}
+\operation{+ setx(xx:const double\&) : void}
+\operation{+ sety(yy:const double\&) : void}
+\operation{+ getx() : double}
+\operation{+ gety() : double}
+\operation{+ reset(xx:const double\&, yy:const double\&) : void}
+\end{class}
+\begin{class}[text width=7cm]{pointwithrange}{7,4}
+\attribute{- functions : double[51][4]}
+\attribute{- points : double[50]}
+\attribute{- pointnum : int}
+\end{class}
+\composition{Point}{1..*}{m\_BusStops}{pointwithrange}
+\composition{Function}{1..1}{m\_BusStops}{pointwithrange}
+\end{tikzpicture}
+\newpage
+
+\section{Model Layer}
+\begin{tikzpicture}
+\begin{class}[text width=10cm]{ProxyPropertyNotification<Model>}{0,0}\end{class}
+\begin{class}[text width=7cm]{Model}{0,-4}
+\inherit{ProxyPropertyNotification<Model>}
+\attribute{- sp\_Function : shared\_ptr<Function>}
+\attribute{- samplePoints : shared\_ptr<Points>}
+\attribute{- real\_xy\_points : shared\_ptr<Points>}
+\attribute{- dxy\_points : shared\_ptr<Points>}
+\attribute{- range\_x : shared\_ptr<Points>}
+\attribute{- range\_y : shared\_ptr<Points>}
+\operation{+ sort(m:Mux\_Points\&, n:const int\&) : shared\_ptr<string>}
+\operation{+ Model}
+\operation{+ ~Model}
+\operation{+ getFunction() : shared\_ptr<Function>}
+\operation{+ getRealPoints() : shared\_ptr<Points>}
+\operation{+ getDyPoints() : shared\_ptr<Points>}
+\operation{+ getSamplePoints() : shared\_ptr<Points>}
+\operation{+ getRangeX() : shared\_ptr<Points>}
+\operation{+ getRangeY() : shared\_ptr<Points>}
+\operation{+ opcf\_fit(p:Param\_opcf\&) : bool}
+\operation{+ get\_realXYPoints(t:Type) : bool}
+\operation{+ get\_mappedXYPoints() : bool}
+\operation{+ get\_min\_real\_x() : double}
+\operation{+ get\_max\_real\_x() : double}
+\operation{+ get\_min\_real\_y() : double}
+\operation{+ get\_max\_real\_y() : double}
+\operation{+ get\_min\_sample\_x() : double}
+\operation{+ get\_max\_sample\_x() : double}
+\end{class}
+\end{tikzpicture}
+\newpage
+
+\section{ViewModel Layer}
+\begin{tikzpicture}
+\begin{class}[text width=10cm]{ProxyPropertyNotification<ViewModel>}{-3,0}\end{class}
+\begin{class}[text width=10cm]{ProxyCommandNotification<ViewModel>}{1,-2}\end{class}
+\begin{class}{DataModel}{-6,-11}\end{class}
+\begin{class}[text width=9.5cm]{ViewModel}{-1,-4}
+\inherit{ProxyPropertyNotification<ViewModel>}
+\inherit{ProxyCommandNotification<ViewModel>}
+\attribute{- m\_model : shared\_ptr<Model>}
+\attribute{- m\_cmdFit: shared\_ptr<RunFitCommand>}
+\attribute{- m\_sink : shared\_ptr<ViewModelSink>}
+\operation{+ SetModel(model:shared\_ptr<Model>) : void}
+\operation{+ getFunction() : shared\_ptr<Function>}
+\operation{+ getRealPoints() : shared\_ptr<Points>}
+\operation{+ getDyPoints() : shared\_ptr<Points>}
+\operation{+ getSamplePoints() : shared\_ptr<Points>}
+\operation{+ getRangeX() : shared\_ptr<Points>}
+\operation{+ getRangeY() : shared\_ptr<Points>}
+\operation{+ get\_fitCommand() : shared\_ptr<ICommandBase>}
+\operation{+ call\_model\_fit(p:Param\_opcf\&) : bool}
+\end{class}
+\begin{class}{ICommandBase}{5,-17}\end{class}
+\begin{class}{TwoStrings}{-2,-17}\end{class}
+\begin{class}[text width=6cm]{QueryCommand}{-2,-13}
+\inherit{ICommandBase}
+\attribute{- m\_pVM : ViewModel}
+\attribute{- m\_param : TwoStrings}
+\operation{+ SetParameter(param:any) : void}
+\operation{+ Exec() : void}
+\end{class}
+\begin{class}{IPropertyNotification}{4,-14}\end{class}
+\begin{class}[text width=6.5cm]{ViewModelSink}{4,-11}
+\inherit{IPropertyNotification}
+\attribute{- m\_pVM : ViewModel}
+\operation{+ OnPropertyChanged(str:string) : void}
+\end{class}
+\composition{ViewModel}{1..1}{m\_cmdQuery}{QueryCommand}
+\composition{ViewModel}{1..1}{m\_sink}{ViewModelSink}
+\composition{ViewModel}{1..1}{m\_Model}{DataModel}
+\composition{QueryCommand}{1..1}{m\_param}{TwoStrings}
+\end{tikzpicture}
+\newpage
+
+\section{View Layer}
+\begin{tikzpicture}
+\begin{class}{QMainWindow}{0,0}
+\end{class}
+\begin{class}[text width=7cm]{BusLabel}{0,-5}
+\inherit{QMainWindow}
+\attribute{- chartView : QChartView*}
+\attribute{- function\_view : QChart*}
+\attribute{- functionText : QPlainTextEdit*}
+\attribute{- table : QTableWidget*}
+\attribute{- whether\_move\_point : bool}
+\attribute{- fitType : Type}
+\attribute{- pointsData : Points}
+\attribute{- m\_param : Param\_opcf}
+\attribute{- spFunction : shared\_ptr<Function>}
+\attribute{- real\_xy\_points : shared\_ptr<Points>}
+\attribute{- dyPoints : shared\_ptr<Points>}
+\attribute{- sample\_points : shared\_ptr<Points>}
+\attribute{- range\_x : shared\_ptr<Point>}
+\attribute{- range\_y : shared\_ptr<Point>}
+\attribute{- m\_updateSink : shared\_ptr<updateSink>}
+\attribute{- m\_cmdRun : shared\_ptr<ICommandBase>}
+\attribute{- m\_runSink : shared\_ptr<runSink>}
+\operation{+ createFuncView() : void}
+\operation{+ movePoint(p : const QPointF\&) : void}
+\end{class}
+\end{tikzpicture}
+\newpage
+
+
+\section{App Layer}
+\begin{tikzpicture}
+\begin{class}[text width=8cm]{BusApp}{0,0}
+\attribute{- \_mainwindow : MainWindow}
+\attribute{- model : shared\_ptr<Model>}
+\attribute{- viewmodel : shared\_ptr<ViewModel>}
+\operation{+ run() : bool}
+\operation{+ getmainwindow() : MainWindow*}
+\operation{+ get\_viewmodel() : shared\_ptr<ViewModel>}
+\end{class}
+\end{tikzpicture}
+\end{document}
