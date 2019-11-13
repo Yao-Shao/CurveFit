@@ -1,6 +1,6 @@
 # OPCF
 
-## C++ in science and enginerring(Summer2019 Prof. Xin Yuan) 
+## C++ in science and engineering(Summer2019 Prof. Xin Yuan) 
 
 A curve fittting tool Based on NVVM and Qt---**OPCF**(ocular points curve fitting).
 
